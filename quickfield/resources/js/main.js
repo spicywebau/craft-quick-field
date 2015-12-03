@@ -144,7 +144,7 @@
 
 	function init(fld)
 	{
-		var container = $('<div class="newfieldbtn-container">').appendTo(fld.$unusedFieldContainer);
+		var container = $('<div class="newfieldbtn-container">').insertAfter(fld.$unusedFieldContainer);
 		var groupButton = $('<div class="btn add icon" tabindex="0">New Group</div>').appendTo(container);
 		var fieldButton = $('<div class="btn add icon" tabindex="0">New Field</div>').appendTo(container);
 
