@@ -34,14 +34,12 @@
 		$currentJs:   null,
 
 		$observed:    null,
-
-		quickField:   null,
 		observer:     null,
 
 		/**
 		 * The constructor.
 		 */
-		init: function(qf, settings)
+		init: function(settings)
 		{
 			this.base();
 
@@ -49,7 +47,6 @@
 				resizable: true
 			});
 
-			this.quickField = qf;
 			this.observer = new MutationObserver($.proxy(function(mutations)
 			{
 				for(var i = 0; i < mutations.length; i++)
@@ -73,7 +70,6 @@
 			this.setContainer($container);
 
 			// Loads the field settings template file, as well as all the resources that come with it
-			// TODO This should be only be done once per page load. Need to move outside FieldModal class.
 			Craft.postActionRequest('quickField/getFieldSettings', {}, $.proxy(function(response, textStatus)
 			{
 				if(textStatus === 'success')
@@ -266,6 +262,17 @@
 			this.$container.remove();
 		}
 	});
+
+	var instance = null;
+	FieldModal.getInstance = function()
+	{
+		if(!instance)
+		{
+			instance = new FieldModal();
+		}
+
+		return instance;
+	};
 
 	window.QuickField.FieldModal = FieldModal;
 

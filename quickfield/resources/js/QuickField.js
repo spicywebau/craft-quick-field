@@ -34,10 +34,23 @@
 			this.$groupButton = $('<div class="btn add icon" tabindex="0">').text(Craft.t('New Group')).appendTo(this.$container);
 			this.$fieldButton = $('<div class="btn add icon" tabindex="0">').text(Craft.t('New Field')).appendTo(this.$container);
 
-			this.dialog = new QuickField.GroupDialog(this);
-			this.modal  = new QuickField.FieldModal(this);
+			this.dialog = QuickField.GroupDialog.getInstance();
+			this.modal  = QuickField.FieldModal.getInstance();
 
+			this.addListener(this.$groupButton, 'activate', 'newGroup');
 			this.addListener(this.$fieldButton, 'activate', 'newField');
+
+			this.dialog.on('newGroup', $.proxy(function(e)
+			{
+				var group = e.group;
+				this.addGroup(group.id, group.name);
+			}, this));
+
+			this.dialog.on('newField', $.proxy(function(e)
+			{
+				var field = e.field;
+
+			}, this));
 		},
 
 		/**
@@ -47,6 +60,54 @@
 		newField: function()
 		{
 			this.modal.show();
+		},
+
+		addField: function()
+		{
+
+		},
+
+		/**
+		 *
+		 */
+		newGroup: function()
+		{
+			this.dialog.addNewGroup();
+		},
+
+		/**
+		 * Adds a new unused (dashed border) group tab to the field layout designer.
+		 *
+		 * @param name
+		 * @param id
+		 */
+		addGroup: function(id, name)
+		{
+			var fld = this.fld;
+			var settings = fld.settings;
+			var container = fld.$unusedFieldContainer;
+			var grid = fld.unusedFieldGrid;
+			var drag = fld.tabDrag;
+
+			var $tab = $(
+				'<div class="fld-tab unused">' +
+					'<div class="tabs">' +
+						'<div class="tab sel">' +
+							'<span>' + name + '</span>' +
+						'</div>' +
+					'</div>' +
+					'<div class="fld-tabcontent"></div>' +
+				'</div>'
+			).appendTo(container);
+
+			grid.addItems($tab);
+
+			if(settings.customizableTabs)
+			{
+				drag.addItems($tab);
+			}
+
+			grid.refreshCols(true);
 		}
 	});
 

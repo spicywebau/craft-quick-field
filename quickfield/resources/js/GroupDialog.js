@@ -16,8 +16,6 @@
 		init: function(qf)
 		{
 			this.quickField = qf;
-
-			this.addListener(this.quickField.$groupButton, 'activate', 'addNewGroup');
 		},
 
 		/**
@@ -39,8 +37,10 @@
 					{
 						if(response.success)
 						{
-							var group = response.group;
-							this.addGroupTab(group.name, group.id);
+							this.trigger('newGroup', {
+								target: this,
+								group: response.group
+							});
 						}
 						else if(response.errors)
 						{
@@ -67,41 +67,6 @@
 		},
 
 		/**
-		 * Adds a new unused (dashed border) group tab to the field layout designer.
-		 *
-		 * @param name
-		 * @param id
-		 */
-		addGroupTab: function(name, id)
-		{
-			var fld = this.quickField.fld;
-			var settings = fld.settings;
-			var container = fld.$unusedFieldContainer;
-			var grid = fld.unusedFieldGrid;
-			var drag = fld.tabDrag;
-
-			var $tab = $(
-				'<div class="fld-tab unused">' +
-					'<div class="tabs">' +
-						'<div class="tab sel">' +
-							'<span>' + name + '</span>' +
-						'</div>' +
-					'</div>' +
-					'<div class="fld-tabcontent"></div>' +
-				'</div>'
-			).appendTo(container);
-
-			grid.addItems($tab);
-
-			if(settings.customizableTabs)
-			{
-				drag.addItems($tab);
-			}
-
-			grid.refreshCols(true);
-		},
-
-		/**
 		 * Utility method that transforms returned errors from an async request into a single dimension array.
 		 * This is useful when outputting errors to the screen, so conversion to string is simpler.
 		 *
@@ -119,6 +84,17 @@
 			return errors;
 		}
 	});
+
+	var instance = null;
+	GroupDialog.getInstance = function()
+	{
+		if(!instance)
+		{
+			instance = new GroupDialog();
+		}
+
+		return instance;
+	};
 
 	window.QuickField.GroupDialog = GroupDialog;
 
