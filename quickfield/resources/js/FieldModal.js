@@ -1,5 +1,16 @@
 (function($)
 {
+	var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+
+	// If mutation observer is not supported, create a harness for it for graceful degradation.
+	// Older browsers could be supported through the DOMNodeInserted event, but that can be saved for another day...
+	if(!MutationObserver)
+	{
+		MutationObserver = function(){};
+		MutationObserver.prototype.observe = function(){};
+		MutationObserver.prototype.disconnect = function(){};
+	}
+
 	/**
 	 * FieldModal class
 	 * Handles the modal window for creating new fields.
@@ -22,7 +33,10 @@
 		$currentHtml: null,
 		$currentJs:   null,
 
+		$observed:    null,
+
 		quickField:   null,
+		observer:     null,
 
 		/**
 		 * The constructor.
@@ -36,6 +50,13 @@
 			});
 
 			this.quickField = qf;
+			this.observer = new MutationObserver($.proxy(function(mutations)
+			{
+				for(var i = 0; i < mutations.length; i++)
+				{
+					this.$observed = this.$observed.add(mutations[i].addedNodes);
+				}
+			}, this));
 
 			var $container    = $('<form class="modal quick-field-modal" style="display: none; opacity: 0;">').appendTo(Garnish.$bod);
 
@@ -153,10 +174,20 @@
 			that.$currentHtml = that.$html.clone();
 			that.$currentJs   = that.$js.clone();
 
+			// Save any new nodes that are added to the body during initialisation, so they can be safely removed later.
+			that.$observed = $();
+			that.observer.observe(Garnish.$bod[0], {childList: true, subtree: false});
+
 			that.$main.append(that.$currentHtml);
 			Garnish.$bod.append(that.$currentJs);
 
 			Craft.initUiElements();
+
+			// Stop observing after a healthy timeout to ensure all mutations are captured.
+			setTimeout(function()
+			{
+				that.observer.disconnect();
+			}, 1);
 		},
 
 		/**
@@ -169,6 +200,7 @@
 
 			that.$currentHtml.remove();
 			that.$currentJs.remove();
+			that.$observed.remove();
 		},
 
 		/**
