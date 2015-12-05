@@ -43,8 +43,8 @@
 			this.fld = fld;
 
 			this.$container   = $('<div class="newfieldbtn-container">').insertAfter(fld.$unusedFieldContainer);
-			this.$groupButton = $('<div class="btn add icon" tabindex="0">New Group</div>').appendTo(this.$container);
-			this.$fieldButton = $('<div class="btn add icon" tabindex="0">New Field</div>').appendTo(this.$container);
+			this.$groupButton = $('<div class="btn add icon" tabindex="0">').text(Craft.t('New Group')).appendTo(this.$container);
+			this.$fieldButton = $('<div class="btn add icon" tabindex="0">').text(Craft.t('New Field')).appendTo(this.$container);
 
 			this.dialog = new QuickField.GroupDialog(this);
 
@@ -57,7 +57,7 @@
 		 */
 		newField: function()
 		{
-			this.modal = new QuickField.FieldModal();
+			this.modal = new QuickField.FieldModal(this);
 		}
 	});
 
@@ -67,28 +67,83 @@
 	 */
 	QuickField.FieldModal = Garnish.Modal.extend({
 
-		$buttons:  null,
-		$closeBtn: null,
+		$body:        null,
+		$content:     null,
+		$main:        null,
+		$footer:      null,
+		$buttons:     null,
+		$saveBtn:     null,
+		$cancelBtn:   null,
+		$saveSpinner: null,
+		$loadSpinner: null,
+
+		$js:          null,
+		$css:         null,
+
+		quickField:   null,
 
 		/**
 		 * The constructor.
 		 */
-		init: function()
+		init: function(qf, settings)
 		{
-			var $container = $('<div class="modal quickfieldmodal">').appendTo(Garnish.$bod);
-			var $body      = $('<div class="body">').appendTo($container);
-			var $content   = $('<div class="content">').appendTo($body);
-			var $main      = $('<div class="main">').appendTo($content);
-			var $footer    = $('<div class="footer">').appendTo($container);
+			this.base();
 
-			this.base($container, {
-
+			this.setSettings(settings, {
+				resizable: true
 			});
 
-			this.$buttons  = $('<div class="buttons rightalign first">').appendTo($footer);
-			this.$closeBtn = $('<div class="btn">' + Craft.t('Close') + '</div>').appendTo(this.$buttons);
+			this.quickField = qf;
 
-			this.addListener(this.$closeBtn, 'activate', 'closeModal');
+			var $container    = $('<form class="modal quick-field-modal">').appendTo(Garnish.$bod);
+
+			this.$body        = $('<div class="body">').appendTo($container);
+			this.$content     = $('<div class="content">').appendTo(this.$body);
+			this.$main        = $('<div class="main">').appendTo(this.$content);
+			this.$footer      = $('<div class="footer">').appendTo($container);
+			this.$loadSpinner = $('<div class="spinner big">').appendTo($container);
+
+			this.$buttons     = $('<div class="buttons right">').appendTo(this.$footer);
+			this.$cancelBtn   = $('<div class="btn">').text(Craft.t('Cancel')).appendTo(this.$buttons);
+			this.$saveBtn     = $('<div class="btn submit disabled" role="button">').text(Craft.t('Save')).appendTo(this.$buttons);
+			this.$saveSpinner = $('<div class="spinner hidden">').appendTo(this.$buttons);
+
+			this.setContainer($container);
+			this.show();
+
+			Craft.postActionRequest('quickField/getFieldSettings', {}, $.proxy(function(response, textStatus)
+			{
+				this.$loadSpinner.remove();
+
+				if(textStatus == 'success')
+				{
+					this.$saveBtn.removeClass('disabled');
+					this.buildModal(response);
+				}
+
+			}, this));
+
+			this.addListener(this.$cancelBtn, 'activate', 'closeModal');
+			this.addListener(this.$saveBtn,   'activate', 'saveField');
+		},
+
+		/**
+		 * Initialises the HTML, CSS and Javascript for the modal window.
+		 *
+		 * @param response - The AJAX response from the QuickFieldController::actionGetFieldSettings controller method
+		 */
+		buildModal: function(response)
+		{
+			this.$js  = $(response.fieldSettingsJs);
+			this.$css = $(response.fieldSettingsCss);
+
+			Garnish.$bod.append(this.$css);
+
+			this.$body.html(response.fieldSettingsHtml);
+
+			Garnish.$bod.append(this.$js);
+
+			Craft.initUiElements();
 		},
 
 		/**
@@ -100,6 +155,8 @@
 			this.destroy();
 			this.$shade.remove();
 			this.$container.remove();
+			this.$js.remove();
+			this.$css.remove();
 
 			this.removeListener(this.$closeBtn, 'click');
 		},
@@ -111,6 +168,45 @@
 		closeModal: function()
 		{
 			this.hide();
+		},
+
+		/**
+		 * Event handler for the save button.
+		 * Saves the new field form to the database.
+		 *
+		 * @param e
+		 */
+		saveField: function(e)
+		{
+			if(e) e.preventDefault();
+
+			if(this.$saveBtn.hasClass('disabled') || !this.$saveSpinner.hasClass('hidden'))
+			{
+				return;
+			}
+
+			this.$saveSpinner.removeClass('hidden');
+			var data = this.$container.serialize();
+
+			Craft.postActionRequest('quickField/saveField', data, $.proxy(function(response, textStatus)
+			{
+				this.$saveSpinner.addClass('hidden');
+
+				if(textStatus == 'success' && response.success)
+				{
+					console.log(response.field);
+
+					Craft.cp.displayNotice(Craft.t('New field created'));
+
+					this.hide();
+				}
+				else
+				{
+					var error = (textStatus == 'success' && response.error ? response.error : Craft.t('An unknown error occurred.'));
+
+					Craft.cp.displayError(error);
+				}
+			}, this));
 		}
 	});
 

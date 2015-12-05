@@ -1,0 +1,92 @@
+{% requireAdmin %}
+
+{% import "_includes/forms" as forms %}
+
+{% set groups = craft.fields.getAllGroups('id') %}
+{% if not groups %}{% exit 404 %}{% endif %}
+
+{% set fieldTypes = craft.fields.getAllFieldTypes() %}
+{% set fieldType = craft.fields.getFieldType('PlainText') %}
+
+
+<input type="hidden" name="action" value="fields/saveField">
+<input type="hidden" name="redirect" value="settings/fields/{groupId}">
+
+{% set groupOptions = [] %}
+{% for group in groups %}
+	{% set groupOptions = groupOptions|merge([{ label: group.name, value: group.id }]) %}
+{% endfor %}
+{{ forms.selectField({
+	first: true,
+	label: "Group"|t,
+	instructions: "Which group should this field be displayed in?"|t,
+	id: 'qf-group',
+	name: 'group',
+	options: groupOptions
+}) }}
+
+{{ forms.textField({
+	label: "Name"|t,
+	instructions: "What this field will be called in the CP."|t,
+	id: 'qf-name',
+	name: 'name',
+	required: true,
+	translatable: true,
+	autofocus: true
+}) }}
+
+{{ forms.textField({
+	label: "Handle"|t,
+	instructions: "How you’ll refer to this field in the templates."|t,
+	id: 'qf-handle',
+	class: 'code',
+	name: 'handle',
+	maxlength: 64,
+	required: true,
+}) }}
+
+{{ forms.textareaField({
+	label: "Instructions"|t,
+	instructions: "Helper text to guide the author."|t,
+	id: 'qf-instructions',
+	class: 'nicetext',
+	name: 'instructions',
+	translatable: true
+}) }}
+
+{% if craft.isLocalized() %}
+	{{ forms.checkboxField({
+		label: "This field is translatable"|t,
+		name: 'translatable'
+	}) }}
+{% endif %}
+
+<hr>
+
+{{ forms.selectField({
+	label: "Field Type"|t,
+	instructions: "What type of field is this?"|t,
+	warning: (fieldId is defined ? "Changing this may result in data loss."|t),
+	id: 'type',
+	name: 'type',
+	options: fieldTypes,
+	value: fieldType.getClassHandle(),
+	toggle: true
+}) }}
+
+{% for _fieldType in fieldTypes %}
+	{% set isCurrent = (_fieldType.getClassHandle() == fieldType.getClassHandle()) %}
+	<div id="{{ _fieldType.getClassHandle() }}"{% if not isCurrent %} class="hidden"{% endif %}>
+		{% namespace 'types['~_fieldType.getClassHandle()~']' %}
+		{% if isCurrent %}
+			{{ fieldType.getSettingsHtml()|raw }}
+		{% else %}
+			{{ _fieldType.getSettingsHtml()|raw }}
+		{% endif %}
+		{% endnamespace %}
+	</div>
+{% endfor %}
+
+
+
+{% includejs "new Craft.HandleGenerator('#qf-name', '#qf-handle');" %}
