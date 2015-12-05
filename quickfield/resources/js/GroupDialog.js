@@ -82,18 +82,23 @@
 
 			return errors;
 		}
-	});
-
-	var instance = null;
-	GroupDialog.getInstance = function()
+	},
 	{
-		if(!instance)
+		/**
+		 * (Static) Singleton pattern.
+		 *
+		 * @returns GroupDialog
+		 */
+		getInstance: function()
 		{
-			instance = new GroupDialog();
-		}
+			if(!this._instance)
+			{
+				this._instance = new GroupDialog();
+			}
 
-		return instance;
-	};
+			return this._instance;
+		}
+	});
 
 	window.QuickField.GroupDialog = GroupDialog;
 

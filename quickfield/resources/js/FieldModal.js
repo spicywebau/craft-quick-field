@@ -268,18 +268,23 @@
 			this.$shade.remove();
 			this.$container.remove();
 		}
-	});
-
-	var instance = null;
-	FieldModal.getInstance = function()
+	},
 	{
-		if(!instance)
+		/**
+		 * (Static) Singleton pattern.
+		 *
+		 * @returns FieldModal
+		 */
+		getInstance: function()
 		{
-			instance = new FieldModal();
-		}
+			if(!this._instance)
+			{
+				this._instance = new FieldModal();
+			}
 
-		return instance;
-	};
+			return this._instance;
+		}
+	});
 
 	window.QuickField.FieldModal = FieldModal;
 
