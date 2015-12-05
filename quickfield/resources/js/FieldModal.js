@@ -73,6 +73,7 @@
 			this.setContainer($container);
 
 			// Loads the field settings template file, as well as all the resources that come with it
+			// TODO This should be only be done once per page load. Need to move outside FieldModal class.
 			Craft.postActionRequest('quickField/getFieldSettings', {}, $.proxy(function(response, textStatus)
 			{
 				if(textStatus === 'success')
