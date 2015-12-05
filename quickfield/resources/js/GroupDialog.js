@@ -33,24 +33,23 @@
 
 				Craft.postActionRequest('fields/saveGroup', data, $.proxy(function(response, textStatus)
 				{
-					if(textStatus === 'success')
+					var statusSuccess = (textStatus === 'success');
+
+					if(statusSuccess && response.success)
 					{
-						if(response.success)
-						{
-							this.trigger('newGroup', {
-								target: this,
-								group: response.group
-							});
-						}
-						else if(response.errors)
-						{
-							var errors = this._flattenErrors(response.errors);
-							alert(Craft.t('Could not create the group:') + "\n\n" + errors.join("\n"));
-						}
-						else
-						{
-							Craft.cp.displayError();
-						}
+						this.trigger('newGroup', {
+							target: this,
+							group: response.group
+						});
+					}
+					else if(statusSuccess && response.errors)
+					{
+						var errors = this._flattenErrors(response.errors);
+						alert(Craft.t('Could not create the group:') + "\n\n" + errors.join("\n"));
+					}
+					else
+					{
+						Craft.cp.displayError(Craft.t('An unknown error occurred.'));
 					}
 				}, this));
 			}

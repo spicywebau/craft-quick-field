@@ -231,19 +231,26 @@
 			{
 				this.$saveSpinner.addClass('hidden');
 
-				if(textStatus === 'success' && response.success)
+				var statusSuccess = (textStatus === 'success');
+
+				if(statusSuccess && response.success)
 				{
-					console.log(response.field);
+					this.trigger('newField', {
+						target: this,
+						field: response.field
+					});
 
 					Craft.cp.displayNotice(Craft.t('New field created'));
 
 					this.hide();
 				}
+				else if(statusSuccess && response.error)
+				{
+					Craft.cp.displayError(response.error);
+				}
 				else
 				{
-					var error = (textStatus === 'success' && response.error ? response.error : Craft.t('An unknown error occurred.'));
-
-					Craft.cp.displayError(error);
+					Craft.cp.displayError(Craft.t('An unknown error occurred.'));
 				}
 			}, this));
 		},
