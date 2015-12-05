@@ -29,12 +29,6 @@ body.rtl .fieldlayoutform .newfieldbtn-container .btn.add {
 	padding-bottom: 58px;
 }
 
-.quick-field-modal > .spinner {
-	position: absolute;
-	top: calc(50% - 44px);
-	left: calc(50% - 12px);
-}
-
 .quick-field-modal .main {
 	margin: -24px;
 	padding: 24px;
@@ -46,7 +40,6 @@ body.rtl .fieldlayoutform .newfieldbtn-container .btn.add {
 .quick-field-modal .body {
 	position: relative;
 	height: 100%;
-	overflow: auto;
 }
 
 .quick-field-modal .body .content {

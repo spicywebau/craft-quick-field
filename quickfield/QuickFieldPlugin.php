@@ -47,7 +47,14 @@ class QuickFieldPlugin extends BasePlugin
 
 	protected function includeResources()
 	{
-		craft()->templates->includeCssResource('quickfield/css/main.css');
-		craft()->templates->includeJsResource('quickfield/js/main.js');
+		if(!craft()->request->isAjaxRequest())
+		{
+			craft()->templates->includeCssResource('quickfield/css/main.css');
+
+			craft()->templates->includeJsResource('quickfield/js/QuickField.js');
+			craft()->templates->includeJsResource('quickfield/js/FieldModal.js');
+			craft()->templates->includeJsResource('quickfield/js/GroupDialog.js');
+			craft()->templates->includeJsResource('quickfield/js/main.js');
+		}
 	}
 }
