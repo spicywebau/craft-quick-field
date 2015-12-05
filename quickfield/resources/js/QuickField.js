@@ -46,10 +46,10 @@
 				this.addGroup(group.id, group.name);
 			}, this));
 
-			this.dialog.on('newField', $.proxy(function(e)
+			this.modal.on('newField', $.proxy(function(e)
 			{
 				var field = e.field;
-
+				this.addField(field.id, field.name, field.groupId);
 			}, this));
 		},
 
@@ -62,9 +62,29 @@
 			this.modal.show();
 		},
 
-		addField: function()
+		/**
+		 * Adds a new unused (dashed border) field to the field layout designer.
+		 *
+		 * @param id
+		 * @param name
+		 * @param groupId
+		 */
+		addField: function(id, name, groupId)
 		{
+			var fld = this.fld;
+			var grid = fld.unusedFieldGrid;
+			var drag = fld.fieldDrag;
 
+			var $container = fld.$unusedFieldContainer;
+			var $group = $container.children('.fld-tab').first();
+			var $groupContent = $group.children('.fld-tabcontent');
+			var $field = $(
+				'<div class="fld-field unused" data-id="' + id + '">' +
+					'<span>' + name + '</span>' +
+				'</div>'
+			).appendTo($groupContent);
+
+			drag.addItems($field);
 		},
 
 		/**
@@ -85,10 +105,10 @@
 		{
 			var fld = this.fld;
 			var settings = fld.settings;
-			var container = fld.$unusedFieldContainer;
 			var grid = fld.unusedFieldGrid;
 			var drag = fld.tabDrag;
 
+			var $container = fld.$unusedFieldContainer;
 			var $tab = $(
 				'<div class="fld-tab unused">' +
 					'<div class="tabs">' +
@@ -98,7 +118,7 @@
 					'</div>' +
 					'<div class="fld-tabcontent"></div>' +
 				'</div>'
-			).appendTo(container);
+			).appendTo($container);
 
 			grid.addItems($tab);
 
