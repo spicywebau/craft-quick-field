@@ -1,39 +1,100 @@
 (function($)
 {
-	// Urgh this is not a nice way of getting access to field layout instances... but it must be done
-
 	var FLD = Craft.FieldLayoutDesigner;
 	var FLDinit = FLD.prototype.init;
 
+	/**
+	 * Override the current FieldLayoutDesigner "constructor" so news buttons can be initialised.
+	 */
 	FLD.prototype.init = function()
 	{
 		FLDinit.apply(this, arguments);
-		init(this);
+
+		new QuickField(this);
 	};
 
-	var QuickFieldModal = Garnish.Modal.extend({
+	/**
+	 * QuickField class
+	 * Handles the buttons for creating new groups and fields inside a FieldLayoutDesigner
+	 */
+	var QuickField = Garnish.Base.extend({
 
-		$buttons: null,
+		$container:   null,
+		$groupButton: null,
+		$fieldButton: null,
+
+		fld:          null,
+		dialog:       null,
+		modal:        null,
+
+		/**
+		 * The constructor.
+		 *
+		 * @param fld - An instance of Craft.FieldLayoutDesigner
+		 */
+		init: function(fld)
+		{
+			if(!(fld instanceof Craft.FieldLayoutDesigner))
+			{
+				// Fail silently - just means the quick field feature will not be initialised, no big deal
+				return;
+			}
+
+			this.fld = fld;
+
+			this.$container   = $('<div class="newfieldbtn-container">').insertAfter(fld.$unusedFieldContainer);
+			this.$groupButton = $('<div class="btn add icon" tabindex="0">New Group</div>').appendTo(this.$container);
+			this.$fieldButton = $('<div class="btn add icon" tabindex="0">New Field</div>').appendTo(this.$container);
+
+			this.dialog = new QuickField.GroupDialog(this);
+
+			this.addListener(this.$fieldButton, 'activate', 'newField');
+		},
+
+		/**
+		 * Event handler for the New Field button.
+		 * Creates a modal window that contains new field settings.
+		 */
+		newField: function()
+		{
+			this.modal = new QuickField.FieldModal();
+		}
+	});
+
+	/**
+	 * FieldModal class
+	 * Handles the modal window for creating new fields.
+	 */
+	QuickField.FieldModal = Garnish.Modal.extend({
+
+		$buttons:  null,
 		$closeBtn: null,
 
+		/**
+		 * The constructor.
+		 */
 		init: function()
 		{
-			var $container = $('<div class="modal quickfieldmodal"></div>').appendTo(Garnish.$bod);
-			var $body = $('<div class="body"></div>').appendTo($container);
-			var $content = $('<div class="content"></div>').appendTo($body);
-			var $main = $('<div class="main"></div>').appendTo($content);
-			var $footer = $('<div class="footer"/>').appendTo($container);
+			var $container = $('<div class="modal quickfieldmodal">').appendTo(Garnish.$bod);
+			var $body      = $('<div class="body">').appendTo($container);
+			var $content   = $('<div class="content">').appendTo($body);
+			var $main      = $('<div class="main">').appendTo($content);
+			var $footer    = $('<div class="footer">').appendTo($container);
 
 			this.base($container, {
 
 			});
 
-			this.$buttons = $('<div class="buttons rightalign first"/>').appendTo($footer);
+			this.$buttons  = $('<div class="buttons rightalign first">').appendTo($footer);
 			this.$closeBtn = $('<div class="btn">' + Craft.t('Close') + '</div>').appendTo(this.$buttons);
 
 			this.addListener(this.$closeBtn, 'activate', 'closeModal');
 		},
 
+		/**
+		 * Event handler for when the modal window finishes fading out after hiding.
+		 * Clears out all events and elements of the modal.
+		 */
 		onFadeOut: function()
 		{
 			this.destroy();
@@ -43,26 +104,39 @@
 			this.removeListener(this.$closeBtn, 'click');
 		},
 
+		/**
+		 * Event handler for the Close button.
+		 * Hides the modal window from view.
+		 */
 		closeModal: function()
 		{
 			this.hide();
 		}
-
 	});
 
-	var GroupDialog = Garnish.Base.extend({
+	/**
+	 * GroupDialog class.
+	 * Handles the dialog box for creating new field groups.
+	 */
+	QuickField.GroupDialog = Garnish.Base.extend({
 
-		$button: null,
-		fld: null,
+		quickField: null,
 
-		init: function($button, fld)
+		/**
+		 * The constructor.
+		 *
+		 * @param qf - An instance of QuickField.
+		 */
+		init: function(qf)
 		{
-			this.$button = $button;
-			this.fld = fld;
+			this.quickField = qf;
 
-			this.addListener(this.$button, 'activate', 'addNewGroup');
+			this.addListener(this.quickField.$groupButton, 'activate', 'addNewGroup');
 		},
 
+		/**
+		 * Requests input for new group name, then creates the group.
+		 */
 		addNewGroup: function()
 		{
 			var name = this.promptForGroupName('');
@@ -84,8 +158,8 @@
 						}
 						else if(response.errors)
 						{
-							var errors = this.flattenErrors(response.errors);
-							alert(Craft.t('Could not create the group:')+ "\n\n" + errors.join("\n"));
+							var errors = this._flattenErrors(response.errors);
+							alert(Craft.t('Could not create the group:') + "\n\n" + errors.join("\n"));
 						}
 						else
 						{
@@ -96,29 +170,29 @@
 			}
 		},
 
+		/**
+		 * Creates and opens the dialog box asking for a group name.
+		 *
+		 * @return string
+		 */
 		promptForGroupName: function(oldName)
 		{
 			return prompt(Craft.t('What do you want to name your group?'), oldName);
 		},
 
-		flattenErrors: function(responseErrors)
-		{
-			var errors = [];
-
-			for(var attribute in responseErrors) if(responseErrors.hasOwnProperty(attribute))
-			{
-				errors = errors.concat(responseErrors[attribute]);
-			}
-
-			return errors;
-		},
-
+		/**
+		 * Adds a new unused (dashed border) group tab to the field layout designer.
+		 *
+		 * @param name
+		 * @param id
+		 */
 		addGroupTab: function(name, id)
 		{
-			var settings = this.fld.settings;
-			var container = this.fld.$unusedFieldContainer;
-			var grid = this.fld.unusedFieldGrid;
-			var drag = this.fld.tabDrag;
+			var fld = this.quickField.fld;
+			var settings = fld.settings;
+			var container = fld.$unusedFieldContainer;
+			var grid = fld.unusedFieldGrid;
+			var drag = fld.tabDrag;
 
 			var $tab = $(
 				'<div class="fld-tab unused">' +
@@ -139,23 +213,25 @@
 			}
 
 			grid.refreshCols(true);
+		},
+
+		/**
+		 * Utility method that transforms returned errors from an async request into a single dimension array.
+		 * This is useful when outputting errors to the screen, so conversion to string is simpler.
+		 *
+		 * @return array
+		 */
+		_flattenErrors: function(responseErrors)
+		{
+			var errors = [];
+
+			for(var attribute in responseErrors) if(responseErrors.hasOwnProperty(attribute))
+			{
+				errors = errors.concat(responseErrors[attribute]);
+			}
+
+			return errors;
 		}
 	});
-
-	function init(fld)
-	{
-		var container = $('<div class="newfieldbtn-container">').insertAfter(fld.$unusedFieldContainer);
-		var groupButton = $('<div class="btn add icon" tabindex="0">New Group</div>').appendTo(container);
-		var fieldButton = $('<div class="btn add icon" tabindex="0">New Field</div>').appendTo(container);
-
-		var dialog = new GroupDialog(groupButton, fld);
-
-		fieldButton.on('click', function(e)
-		{
-			fieldButton.trigger('blur');
-
-			var modal = new QuickFieldModal();
-		});
-	}
 
 })(jQuery);
