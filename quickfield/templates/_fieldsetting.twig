@@ -8,10 +8,6 @@
 {% set fieldTypes = craft.fields.getAllFieldTypes() %}
 {% set fieldType = craft.fields.getFieldType('PlainText') %}
 
-
-<input type="hidden" name="action" value="fields/saveField">
-<input type="hidden" name="redirect" value="settings/fields/{groupId}">
-
 {% set groupOptions = [] %}
 {% for group in groups %}
 	{% set groupOptions = groupOptions|merge([{ label: group.name, value: group.id }]) %}
@@ -20,7 +16,7 @@
 	first: true,
 	label: "Group"|t,
 	instructions: "Which group should this field be displayed in?"|t,
-	id: 'qf-group',
+	id: 'group'|namespaceInputId,
 	name: 'group',
 	options: groupOptions
 }) }}
@@ -28,7 +24,7 @@
 {{ forms.textField({
 	label: "Name"|t,
 	instructions: "What this field will be called in the CP."|t,
-	id: 'qf-name',
+	id: 'name'|namespaceInputId,
 	name: 'name',
 	required: true,
 	translatable: true,
@@ -38,7 +34,7 @@
 {{ forms.textField({
 	label: "Handle"|t,
 	instructions: "How you’ll refer to this field in the templates."|t,
-	id: 'qf-handle',
+	id: 'handle'|namespaceInputId,
 	class: 'code',
 	name: 'handle',
 	maxlength: 64,
@@ -48,7 +44,7 @@
 {{ forms.textareaField({
 	label: "Instructions"|t,
 	instructions: "Helper text to guide the author."|t,
-	id: 'qf-instructions',
+	id: 'instructions'|namespaceInputId,
 	class: 'nicetext',
 	name: 'instructions',
 	translatable: true
@@ -67,7 +63,7 @@
 	label: "Field Type"|t,
 	instructions: "What type of field is this?"|t,
 	warning: (fieldId is defined ? "Changing this may result in data loss."|t),
-	id: 'type',
+	id: 'type'|namespaceInputId,
 	name: 'type',
 	options: fieldTypes,
 	value: fieldType.getClassHandle(),
@@ -76,7 +72,7 @@
 
 {% for _fieldType in fieldTypes %}
 	{% set isCurrent = (_fieldType.getClassHandle() == fieldType.getClassHandle()) %}
-	<div id="{{ _fieldType.getClassHandle() }}"{% if not isCurrent %} class="hidden"{% endif %}>
+	<div id="{{ _fieldType.getClassHandle()|namespaceInputId }}"{% if not isCurrent %} class="hidden"{% endif %}>
 		{% namespace 'types['~_fieldType.getClassHandle()~']' %}
 		{% if isCurrent %}
 			{{ fieldType.getSettingsHtml()|raw }}
@@ -89,4 +85,4 @@
 
 
 
-{% includejs "new Craft.HandleGenerator('#qf-name', '#qf-handle');" %}
+{% includejs "new Craft.HandleGenerator('#" ~ ('name'|namespaceInputId) ~ "', '#" ~ ('handle'|namespaceInputId) ~ "');" %}
