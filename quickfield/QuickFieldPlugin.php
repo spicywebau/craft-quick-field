@@ -17,7 +17,7 @@ class QuickFieldPlugin extends BasePlugin
 
 	function getVersion()
 	{
-		return '0.1.0';
+		return '0.1.1';
 	}
 
 	function getDeveloper()
@@ -32,7 +32,7 @@ class QuickFieldPlugin extends BasePlugin
 
 	public function getDocumentationUrl()
 	{
-		return 'https://github.com/benjamminf/craft-quick-field/blob/0.1.0/README.md';
+		return 'https://github.com/benjamminf/craft-quick-field/blob/0.1.1/README.md';
 	}
 
 	public function init()
