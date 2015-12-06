@@ -47,6 +47,13 @@
 				resizable: true
 			});
 
+			// It's important to observe the DOM for new nodes when rendering the field settings template, as more
+			// complex fields may be adding elements to the body such as modal windows or helper elements. Since the
+			// settings template gets re-rendered each time the modal window is opened, these elements also get
+			// recreated, so if the old ones aren't tracked and removed then they start polluting the DOM and
+			// potentially affect performance.
+			// This feels like a hack, but unfortunately since field type behaviour cannot be predicted (for example,
+			// third-party field type plugins) this is the cleanest possible solution.
 			this.observer = new MutationObserver($.proxy(function(mutations)
 			{
 				for(var i = 0; i < mutations.length; i++)
@@ -61,6 +68,7 @@
 			this.$content     = $('<div class="content">').appendTo(this.$body);
 			this.$main        = $('<div class="main">').appendTo(this.$content);
 			this.$footer      = $('<div class="footer">').appendTo($container);
+			this.$loadSpinner = $('<div class="spinner big">').appendTo($container);
 
 			this.$buttons     = $('<div class="buttons right">').appendTo(this.$footer);
 			this.$cancelBtn   = $('<div class="btn">').text(Craft.t('Cancel')).appendTo(this.$buttons);
@@ -74,67 +82,93 @@
 			{
 				if(textStatus === 'success')
 				{
-					this.$saveBtn.removeClass('disabled');
-
-					var $html = $(response.fieldSettingsHtml);
-					var $js   = $(response.fieldSettingsJs).filter('script');
-					var $css  = $(response.fieldSettingsCss).filter('style, link');
-
-					// Ensure that external stylesheets are loaded asynchronously
-					$css.filter('link').prop('async', true);
-
-					// Load external Javascript files asynchronously, and remove them from being executed again.
-					// This assumes that external Javascript files are simply library files, that don't directly and
-					// instantly execute code that modifies the DOM. Library files can be loaded and executed once and
-					// reused later on.
-					// The Javascript tags that directly contain code are assumed to be context-dependent, so they are
-					// saved to be executed each time the modal is opened.
-					var jsFiles = [];
-					var $jsInline = $js.filter(function()
-					{
-						var $this = $(this);
-						var src = $this.prop('src');
-						var hasSrc = !!src;
-
-						if(hasSrc)
-						{
-							jsFiles.push(src);
-						}
-
-						return !hasSrc;
-					});
-
-					var jsFilesCount = jsFiles.length;
-					for(var i = 0; i < jsFiles.length; i++)
-					{
-						var src = jsFiles[i];
-
-						$.getScript(src, $.proxy(function(data, status)
-						{
-							if(status === 'success')
-							{
-								jsFilesCount--;
-
-								if(jsFilesCount === 0)
-								{
-									this.initListeners();
-								}
-							}
-						}, this));
-					}
-
-					this.$html = $html;
-					this.$js   = $jsInline;
-					this.$css  = $css;
-
-					Garnish.$doc.find('head').append(this.$css);
+					this.$loadSpinner.remove();
+					this.initTemplate(response);
 				}
 				else
 				{
 					this.destroy();
 				}
-
 			}, this));
+		},
+
+		/**
+		 * Prepares the field settings template HTML, CSS and Javascript.
+		 *
+		 * @param response
+		 */
+		initTemplate: function(response)
+		{
+			this.$saveBtn.removeClass('disabled');
+
+			var $html = $(response.fieldSettingsHtml);
+			var $js   = $(response.fieldSettingsJs).filter('script');
+			var $css  = $(response.fieldSettingsCss).filter('style, link');
+
+			// Watch for new groups so they can be added to the group select field
+			var $group = $html.find('#group');
+			var dialog = QuickField.GroupDialog.getInstance();
+			dialog.on('newGroup', $.proxy(function(e)
+			{
+				$group.append($('<option>', {
+					value: e.group.id,
+					text:  e.group.name
+				}));
+			}, this));
+
+			// Ensure that external stylesheets are loaded asynchronously
+			$css.filter('link').prop('async', true);
+
+			// Load external Javascript files asynchronously, and remove them from being executed again.
+			// This assumes that external Javascript files are simply library files, that don't directly and
+			// instantly execute code that modifies the DOM. Library files can be loaded and executed once and
+			// reused later on.
+			// The Javascript tags that directly contain code are assumed to be context-dependent, so they are
+			// saved to be executed each time the modal is opened.
+			var jsFiles = [];
+			var $jsInline = $js.filter(function()
+			{
+				var $this = $(this);
+				var src = $this.prop('src');
+				var hasSrc = !!src;
+
+				if(hasSrc)
+				{
+					jsFiles.push(src);
+				}
+
+				return !hasSrc;
+			});
+
+			var jsFilesCount = jsFiles.length;
+			for(var i = 0; i < jsFiles.length; i++)
+			{
+				var src = jsFiles[i];
+
+				$.getScript(src, $.proxy(function(data, status)
+				{
+					if(status === 'success')
+					{
+						jsFilesCount--;
+
+						if(jsFilesCount === 0)
+						{
+							this.initListeners();
+
+							if(this.visible)
+							{
+								this.initSettings();
+							}
+						}
+					}
+				}, this));
+			}
+
+			this.$html = $html;
+			this.$js   = $jsInline;
+			this.$css  = $css;
+
+			Garnish.$doc.find('head').append(this.$css);
 		},
 
 		/**
@@ -267,6 +301,8 @@
 
 			this.$shade.remove();
 			this.$container.remove();
+
+			this.trigger('destroy');
 		}
 	},
 	{

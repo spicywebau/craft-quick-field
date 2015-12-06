@@ -80,7 +80,7 @@
 
 			if($group)
 			{
-				var $groupContent = $group.children('.fld-tabcontent');
+								var $groupContent = $group.children('.fld-tabcontent');
 				var $field = $(
 					'<div class="fld-field unused" data-id="' + id + '">' +
 						'<span>' + name + '</span>' +
@@ -89,12 +89,13 @@
 
 				fld.$allFields = fields.add($field);
 
+				$group.removeClass('hidden');
 				drag.addItems($field);
 				grid.refreshCols(true);
 			}
 			else
 			{
-				Craft.cp.displayError(Craft.t('Invalid field group "' + groupName + '".'));
+				Craft.cp.displayError(Craft.t('Invalid field group:') + groupName);
 			}
 		},
 
