@@ -56,17 +56,21 @@ class QuickFieldController extends BaseElementsController
 			$field->settings = $typeSettings[$field->type];
 		}
 
-		$success = craft()->fields->saveField($field);
+		$group = craft()->fields->getGroupById($field->groupId);
+		$success = $group && craft()->fields->saveField($field);
 
 		$this->returnJson(array(
 			'success' => $success,
-			'field' => array(
-				'id' => $field->id,
-				'groupId' => $field->groupId,
-				'name' => $field->name,
-				'handle' => $field->handle,
+			'field'   => array(
+				'id'           => $field->id,
+				'name'         => $field->name,
+				'handle'       => $field->handle,
 				'instructions' => $field->instructions,
 				'translatable' => $field->translatable,
+				'group'        => !$group ? array() : array(
+					'id'   => $group->id,
+					'name' => $group->name,
+				),
 			),
 		));
 	}

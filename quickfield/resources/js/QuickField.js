@@ -49,7 +49,8 @@
 			this.modal.on('newField', $.proxy(function(e)
 			{
 				var field = e.field;
-				this.addField(field.id, field.name, field.groupId);
+				var group = field.group;
+				this.addField(field.id, field.name, group.name);
 			}, this));
 		},
 
@@ -67,24 +68,34 @@
 		 *
 		 * @param id
 		 * @param name
-		 * @param groupId
+		 * @param groupName
 		 */
-		addField: function(id, name, groupId)
+		addField: function(id, name, groupName)
 		{
 			var fld = this.fld;
 			var grid = fld.unusedFieldGrid;
 			var drag = fld.fieldDrag;
+			var fields = fld.$allFields;
+			var $group = this._getGroupByName(groupName);
 
-			var $container = fld.$unusedFieldContainer;
-			var $group = $container.children('.fld-tab').first();
-			var $groupContent = $group.children('.fld-tabcontent');
-			var $field = $(
-				'<div class="fld-field unused" data-id="' + id + '">' +
-					'<span>' + name + '</span>' +
-				'</div>'
-			).appendTo($groupContent);
+			if($group)
+			{
+				var $groupContent = $group.children('.fld-tabcontent');
+				var $field = $(
+					'<div class="fld-field unused" data-id="' + id + '">' +
+						'<span>' + name + '</span>' +
+					'</div>'
+				).appendTo($groupContent);
 
-			drag.addItems($field);
+				fld.$allFields = fields.add($field);
+
+				drag.addItems($field);
+				grid.refreshCols(true);
+			}
+			else
+			{
+				Craft.cp.displayError(Craft.t('Invalid field group "' + groupName + '".'));
+			}
 		},
 
 		/**
@@ -128,6 +139,35 @@
 			}
 
 			grid.refreshCols(true);
+		},
+
+		/**
+		 * Finds the group tab element from it's name.
+		 *
+		 * @param name
+		 * @returns {*}
+		 * @private
+		 */
+		_getGroupByName: function(name)
+		{
+			var $container = this.fld.$unusedFieldContainer;
+			var $groups = $container.children('.fld-tab');
+			var $group = null;
+
+			$groups.each(function()
+			{
+				var $this = $(this);
+				var $tab = $this.children('.tabs').children('.tab.sel');
+				var $span = $tab.children('span');
+
+				if($span.text() === name)
+				{
+					$group = $this;
+					return false;
+				}
+			});
+
+			return $group;
 		}
 	});
 
