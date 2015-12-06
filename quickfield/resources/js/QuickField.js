@@ -80,7 +80,7 @@
 
 			if($group)
 			{
-								var $groupContent = $group.children('.fld-tabcontent');
+				var $groupContent = $group.children('.fld-tabcontent');
 				var $field = $(
 					'<div class="fld-field unused" data-id="' + id + '">' +
 						'<span>' + name + '</span>' +
