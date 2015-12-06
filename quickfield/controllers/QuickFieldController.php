@@ -17,7 +17,7 @@ class QuickFieldController extends BaseElementsController
 		$this->requireAdmin();
 		$this->requireAjaxRequest();
 
-		$html = craft()->templates->render('quickfield/_fieldsetting');
+		$html = craft()->templates->render('quickfield/_fieldsettings');
 		$js   = craft()->templates->getFootHtml();
 		$css  = craft()->templates->getHeadHtml();
 
