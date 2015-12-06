@@ -7,3 +7,11 @@ to the field layout that allow you to quickly create fields and field groups on 
 
 ![Quick Field buttons screenshot](screenshots/screenshot-01.png)
 ![Quick Field create field screenshot](screenshots/screenshot-02.png)
+
+## Changelog
+
+### v0.1.1
+- Added documentation links
+
+### v0.1.0
+- Initial release
