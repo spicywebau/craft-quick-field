@@ -47,7 +47,7 @@ class QuickFieldPlugin extends BasePlugin
 
 	protected function includeResources()
 	{
-		if(!craft()->request->isAjaxRequest())
+		if(!craft()->request->isAjaxRequest() && craft()->userSession->isAdmin())
 		{
 			craft()->templates->includeCssResource('quickfield/css/main.css');
 

@@ -15,6 +15,7 @@ class QuickFieldController extends BaseElementsController
 	public function actionGetFieldSettings()
 	{
 		$this->requireAdmin();
+		$this->requireAjaxRequest();
 
 		$html = craft()->templates->render('quickfield/_fieldsetting');
 		$js   = craft()->templates->getFootHtml();
@@ -35,6 +36,7 @@ class QuickFieldController extends BaseElementsController
 	 */
 	public function actionSaveField()
 	{
+		$this->requireAdmin();
 		$this->requirePostRequest();
 		$this->requireAjaxRequest();
 
