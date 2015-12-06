@@ -30,6 +30,11 @@ class QuickFieldPlugin extends BasePlugin
 		return 'http://benf.co';
 	}
 
+	public function getDocumentationUrl()
+	{
+		return 'https://github.com/benjamminf/craft-quick-field/blob/0.1.0/README.md';
+	}
+
 	public function init()
 	{
 		parent::init();
