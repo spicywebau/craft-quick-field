@@ -17,24 +17,29 @@
 	 */
 	var FieldModal = Garnish.Modal.extend({
 
-		$body:        null,
-		$content:     null,
-		$main:        null,
-		$footer:      null,
-		$buttons:     null,
-		$saveBtn:     null,
-		$cancelBtn:   null,
-		$saveSpinner: null,
-		$loadSpinner: null,
+		$body:          null,
+		$content:       null,
+		$main:          null,
+		$footer:        null,
+		$buttons:       null,
+		$saveBtn:       null,
+		$cancelBtn:     null,
+		$saveSpinner:   null,
+		$loadSpinner:   null,
 
-		$html:        null,
-		$js:          null,
-		$css:         null,
-		$currentHtml: null,
-		$currentJs:   null,
+		$html:          null,
+		$js:            null,
+		$css:           null,
+		$currentHtml:   null,
+		$currentJs:     null,
+		$currentCss:    null,
 
-		$observed:    null,
-		observer:     null,
+		$observed:      null,
+		observer:       null,
+
+		templateLoaded: false,
+		executedJs:     null,
+		loadedCss:      null,
 
 		/**
 		 * The constructor.
@@ -42,10 +47,17 @@
 		init: function(settings)
 		{
 			this.base();
-
 			this.setSettings(settings, {
 				resizable: true
 			});
+
+			this.$currentHtml = $();
+			this.$currentJs   = $();
+			this.$currentCss  = $();
+			this.$observed    = $();
+
+			this.executedJs   = {};
+			this.loadedCss    = {};
 
 			// It's important to observe the DOM for new nodes when rendering the field settings template, as more
 			// complex fields may be adding elements to the body such as modal windows or helper elements. Since the
@@ -71,7 +83,7 @@
 			this.$loadSpinner = $('<div class="spinner big">').appendTo($container);
 
 			this.$buttons     = $('<div class="buttons right">').appendTo(this.$footer);
-			this.$cancelBtn   = $('<div class="btn">').text(Craft.t('Cancel')).appendTo(this.$buttons);
+			this.$cancelBtn   = $('<div class="btn disabled" role="button">').text(Craft.t('Cancel')).appendTo(this.$buttons);
 			this.$saveBtn     = $('<div class="btn submit disabled" role="button">').text(Craft.t('Save')).appendTo(this.$buttons);
 			this.$saveSpinner = $('<div class="spinner hidden">').appendTo(this.$buttons);
 
@@ -82,7 +94,7 @@
 			{
 				if(textStatus === 'success')
 				{
-					this.$loadSpinner.remove();
+					this.$loadSpinner.css('display', 'none');
 					this.initTemplate(response);
 				}
 				else
@@ -95,29 +107,61 @@
 		/**
 		 * Prepares the field settings template HTML, CSS and Javascript.
 		 *
-		 * @param response
+		 * @param template
 		 */
-		initTemplate: function(response)
+		initTemplate: function(template)
 		{
-			this.$saveBtn.removeClass('disabled');
-
-			var $html = $(response.fieldSettingsHtml);
-			var $js   = $(response.fieldSettingsJs).filter('script');
-			var $css  = $(response.fieldSettingsCss).filter('style, link');
-
-			// Watch for new groups so they can be added to the group select field
-			var $group = $html.find('#qf-group');
-			var dialog = QuickField.GroupDialog.getInstance();
-			dialog.on('newGroup', $.proxy(function(e)
+			var callback = $.proxy(function(e)
 			{
-				$group.append($('<option>', {
-					value: e.group.id,
-					text:  e.group.name
-				}));
-			}, this));
+				this.$html = e.$html;
+				this.$js   = e.$js;
+				this.$css  = e.$css;
+
+				this.templateLoaded = true;
+				this.initListeners();
+
+				if(this.visible)
+				{
+					this.initSettings();
+				}
+
+				this.off('parseTemplate', callback);
+			}, this);
+
+			this.on('parseTemplate', callback);
+			this.parseTemplate(template);
+		},
+
+		/**
+		 * Takes raw HTML, CSS and Javascript and parses it ready to be used in the DOM.
+		 * It also loads any external resources if they are needed.
+		 * 
+		 * @param template
+		 */
+		parseTemplate: function(template)
+		{
+			var that = this;
+			var $head = Garnish.$doc.find('head');
+
+			var $html = $(template.html);
+			var $js   = $(template.js).filter('script');
+			var $css  = $(template.css).filter('style, link');
 
 			// Ensure that external stylesheets are loaded asynchronously
-			$css.filter('link').prop('async', true);
+			var $cssFiles  = $css.filter('link').prop('async', true);
+			var $cssInline = $css.filter('style');
+
+			$cssFiles.each(function()
+			{
+				var $this = $(this);
+				var src = $this.prop('src');
+
+				if(!that.loadedCss.hasOwnProperty(src))
+				{
+					$head.append($this);
+					that.loadedCss[src] = $this;
+				}
+			});
 
 			// Load external Javascript files asynchronously, and remove them from being executed again.
 			// This assumes that external Javascript files are simply library files, that don't directly and
@@ -125,50 +169,62 @@
 			// reused later on.
 			// The Javascript tags that directly contain code are assumed to be context-dependent, so they are
 			// saved to be executed each time the modal is opened.
+			var $jsFiles  = $js.filter('[src]');
+			var $jsInline = $js.filter(':not([src])');
+
 			var jsFiles = [];
-			var $jsInline = $js.filter(function()
+			$jsFiles.each(function()
 			{
 				var $this = $(this);
 				var src = $this.prop('src');
-				var hasSrc = !!src;
 
-				if(hasSrc)
+				if(!that.executedJs.hasOwnProperty(src))
 				{
 					jsFiles.push(src);
+					that.executedJs[src] = true;
 				}
-
-				return !hasSrc;
 			});
 
 			var jsFilesCount = jsFiles.length;
-			for(var i = 0; i < jsFiles.length; i++)
+			if(jsFilesCount === 0)
 			{
-				var src = jsFiles[i];
-
-				$.getScript(src, $.proxy(function(data, status)
+				this.trigger('parseTemplate', {
+					target: this,
+					$html: $html,
+					$js:   $jsInline,
+					$css:  $cssInline
+				});
+			}
+			else
+			{
+				for(var i = 0; i < jsFiles.length; i++)
 				{
-					if(status === 'success')
+					var src = jsFiles[i];
+
+					$.getScript(src, $.proxy(function(data, status)
 					{
-						jsFilesCount--;
-
-						if(jsFilesCount === 0)
+						if(status === 'success')
 						{
-							this.initListeners();
+							jsFilesCount--;
 
-							if(this.visible)
+							if(jsFilesCount === 0)
 							{
-								this.initSettings();
+								this.trigger('parseTemplate', {
+									target: this,
+									$html: $html,
+									$js: $jsInline,
+									$css: $cssInline
+								});
 							}
 						}
-					}
-				}, this));
+						else
+						{
+							Craft.displayError(Craft.t('Could not load all resources.'));
+							this.destroy();
+						}
+					}, this));
+				}
 			}
-
-			this.$html = $html;
-			this.$js   = $jsInline;
-			this.$css  = $css;
-
-			Garnish.$doc.find('head').append(this.$css);
 		},
 
 		/**
@@ -176,6 +232,9 @@
 		 */
 		initListeners: function()
 		{
+			this.$cancelBtn.removeClass('disabled');
+			this.$saveBtn.removeClass('disabled');
+
 			this.addListener(this.$cancelBtn, 'activate', 'closeModal');
 			this.addListener(this.$saveBtn,   'activate', 'saveField');
 
@@ -188,11 +247,14 @@
 		 */
 		destroyListeners: function()
 		{
+			this.$cancelBtn.addClass('disabled');
+			this.$saveBtn.addClass('disabled');
+
 			this.removeListener(this.$cancelBtn, 'activate');
 			this.removeListener(this.$saveBtn,   'activate');
 
-			this.off('show');
-			this.off('fadeOut');
+			this.off('show',    this.initSettings);
+			this.off('fadeOut', this.destroySettings);
 		},
 
 		/**
@@ -202,8 +264,12 @@
 		{
 			var that = e && e.target ? e.target : this;
 
-			that.$currentHtml = that.$html.clone();
-			that.$currentJs   = that.$js.clone();
+			// If the template files are not loaded yet, just cancel initialisation of the settings.
+			if(!that.templateLoaded) return;
+
+			that.$currentHtml = e && e.$html ? e.$html : that.$html.clone();
+			that.$currentJs   = e && e.$js   ? e.$js   : that.$js.clone();
+			that.$currentCss  = e && e.$css  ? e.$css  : that.$css.clone();
 
 			// Save any new nodes that are added to the body during initialisation, so they can be safely removed later.
 			that.$observed = $();
@@ -231,6 +297,7 @@
 
 			that.$currentHtml.remove();
 			that.$currentJs.remove();
+			that.$currentCss.remove();
 			that.$observed.remove();
 		},
 
@@ -258,6 +325,8 @@
 				return;
 			}
 
+			this.destroyListeners();
+
 			this.$saveSpinner.removeClass('hidden');
 			var data = this.$container.serialize();
 
@@ -269,6 +338,8 @@
 
 				if(statusSuccess && response.success)
 				{
+					this.initListeners();
+
 					this.trigger('newField', {
 						target: this,
 						field: response.field
@@ -278,12 +349,30 @@
 
 					this.hide();
 				}
-				else if(statusSuccess && response.errors && response.errors.length)
+				else if(statusSuccess && response.template)
 				{
-					Craft.cp.displayError(Craft.t('Could not create the field:') + "\n\n" + response.errors.join("\n"));
+					if(this.visible)
+					{
+						var callback = $.proxy(function(e)
+						{
+							this.initListeners();
+							this.destroySettings();
+							this.initSettings(e);
+							this.off('parseTemplate', callback);
+						}, this);
+
+						this.on('parseTemplate', callback);
+						this.parseTemplate(response.template);
+					}
+					else
+					{
+						this.initListeners();
+					}
 				}
 				else
 				{
+					this.initListeners();
+
 					Craft.cp.displayError(Craft.t('An unknown error occurred.'));
 				}
 			}, this));

@@ -17,15 +17,7 @@ class QuickFieldController extends BaseElementsController
 		$this->requireAdmin();
 		$this->requireAjaxRequest();
 
-		$html = craft()->templates->render('quickfield/_fieldsettings');
-		$js   = craft()->templates->getFootHtml();
-		$css  = craft()->templates->getHeadHtml();
-
-		$this->returnJson(array(
-			'fieldSettingsHtml' => $html,
-			'fieldSettingsJs'   => $js,
-			'fieldSettingsCss'  => $css
-		));
+		$this->returnJson($this->_getTemplate());
 	}
 
 	/**
@@ -75,6 +67,26 @@ class QuickFieldController extends BaseElementsController
 					'name' => $group->name,
 				),
 			),
+			'template' => $success ? false : $this->_getTemplate($field),
 		));
+	}
+
+	/**
+	 * Loads the field settings template and returns all HTML, CSS and Javascript.
+	 *
+	 * @param FieldModel|null $field
+	 * @return array
+	 */
+	private function _getTemplate(FieldModel $field = null)
+	{
+		$html = craft()->templates->render('quickfield/_fieldsettings', $field ? array('field' => $field) : array());
+		$js   = craft()->templates->getFootHtml();
+		$css  = craft()->templates->getHeadHtml();
+
+		return array(
+			'html' => $html,
+			'js'   => $js,
+			'css'  => $css
+		);
 	}
 }
