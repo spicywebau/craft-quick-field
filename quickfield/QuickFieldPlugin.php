@@ -20,6 +20,11 @@ class QuickFieldPlugin extends BasePlugin
 		return '0.1.1';
 	}
 
+	public function getSchemaVersion()
+	{
+		return '1.0.0';
+	}
+
 	function getDeveloper()
 	{
 		return 'Benjamin Fleming';
