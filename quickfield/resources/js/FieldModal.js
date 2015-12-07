@@ -154,7 +154,7 @@
 			$cssFiles.each(function()
 			{
 				var $this = $(this);
-				var src = $this.prop('src');
+				var src = $this.prop('href');
 
 				if(!that.loadedCss.hasOwnProperty(src))
 				{
