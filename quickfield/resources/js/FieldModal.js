@@ -106,7 +106,7 @@
 			var $css  = $(response.fieldSettingsCss).filter('style, link');
 
 			// Watch for new groups so they can be added to the group select field
-			var $group = $html.find('#group');
+			var $group = $html.find('#qf-group');
 			var dialog = QuickField.GroupDialog.getInstance();
 			dialog.on('newGroup', $.proxy(function(e)
 			{
