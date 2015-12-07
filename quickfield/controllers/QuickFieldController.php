@@ -63,6 +63,7 @@ class QuickFieldController extends BaseElementsController
 
 		$this->returnJson(array(
 			'success' => $success,
+			'errors'  => $field->getAllErrors(),
 			'field'   => array(
 				'id'           => $field->id,
 				'name'         => $field->name,

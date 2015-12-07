@@ -278,9 +278,9 @@
 
 					this.hide();
 				}
-				else if(statusSuccess && response.error)
+				else if(statusSuccess && response.errors && response.errors.length)
 				{
-					Craft.cp.displayError(response.error);
+					Craft.cp.displayError(Craft.t('Could not create the field:') + "\n\n" + response.errors.join("\n"));
 				}
 				else
 				{
