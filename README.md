@@ -10,6 +10,10 @@ to the field layout that allow you to quickly create fields and field groups on 
 
 ## Changelog
 
+### v0.2.0
+- Implemented much better error reporting when saving fields ([\#1](https://github.com/benjamminf/craft-quick-field/issues/1))
+- Fixed issue with duplicate HTML id's ([\#2](https://github.com/benjamminf/craft-quick-field/issues/2))
+
 ### v0.1.1
 - Added documentation links
 
