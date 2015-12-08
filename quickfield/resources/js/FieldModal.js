@@ -363,6 +363,8 @@
 
 						this.on('parseTemplate', callback);
 						this.parseTemplate(response.template);
+
+						Garnish.shake(this.$container);
 					}
 					else
 					{
