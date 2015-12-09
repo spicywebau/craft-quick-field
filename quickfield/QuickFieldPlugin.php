@@ -44,7 +44,7 @@ class QuickFieldPlugin extends BasePlugin
 	{
 		parent::init();
 
-		if($this->isCraftRequiredVersion())
+		if(craft()->request->isCpRequest() && $this->isCraftRequiredVersion())
 		{
 			$this->includeResources();
 		}
