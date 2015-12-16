@@ -15,9 +15,14 @@ class QuickFieldPlugin extends BasePlugin
 		return Craft::t('Quick Field');
 	}
 
+	public function getDescription()
+	{
+		return 'Create fields on the fly while designing field layouts';
+	}
+
 	function getVersion()
 	{
-		return '0.2.0';
+		return '0.2.1';
 	}
 
 	public function getSchemaVersion()
@@ -37,7 +42,12 @@ class QuickFieldPlugin extends BasePlugin
 
 	public function getDocumentationUrl()
 	{
-		return 'https://github.com/benjamminf/craft-quick-field/blob/0.2.0/README.md';
+		return 'https://github.com/benjamminf/craft-quick-field';
+	}
+
+	public function getReleaseFeedUrl()
+	{
+		return 'https://github.com/benjamminf/craft-quick-field/blob/master/releases.json';
 	}
 
 	public function init()
