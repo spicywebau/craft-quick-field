@@ -185,45 +185,62 @@
 				}
 			});
 
-			var jsFilesCount = jsFiles.length;
-			if(jsFilesCount === 0)
+			var callback = function()
 			{
-				this.trigger('parseTemplate', {
+				that.off('runExternalScripts', callback);
+
+				that.trigger('parseTemplate', {
 					target: this,
 					$html: $html,
-					$js:   $jsInline,
-					$css:  $cssInline
+					$js: $jsInline,
+					$css: $cssInline
 				});
-			}
-			else
+			};
+
+			that.on('runExternalScripts', callback);
+			this.runExternalScripts(jsFiles);
+		},
+
+		/**
+		 * Runs external Javascript files
+		 *
+		 * @param files - An array of URL's (as strings) to Javascript files
+		 */
+		runExternalScripts: function(files)
+		{
+			var filesCount = files.length;
+
+			if(filesCount > 0)
 			{
-				for(var i = 0; i < jsFiles.length; i++)
+				for(var i = 0; i < files.length; i++)
 				{
-					var src = jsFiles[i];
+					var src = files[i];
 
 					$.getScript(src, $.proxy(function(data, status)
 					{
 						if(status === 'success')
 						{
-							jsFilesCount--;
+							filesCount--;
 
-							if(jsFilesCount === 0)
+							if(filesCount === 0)
 							{
-								this.trigger('parseTemplate', {
-									target: this,
-									$html: $html,
-									$js: $jsInline,
-									$css: $cssInline
+								this.trigger('runExternalScripts', {
+									target: this
 								});
 							}
 						}
 						else
 						{
 							Craft.displayError(Craft.t('Could not load all resources.'));
-							this.destroy();
 						}
 					}, this));
 				}
+			}
+			else
+			{
+				this.trigger('runExternalScripts', {
+					target: this
+				});
 			}
 		},
 
@@ -280,11 +297,22 @@
 
 			Craft.initUiElements();
 
-			// Stop observing after a healthy timeout to ensure all mutations are captured.
-			setTimeout(function()
+			// Rerun the external scripts as some field types may need to make DOM changes in their external files.
+			// This means that libraries are being initialized multiple times, but hopefully they're smart enough to
+			// deal with that. So far, no issues.
+			var callback = function()
 			{
-				that.observer.disconnect();
-			}, 1);
+				that.off('runExternalScripts', callback);
+
+				// Stop observing after a healthy timeout to ensure all mutations are captured.
+				setTimeout(function()
+				{
+					that.observer.disconnect();
+				}, 1);
+			};
+
+			that.on('runExternalScripts', callback);
+			that.runExternalScripts(Object.keys(that.executedJs));
 		},
 
 		/**
