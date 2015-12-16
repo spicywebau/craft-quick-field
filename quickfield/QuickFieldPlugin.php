@@ -47,7 +47,7 @@ class QuickFieldPlugin extends BasePlugin
 
 	public function getReleaseFeedUrl()
 	{
-		return 'https://github.com/benjamminf/craft-quick-field/blob/master/releases.json';
+		return 'https://raw.githubusercontent.com/benjamminf/craft-quick-field/master/releases.json';
 	}
 
 	public function init()
