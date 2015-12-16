@@ -1,3 +1,12 @@
 [
-
+	{
+		"version": "0.2.2",
+		"downloadUrl": "https://github.com/benjamminf/craft-quick-field/archive/0.2.2.zip",
+		"date": "2015-12-16T20:30:00+11:00",
+		"notes": [
+			"[Fixed] Fixed issues with certain third-party field types where their Javascript wasn't executing correctly.",
+			"[Added] Added release feed for convenient updating.",
+			"[Added] Added plugin description."
+		]
+	}
 ]
