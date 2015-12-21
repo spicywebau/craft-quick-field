@@ -361,7 +361,6 @@
 				{
 					var callback = $.proxy(function(e)
 					{
-						this.initListeners();
 						this.destroySettings();
 						this.initSettings(e);
 						this.off('parseTemplate', callback);
