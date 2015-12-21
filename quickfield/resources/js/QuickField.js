@@ -34,6 +34,8 @@
 			this.$groupButton = $('<div class="btn add icon" tabindex="0">').text(Craft.t('New Group')).appendTo(this.$container);
 			this.$fieldButton = $('<div class="btn add icon" tabindex="0">').text(Craft.t('New Field')).appendTo(this.$container);
 
+			this.initButtons();
+
 			this.dialog = QuickField.GroupDialog.getInstance();
 			this.modal  = QuickField.FieldModal.getInstance();
 
@@ -52,6 +54,19 @@
 				var group = field.group;
 				this.addField(field.id, field.name, group.name);
 			}, this));
+		},
+
+		initButtons: function()
+		{
+			var $fields = this.fld.$unusedFieldContainer.find('.fld-field.unused');
+
+			$fields.each(function()
+			{
+				var $field = $(this);
+				var $button = $('<a class="qf-settings icon" title="Edit"></a>');
+
+				$field.append($button);
+			});
 		},
 
 		/**
@@ -81,11 +96,12 @@
 			if($group)
 			{
 				var $groupContent = $group.children('.fld-tabcontent');
-				var $field = $(
-					'<div class="fld-field unused" data-id="' + id + '">' +
-						'<span>' + name + '</span>' +
+				var $field = $([
+					'<div class="fld-field unused" data-id="', id, '">',
+						'<span>', name, '</span>',
+						'<a class="qf-settings icon" title="Edit"></a>',
 					'</div>'
-				).appendTo($groupContent);
+				].join('')).appendTo($groupContent);
 
 				fld.$allFields = fields.add($field);
 
