@@ -22,6 +22,7 @@
 		$main:          null,
 		$footer:        null,
 		$buttons:       null,
+		$deleteBtn:     null,
 		$saveBtn:       null,
 		$cancelBtn:     null,
 		$saveSpinner:   null,
@@ -83,6 +84,7 @@
 			this.$loadSpinner = $('<div class="spinner big">').appendTo($container);
 
 			this.$buttons     = $('<div class="buttons right">').appendTo(this.$footer);
+			this.$deleteBtn   = $('<a class="error left" style="line-height:30px">').text(Craft.t('Delete')).appendTo(this.$footer);
 			this.$cancelBtn   = $('<div class="btn disabled" role="button">').text(Craft.t('Cancel')).appendTo(this.$buttons);
 			this.$saveBtn     = $('<div class="btn submit disabled" role="button">').text(Craft.t('Save')).appendTo(this.$buttons);
 			this.$saveSpinner = $('<div class="spinner hidden">').appendTo(this.$buttons);
