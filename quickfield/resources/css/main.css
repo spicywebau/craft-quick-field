@@ -60,14 +60,6 @@ body.rtl .fieldlayoutform .newfieldbtn-container .btn.add {
 	margin: 0;
 }
 
-.fld-field > .qf-settings {
+.fld-field:not(.unused) .edit {
 	display: none
-}
-
-.fld-field.unused > .qf-settings {
-	display: block;
-}
-
-.fld-field.unused > .icon.qf-settings:before {
-	content: 'edit';
 }

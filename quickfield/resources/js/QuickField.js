@@ -66,7 +66,7 @@
 			$fields.each(function()
 			{
 				var $field = $(this);
-				var $button = $('<a class="qf-settings icon" title="Edit"></a>');
+				var $button = $('<a class="edit icon" title="Edit"></a>');
 
 				$field.append($button);
 			});
