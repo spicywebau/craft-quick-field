@@ -61,6 +61,8 @@
 		 */
 		initButtons: function()
 		{
+			var that = this;
+
 			var $tabs = this.fld.$unusedFieldContainer.find('.fld-tab .tab.sel');
 			var $fields = this.fld.$unusedFieldContainer.find('.fld-field.unused');
 
@@ -78,6 +80,8 @@
 				var $field = $(this);
 				var $button = $('<a class="qf-edit icon" title="Edit"></a>');
 
+				that.addListener($button, 'activate', 'editField');
+
 				$field.append($button);
 			});
 		},
@@ -89,6 +93,21 @@
 		newField: function()
 		{
 			this.modal.show();
+		},
+
+		/**
+		 * Event handler for the edit buttons on fields.
+		 * Opens a modal window that contains the field settings.
+		 *
+		 * @param e
+		 */
+		editField: function(e)
+		{
+			var $button = $(e.target);
+			var $field = $button.parent();
+			var id = $field.data('id');
+
+			this.modal.editField(id);
 		},
 
 		/**

@@ -21,6 +21,50 @@ class QuickFieldController extends BaseElementsController
 	}
 
 	/**
+	 * Edits an existing field.
+	 *
+	 * @throws HttpException
+	 */
+	public function actionEditField()
+	{
+		$this->requireAdmin();
+		$this->requirePostRequest();
+		$this->requireAjaxRequest();
+
+		$id = craft()->request->getPost('fieldId');
+
+		$field = craft()->fields->getFieldById($id);
+
+		if($field)
+		{
+			$group = craft()->fields->getGroupById($field->groupId);
+
+			$this->returnJson(array(
+				'success' => true,
+				'field'   => array(
+					'id'           => $field->id,
+					'name'         => $field->name,
+					'handle'       => $field->handle,
+					'instructions' => $field->instructions,
+					'translatable' => $field->translatable,
+					'group'        => !$group ? array() : array(
+						'id'   => $group->id,
+						'name' => $group->name,
+					),
+				),
+				'template' => $this->_getTemplate($field),
+			));
+		}
+		else
+		{
+			$this->returnJson(array(
+				'success' => false,
+				'error'   => Craft::t('The field requested to edit no longer exists.'),
+			));
+		}
+	}
+
+	/**
 	 * Saves a new field to the database.
 	 *
 	 * @throws HttpException

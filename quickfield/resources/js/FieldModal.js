@@ -94,7 +94,7 @@
 			{
 				if(textStatus === 'success')
 				{
-					this.$loadSpinner.css('display', 'none');
+					this.$loadSpinner.addClass('hidden');
 					this.initTemplate(response);
 				}
 				else
@@ -336,6 +336,53 @@
 		closeModal: function()
 		{
 			this.hide();
+		},
+
+		/**
+		 *
+		 * @param id
+		 */
+		editField: function(id)
+		{
+			this.destroyListeners();
+			this.show();
+			this.initListeners();
+
+			this.$loadSpinner.removeClass('hidden');
+			var data = {fieldId: id};
+
+			Craft.postActionRequest('quickField/editField', data, $.proxy(function(response, textStatus)
+			{
+				this.$loadSpinner.addClass('hidden');
+
+				var statusSuccess = (textStatus === 'success');
+
+				if(statusSuccess && response.success)
+				{
+					var callback = $.proxy(function(e)
+					{
+						this.initListeners();
+						this.destroySettings();
+						this.initSettings(e);
+						this.off('parseTemplate', callback);
+					}, this);
+
+					this.on('parseTemplate', callback);
+					this.parseTemplate(response.template);
+				}
+				else if(statusSuccess && response.error)
+				{
+					Craft.cp.displayError(response.error);
+
+					this.hide();
+				}
+				else
+				{
+					Craft.cp.displayError(Craft.t('An unknown error occurred.'));
+
+					this.hide();
+				}
+			}, this));
 		},
 
 		/**
