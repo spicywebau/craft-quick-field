@@ -123,7 +123,19 @@ class QuickFieldController extends BaseElementsController
 	 */
 	private function _getTemplate(FieldModel $field = null)
 	{
-		$html = craft()->templates->render('quickfield/_fieldsettings', $field ? array('field' => $field) : array());
+		$data = array();
+
+		if($field)
+		{
+			$data['field'] = $field;
+
+			if($field->id != null)
+			{
+				$data['fieldId'] = $field->id;
+			}
+		}
+
+		$html = craft()->templates->render('quickfield/_fieldsettings', $data);
 		$js   = craft()->templates->getFootHtml();
 		$css  = craft()->templates->getHeadHtml();
 

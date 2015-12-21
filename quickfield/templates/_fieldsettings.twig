@@ -8,9 +8,7 @@
 	{% exit 404 %}
 {% endif %}
 
-{% set groupId = craft.request.getQuery('groupId') %}
-
-{% if not groupId %}
+{% if groupId is not defined %}
 	{% if field is defined %}
 		{% set groupId = field.groupId %}
 	{% else %}
@@ -36,6 +34,9 @@
 	{% set fieldType = craft.fields.getFieldType('PlainText') %}
 {% endif %}
 
+{% if fieldId is defined %}
+	<input type="hidden" name="fieldId" value="{{ fieldId }}">
+{% endif %}
 
 {% set groupOptions = [] %}
 {% for group in groups %}

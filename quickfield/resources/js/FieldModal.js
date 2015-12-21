@@ -404,6 +404,9 @@
 			this.$saveSpinner.removeClass('hidden');
 			var data = this.$container.serialize();
 
+			var inputId = this.$container.find('input[name="fieldId"]');
+			var id = inputId.length ? inputId.val() : false;
+
 			Craft.postActionRequest('quickField/saveField', data, $.proxy(function(response, textStatus)
 			{
 				this.$saveSpinner.addClass('hidden');
@@ -414,12 +417,25 @@
 				{
 					this.initListeners();
 
-					this.trigger('newField', {
-						target: this,
-						field: response.field
-					});
+					if(id === false)
+					{
+						this.trigger('newField', {
+							target: this,
+							field: response.field
+						});
 
-					Craft.cp.displayNotice(Craft.t('New field created'));
+						Craft.cp.displayNotice(Craft.t('New field created.'));
+					}
+					else
+					{
+						this.trigger('saveField', {
+							target: this,
+							field: response.field,
+							fieldId: id
+						});
+
+						Craft.cp.displayNotice(Craft.t('\'{name}\' field saved.', {name: response.field.name}));
+					}
 
 					this.hide();
 				}

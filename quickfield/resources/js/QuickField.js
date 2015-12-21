@@ -54,6 +54,13 @@
 				var group = field.group;
 				this.addField(field.id, field.name, group.name);
 			}, this));
+
+			this.modal.on('saveField', $.proxy(function(e)
+			{
+				var field = e.field;
+				var group = field.group;
+				this.resetField(field.id, group.name, field.name);
+			}, this));
 		},
 
 		/**
@@ -144,6 +151,34 @@
 			else
 			{
 				Craft.cp.displayError(Craft.t('Invalid field group:') + groupName);
+			}
+		},
+
+		/**
+		 * Renames and regroups an existing field on the field layout designer.
+		 *
+		 * @param id
+		 * @param groupName
+		 * @param name
+		 */
+		resetField: function(id, groupName, name)
+		{
+			var fld = this.fld;
+			var grid = fld.unusedFieldGrid;
+			var $container = fld.$container;
+			var $group = this._getGroupByName(groupName);
+			var $content = $group.children('.fld-tabcontent');
+			var $field = $container.find('.fld-field[data-id="' + id + '"]');
+			var $unusedField = $field.filter('.unused');
+			var $currentGroup = $unusedField.closest('.fld-tab');
+			var $span = $field.children('span');
+
+			$span.text(name);
+
+			if($currentGroup[0] !== $group[0])
+			{
+				$content.append($unusedField);
+				grid.refreshCols(true);
 			}
 		},
 
