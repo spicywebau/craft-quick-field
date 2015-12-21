@@ -56,6 +56,9 @@
 			}, this));
 		},
 
+		/**
+		 * Adds edit buttons to existing fields.
+		 */
 		initButtons: function()
 		{
 			var $fields = this.fld.$unusedFieldContainer.find('.fld-field.unused');
