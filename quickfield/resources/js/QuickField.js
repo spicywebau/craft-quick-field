@@ -61,12 +61,22 @@
 		 */
 		initButtons: function()
 		{
+			var $tabs = this.fld.$unusedFieldContainer.find('.fld-tab .tab.sel');
 			var $fields = this.fld.$unusedFieldContainer.find('.fld-field.unused');
+
+			$tabs.each(function()
+			{
+				var $tab = $(this);
+				var $button = $('<a class="qf-settings icon" title="Edit"></a>');
+
+				// Add the extra space in there for consistent padding
+				$tab.append('&nbsp;').append($button);
+			});
 
 			$fields.each(function()
 			{
 				var $field = $(this);
-				var $button = $('<a class="edit icon" title="Edit"></a>');
+				var $button = $('<a class="qf-edit icon" title="Edit"></a>');
 
 				$field.append($button);
 			});
@@ -102,7 +112,7 @@
 				var $field = $([
 					'<div class="fld-field unused" data-id="', id, '">',
 						'<span>', name, '</span>',
-						'<a class="qf-settings icon" title="Edit"></a>',
+						'<a class="qf-edit icon" title="Edit"></a>',
 					'</div>'
 				].join('')).appendTo($groupContent);
 
@@ -140,16 +150,17 @@
 			var drag = fld.tabDrag;
 
 			var $container = fld.$unusedFieldContainer;
-			var $tab = $(
-				'<div class="fld-tab unused">' +
-					'<div class="tabs">' +
-						'<div class="tab sel">' +
-							'<span>' + name + '</span>' +
-						'</div>' +
-					'</div>' +
-					'<div class="fld-tabcontent"></div>' +
+			var $tab = $([
+				'<div class="fld-tab unused">',
+					'<div class="tabs">',
+						'<div class="tab sel">',
+							'<span>', name, '</span>',
+							'&nbsp;<a class="qf-settings icon" title="Edit"></a>',
+						'</div>',
+					'</div>',
+					'<div class="fld-tabcontent"></div>',
 				'</div>'
-			).appendTo($container);
+			].join('')).appendTo($container);
 
 			grid.addItems($tab);
 
