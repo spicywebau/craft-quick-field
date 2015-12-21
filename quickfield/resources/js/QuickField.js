@@ -129,7 +129,7 @@
 		},
 
 		/**
-		 *
+		 * Event listener for the new group button
 		 */
 		newGroup: function()
 		{
