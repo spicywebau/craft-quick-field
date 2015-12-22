@@ -1,5 +1,15 @@
 [
 	{
+		"version": "0.3.0",
+		"downloadUrl": "https://github.com/benjamminf/craft-quick-field/archive/0.3.0.zip",
+		"date": "2015-12-22T15:07:00+11:00",
+		"notes": [
+			"[Added] Added ability to edit and delete current fields.",
+			"[Added] Added plugin icon.",
+			"[Fixed] Now prevents modal from closing when saving (and deleting)."
+		]
+	},
+	{
 		"version": "0.2.2",
 		"downloadUrl": "https://github.com/benjamminf/craft-quick-field/archive/0.2.2.zip",
 		"date": "2015-12-16T20:30:00+11:00",
