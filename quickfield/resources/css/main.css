@@ -60,6 +60,10 @@ body.rtl .fieldlayoutform .newfieldbtn-container .btn.add {
 	margin: 0;
 }
 
+.quick-field-modal .footer .delete {
+	line-height: 30px;
+}
+
 .fld-tab .qf-settings:before {
 	content: 'settings';
 }

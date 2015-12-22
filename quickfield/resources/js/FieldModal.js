@@ -84,7 +84,7 @@
 			this.$loadSpinner = $('<div class="spinner big">').appendTo($container);
 
 			this.$buttons     = $('<div class="buttons right">').appendTo(this.$footer);
-			this.$deleteBtn   = $('<a class="error left" style="line-height:30px">').text(Craft.t('Delete')).appendTo(this.$footer);
+			this.$deleteBtn   = $('<a class="delete error left hidden">').text(Craft.t('Delete')).appendTo(this.$footer);
 			this.$cancelBtn   = $('<div class="btn disabled" role="button">').text(Craft.t('Cancel')).appendTo(this.$buttons);
 			this.$saveBtn     = $('<div class="btn submit disabled" role="button">').text(Craft.t('Save')).appendTo(this.$buttons);
 			this.$saveSpinner = $('<div class="spinner hidden">').appendTo(this.$buttons);
@@ -297,6 +297,10 @@
 			that.$main.append(that.$currentHtml);
 			Garnish.$bod.append(that.$currentJs);
 
+			// Only show the delete button if editing a field
+			var $fieldId = that.$main.find('input[name="fieldId"]');
+			that.$deleteBtn.toggleClass('hidden', $fieldId.length === 0);
+
 			Craft.initUiElements();
 
 			// Rerun the external scripts as some field types may need to make DOM changes in their external files.
@@ -329,6 +333,8 @@
 			that.$currentJs.remove();
 			that.$currentCss.remove();
 			that.$observed.remove();
+
+			that.$deleteBtn.addClass('hidden');
 		},
 
 		/**
