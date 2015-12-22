@@ -61,6 +61,12 @@
 				var group = field.group;
 				this.resetField(field.id, group.name, field.name);
 			}, this));
+
+			this.modal.on('deleteField', $.proxy(function(e)
+			{
+				var field = e.field;
+				this.removeField(field.id);
+			}, this));
 		},
 
 		/**
@@ -152,6 +158,26 @@
 			{
 				Craft.cp.displayError(Craft.t('Invalid field group:') + groupName);
 			}
+		},
+
+		/**
+		 * Removes a field from the field layout designer.
+		 * 
+		 * @param id
+		 */
+		removeField: function(id)
+		{
+			var fld = this.fld;
+			var grid = fld.unusedFieldGrid;
+			var drag = fld.fieldDrag;
+			var $container = fld.$container;
+			var $fields = fld.$allFields;
+			var $field = $container.find('.fld-field[data-id="' + id + '"]');
+
+			$field.remove();
+			fld.$allFields = $fields.not($field);
+			drag.removeItems($field);
+			grid.refreshCols(true);
 		},
 
 		/**
