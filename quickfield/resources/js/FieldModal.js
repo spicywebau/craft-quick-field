@@ -21,11 +21,13 @@
 		$content:       null,
 		$main:          null,
 		$footer:        null,
-		$buttons:       null,
+		$leftButtons:   null,
+		$rightButtons:  null,
 		$deleteBtn:     null,
 		$saveBtn:       null,
 		$cancelBtn:     null,
 		$saveSpinner:   null,
+		$deleteSpinner: null,
 		$loadSpinner:   null,
 
 		$html:          null,
@@ -75,19 +77,23 @@
 				}
 			}, this));
 
-			var $container    = $('<form class="modal quick-field-modal" style="display: none; opacity: 0;">').appendTo(Garnish.$bod);
+			var $container      = $('<form class="modal quick-field-modal" style="display: none; opacity: 0;">').appendTo(Garnish.$bod);
 
-			this.$body        = $('<div class="body">').appendTo($container);
-			this.$content     = $('<div class="content">').appendTo(this.$body);
-			this.$main        = $('<div class="main">').appendTo(this.$content);
-			this.$footer      = $('<div class="footer">').appendTo($container);
-			this.$loadSpinner = $('<div class="spinner big">').appendTo($container);
+			this.$body          = $('<div class="body">').appendTo($container);
+			this.$content       = $('<div class="content">').appendTo(this.$body);
+			this.$main          = $('<div class="main">').appendTo(this.$content);
+			this.$footer        = $('<div class="footer">').appendTo($container);
+			this.$loadSpinner   = $('<div class="spinner big">').appendTo($container);
 
-			this.$buttons     = $('<div class="buttons right">').appendTo(this.$footer);
-			this.$deleteBtn   = $('<a class="delete error left hidden">').text(Craft.t('Delete')).appendTo(this.$footer);
-			this.$cancelBtn   = $('<div class="btn disabled" role="button">').text(Craft.t('Cancel')).appendTo(this.$buttons);
-			this.$saveBtn     = $('<div class="btn submit disabled" role="button">').text(Craft.t('Save')).appendTo(this.$buttons);
-			this.$saveSpinner = $('<div class="spinner hidden">').appendTo(this.$buttons);
+			this.$leftButtons   = $('<div class="buttons left">').appendTo(this.$footer);
+			this.$rightButtons  = $('<div class="buttons right">').appendTo(this.$footer);
+
+			this.$deleteBtn     = $('<a class="delete error hidden">').text(Craft.t('Delete')).appendTo(this.$leftButtons);
+			this.$deleteSpinner = $('<div class="spinner hidden">').appendTo(this.$leftButtons);
+
+			this.$cancelBtn     = $('<div class="btn disabled" role="button">').text(Craft.t('Cancel')).appendTo(this.$rightButtons);
+			this.$saveBtn       = $('<div class="btn submit disabled" role="button">').text(Craft.t('Save')).appendTo(this.$rightButtons);
+			this.$saveSpinner   = $('<div class="spinner hidden">').appendTo(this.$rightButtons);
 
 			this.setContainer($container);
 
@@ -476,6 +482,16 @@
 					Craft.cp.displayError(Craft.t('An unknown error occurred.'));
 				}
 			}, this));
+		},
+
+		deleteField: function(e)
+		{
+			if(e) e.preventDefault();
+
+			if(this.$deleteBtn.hasClass('disabled') || !this.$deleteSpinner.hasClass('hidden'))
+			{
+				return;
+			}
 		},
 
 		/**
