@@ -116,6 +116,63 @@ class QuickFieldController extends BaseElementsController
 	}
 
 	/**
+	 * Deletes a field from the database.
+	 *
+	 * @throws HttpException
+	 */
+	public function actionDeleteField()
+	{
+		$this->requireAdmin();
+		$this->requirePostRequest();
+		$this->requireAjaxRequest();
+
+		$id = craft()->request->getPost('fieldId');
+
+		$field = craft()->fields->getFieldById($id);
+
+		if($field)
+		{
+			$group = craft()->fields->getGroupById($field->groupId);
+			$returnField = array(
+				'id'           => $field->id,
+				'name'         => $field->name,
+				'handle'       => $field->handle,
+				'instructions' => $field->instructions,
+				'translatable' => $field->translatable,
+				'group'        => !$group ? array() : array(
+					'id'   => $group->id,
+					'name' => $group->name,
+				),
+			);
+
+			try
+			{
+				craft()->fields->deleteField($field);
+
+				$this->returnJson(array(
+					'success' => true,
+					'field'   => $returnField,
+				));
+			}
+			catch(\Exception $e)
+			{
+				$this->returnJson(array(
+					'success' => false,
+					'field'   => $returnField,
+					'error'   => $e->getMessage(),
+				));
+			}
+		}
+		else
+		{
+			$this->returnJson(array(
+				'success' => false,
+				'error'   => Craft::t('The field requested to delete no longer exists.'),
+			));
+		}
+	}
+
+	/**
 	 * Loads the field settings template and returns all HTML, CSS and Javascript.
 	 *
 	 * @param FieldModel|null $field
