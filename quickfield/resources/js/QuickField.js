@@ -79,6 +79,7 @@
 			var $tabs = this.fld.$unusedFieldContainer.find('.fld-tab .tab.sel');
 			var $fields = this.fld.$unusedFieldContainer.find('.fld-field.unused');
 
+			/*
 			$tabs.each(function()
 			{
 				var $tab = $(this);
@@ -87,6 +88,7 @@
 				// Add the extra space in there for consistent padding
 				$tab.append('&nbsp;').append($button);
 			});
+			*/
 
 			$fields.each(function()
 			{
@@ -235,7 +237,7 @@
 					'<div class="tabs">',
 						'<div class="tab sel">',
 							'<span>', name, '</span>',
-							'&nbsp;<a class="qf-settings icon" title="Edit"></a>',
+							// '&nbsp;<a class="qf-settings icon" title="Edit"></a>',
 						'</div>',
 					'</div>',
 					'<div class="fld-tabcontent"></div>',
