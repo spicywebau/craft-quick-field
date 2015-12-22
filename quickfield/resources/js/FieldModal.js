@@ -266,6 +266,8 @@
 
 			this.on('show',    this.initSettings);
 			this.on('fadeOut', this.destroySettings);
+
+			this.enable();
 		},
 
 		/**
@@ -282,6 +284,8 @@
 
 			this.off('show',    this.initSettings);
 			this.off('fadeOut', this.destroySettings);
+
+			this.disable();
 		},
 
 		/**
@@ -559,6 +563,18 @@
 		promptForDelete: function()
 		{
 			return confirm(Craft.t('Are you sure you want to delete this field?'));
+		},
+
+		/**
+		 * Prevents the modal from closing if it's disabled.
+		 * This fixes issues if the modal is closed when saving/deleting fields.
+		 */
+		hide: function()
+		{
+			if(!this._disabled)
+			{
+				this.base();
+			}
 		},
 
 		/**
