@@ -1,5 +1,10 @@
 ## Changelog
 
+#### v0.3.0
+- [Added] Added ability to edit and delete current fields ([\#3](https://github.com/benjamminf/craft-quick-field/issues/3))
+- [Added] Added plugin icon
+- [Fixed] Now prevents modal from closing when saving (and deleting)
+
 #### v0.2.2
 - [Fixed] Fixed issues with certain third-party field types where their Javascript wasn't executing correctly
 - [Added] Added release feed for convenient updating
