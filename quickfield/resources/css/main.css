@@ -1,5 +1,6 @@
 .fieldlayoutform .newfieldbtn-container {
-	margin: 30px 0;
+	clear: both;
+	margin-bottom: 30px;
 }
 
 .fieldlayoutform .newfieldbtn-container .btn.add {
@@ -88,4 +89,8 @@ body.rtl .fieldlayoutform .newfieldbtn-container .btn.add {
 .fld-tab:not(.unused) .qf-settings,
 .fld-field:not(.unused) .qf-edit {
 	display: none;
+}
+
+.fld-tab.unused.last {
+	margin-bottom: 30px !important;
 }
