@@ -99,7 +99,7 @@
 
 				that.addListener($button, 'activate', 'editField');
 
-				$field.append($button);
+				$field.prepend($button);
 			});
 		},
 
