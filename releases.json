@@ -1,5 +1,15 @@
 [
 	{
+		"version": "0.3.1",
+		"downloadUrl": "https://github.com/benjamminf/craft-quick-field/archive/0.3.1.zip",
+		"date": "2016-01-12T10:50:00+11:00",
+		"notes": [
+			"[Added] Added compatibility with the PimpMyMatrix plugin.",
+			"[Improved] Improved layout of buttons on the field layout designer.",
+			"[Improved] Changed vertical alignment of the edit button to the top for long named fields."
+		]
+	},
+	{
 		"version": "0.3.0",
 		"downloadUrl": "https://github.com/benjamminf/craft-quick-field/archive/0.3.0.zip",
 		"date": "2015-12-22T15:07:00+11:00",
