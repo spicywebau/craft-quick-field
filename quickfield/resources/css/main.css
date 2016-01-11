@@ -1,9 +1,9 @@
-.fieldlayoutform .newfieldbtn-container {
+.fieldlayoutform.quick-field .newfieldbtn-container {
 	clear: both;
 	margin-bottom: 30px;
 }
 
-.fieldlayoutform .newfieldbtn-container .btn.add {
+.fieldlayoutform.quick-field .newfieldbtn-container .btn.add {
 	border: 1px dashed #2f1fb5;
 	padding: 2px 10px 0;
 	line-height: 27px;
@@ -14,15 +14,15 @@
 	box-shadow: none;
 }
 
-body.ltr .fieldlayoutform .newfieldbtn-container .btn.add {
+body.ltr .fieldlayoutform.quick-field .newfieldbtn-container .btn.add {
 	margin-right: 20px;
 }
 
-body.rtl .fieldlayoutform .newfieldbtn-container .btn.add {
+body.rtl .fieldlayoutform.quick-field .newfieldbtn-container .btn.add {
 	margin-left: 20px;
 }
 
-.fieldlayoutform .newfieldbtn-container .btn.add:before {
+.fieldlayoutform.quick-field .newfieldbtn-container .btn.add:before {
 	margin-top: -2px;
 }
 
@@ -78,19 +78,19 @@ body.rtl .fieldlayoutform .newfieldbtn-container .btn.add {
 	margin: 0;
 }
 
-.fld-tab .qf-settings:before {
+.fieldlayoutform.quick-field .fld-tab .qf-settings:before {
 	content: 'settings';
 }
 
-.fld-field .qf-edit:before {
+.fieldlayoutform.quick-field .fld-field .qf-edit:before {
 	content: 'edit';
 }
 
-.fld-tab:not(.unused) .qf-settings,
-.fld-field:not(.unused) .qf-edit {
+.fieldlayoutform.quick-field .fld-tab:not(.unused) .qf-settings,
+.fieldlayoutform.quick-field .fld-field:not(.unused) .qf-edit {
 	display: none;
 }
 
-.fld-tab.unused.last {
+.fieldlayoutform.quick-field .fld-tab.unused.last {
 	margin-bottom: 30px !important;
 }
