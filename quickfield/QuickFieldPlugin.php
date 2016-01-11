@@ -22,7 +22,7 @@ class QuickFieldPlugin extends BasePlugin
 
 	function getVersion()
 	{
-		return '0.3.0';
+		return '0.3.1';
 	}
 
 	public function getSchemaVersion()

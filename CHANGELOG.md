@@ -1,5 +1,10 @@
 ## Changelog
 
+#### v0.3.1
+- [Added] Added compatibility with the PimpMyMatrix plugin
+- [Improved] Improved layout of buttons on the field layout designer
+- [Improved] Changed vertical alignment of the edit button to the top for long named fields
+
 #### v0.3.0
 - [Added] Added ability to edit and delete current fields ([\#3](https://github.com/benjamminf/craft-quick-field/issues/3))
 - [Added] Added plugin icon
