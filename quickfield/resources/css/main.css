@@ -78,16 +78,16 @@ body.rtl .fieldlayoutform.quick-field .newfieldbtn-container .btn.add {
 	margin: 0;
 }
 
-.fieldlayoutform.quick-field .fld-tab .qf-settings:before {
+.fld-tab .qf-settings:before {
 	content: 'settings';
 }
 
-.fieldlayoutform.quick-field .fld-field .qf-edit:before {
+.fld-field .qf-edit:before {
 	content: 'edit';
 }
 
-.fieldlayoutform.quick-field .fld-tab:not(.unused) .qf-settings,
-.fieldlayoutform.quick-field .fld-field:not(.unused) .qf-edit {
+.fld-tab:not(.unused) .qf-settings,
+.fld-field:not(.unused) .qf-edit {
 	display: none;
 }
 
