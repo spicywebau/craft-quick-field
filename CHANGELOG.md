@@ -1,5 +1,11 @@
 ## Changelog
 
+#### v0.3.2
+- [Improved] Updated the plugin icon
+- [Fixed] Fixed bug where changing a field's group to a hidden one wouldn't show the group
+- [Fixed] Fixed bug where newly created fields couldn't be edited
+- [Fixed] Edit icon on fields now stays visible when dragging
+
 #### v0.3.1
 - [Added] Added compatibility with the PimpMyMatrix plugin
 - [Improved] Improved layout of buttons on the field layout designer

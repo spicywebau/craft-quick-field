@@ -22,7 +22,7 @@ class QuickFieldPlugin extends BasePlugin
 
 	function getVersion()
 	{
-		return '0.3.1';
+		return '0.3.2';
 	}
 
 	public function getSchemaVersion()
@@ -37,7 +37,7 @@ class QuickFieldPlugin extends BasePlugin
 
 	function getDeveloperUrl()
 	{
-		return 'http://benf.co';
+		return 'http://benjamminf.github.io';
 	}
 
 	public function getDocumentationUrl()
