@@ -210,6 +210,7 @@
 
 			if($currentGroup[0] !== $group[0])
 			{
+				$group.removeClass('hidden');
 				$content.append($unusedField);
 				grid.refreshCols(true);
 			}
