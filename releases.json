@@ -1,5 +1,16 @@
 [
 	{
+		"version": "0.3.2",
+		"downloadUrl": "https://github.com/benjamminf/craft-quick-field/archive/0.3.2.zip",
+		"date": "2016-03-04T23:00:00+11:00",
+		"notes": [
+			"[Improved] Updated the plugin icon",
+			"[Fixed] Fixed bug where changing a field's group to a hidden one wouldn't show the group",
+			"[Fixed] Fixed bug where newly created fields couldn't be edited",
+			"[Fixed] Edit icon on fields now stays visible when dragging"
+		]
+	},
+	{
 		"version": "0.3.1",
 		"downloadUrl": "https://github.com/benjamminf/craft-quick-field/archive/0.3.1.zip",
 		"date": "2016-01-12T10:50:00+11:00",
