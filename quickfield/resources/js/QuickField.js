@@ -154,6 +154,9 @@
 
 				fld.$allFields = fields.add($field);
 
+				var $button = $field.children('.qf-edit');
+				this.addListener($button, 'activate', 'editField');
+
 				$group.removeClass('hidden');
 				drag.addItems($field);
 				grid.refreshCols(true);
