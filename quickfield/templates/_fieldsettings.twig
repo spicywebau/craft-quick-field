@@ -105,12 +105,13 @@
 	options: fieldTypes,
 	value: fieldType.getClassHandle(),
 	errors: (isFieldTypeMissing ? ["The fieldtype class “{class}” could not be found."|t({ class: field.type })] : null),
-	toggle: true
+	toggle: true,
+	targetPrefix: 'qf-'
 }) }}
 
 {% for _fieldType in fieldTypes %}
 	{% set isCurrent = (_fieldType.getClassHandle() == fieldType.getClassHandle()) %}
-	<div id="{{ _fieldType.getClassHandle()|namespaceInputId }}"{% if not isCurrent %} class="hidden"{% endif %}>
+	<div id="qf-{{ _fieldType.getClassHandle()|namespaceInputId }}"{% if not isCurrent %} class="hidden"{% endif %}>
 		{% namespace 'types['~_fieldType.getClassHandle()~']' %}
 			{% if isCurrent %}
 				{{ fieldType.getSettingsHtml()|raw }}
