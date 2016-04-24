@@ -163,7 +163,7 @@
 			}
 			else
 			{
-				Craft.cp.displayError(Craft.t('Invalid field group:') + groupName);
+				Craft.cp.displayError(Craft.t('Invalid field group: {groupName}', {groupName: groupName}));
 			}
 		},
 
