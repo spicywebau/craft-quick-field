@@ -1,5 +1,8 @@
 ## Changelog
 
+#### v0.3.3
+- `Improved` Added support for the Neo plugin/field type
+
 #### v0.3.2
 - `Improved` Updated the plugin icon
 - `Fixed` Fixed bug where changing a field's group to a hidden one wouldn't show the group
