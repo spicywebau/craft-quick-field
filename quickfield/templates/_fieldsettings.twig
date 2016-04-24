@@ -21,7 +21,7 @@
 {% endif %}
 
 
-{% set fieldTypes = craft.fields.getAllFieldTypes() %}
+{% set fieldTypes = craft.quickField.getFieldTypes() %}
 
 {% if field is defined %}
 	{% set fieldType = field.getFieldType() %}
