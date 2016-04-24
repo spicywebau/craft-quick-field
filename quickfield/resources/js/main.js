@@ -10,7 +10,7 @@
 	{
 		FLDinit.apply(this, arguments);
 
-		if(this.$container.is('#fieldlayoutform') || this.$container.is('.quick-field'))
+		if(this.$container.is('#fieldlayoutform'))
 		{
 			new QuickField(this);
 		}
