@@ -1,5 +1,13 @@
 [
 	{
+		"version": "0.3.3",
+		"downloadUrl": "https://github.com/benjamminf/craft-quick-field/archive/0.3.3.zip",
+		"date": "2016-04-24T23:21:00+11:00",
+		"notes": [
+			"[Improved] Added support for the Neo plugin/field type"
+		]
+	},
+	{
 		"version": "0.3.2",
 		"downloadUrl": "https://github.com/benjamminf/craft-quick-field/archive/0.3.2.zip",
 		"date": "2016-03-04T23:00:00+11:00",
