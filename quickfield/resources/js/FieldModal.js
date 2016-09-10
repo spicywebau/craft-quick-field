@@ -310,7 +310,7 @@
 			Garnish.$bod.append(that.$currentJs);
 
 			// Only show the delete button if editing a field
-			var $fieldId = that.$main.find('input[name="fieldId"]');
+			var $fieldId = that.$main.find('input[name="qf[fieldId]"]');
 			that.$deleteBtn.toggleClass('hidden', $fieldId.length === 0);
 
 			Craft.initUiElements();
@@ -424,7 +424,7 @@
 			this.$saveSpinner.removeClass('hidden');
 			var data = this.$container.serialize();
 
-			var inputId = this.$container.find('input[name="fieldId"]');
+			var inputId = this.$container.find('input[name="qf[fieldId]"]');
 			var id = inputId.length ? inputId.val() : false;
 
 			Craft.postActionRequest('quickField/saveField', data, $.proxy(function(response, textStatus)
@@ -510,7 +510,7 @@
 
 				this.$deleteSpinner.removeClass('hidden');
 
-				var inputId = this.$container.find('input[name="fieldId"]');
+				var inputId = this.$container.find('input[name="qf[fieldId]"]');
 				var id = inputId.length ? inputId.val() : false;
 
 				if(id === false)

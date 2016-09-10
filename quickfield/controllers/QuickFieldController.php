@@ -78,16 +78,16 @@ class QuickFieldController extends BaseElementsController
 
 		$field = new FieldModel();
 
-		$field->id           = craft()->request->getPost('fieldId');
-		$field->groupId      = craft()->request->getRequiredPost('group');
-		$field->name         = craft()->request->getPost('name');
-		$field->handle       = craft()->request->getPost('handle');
-		$field->instructions = craft()->request->getPost('instructions');
-		$field->translatable = (bool) craft()->request->getPost('translatable');
+		$field->id           = craft()->request->getPost('qf.fieldId');
+		$field->groupId      = craft()->request->getRequiredPost('qf.group');
+		$field->name         = craft()->request->getPost('qf.name');
+		$field->handle       = craft()->request->getPost('qf.handle');
+		$field->instructions = craft()->request->getPost('qf.instructions');
+		$field->translatable = (bool) craft()->request->getPost('qf.translatable');
 
-		$field->type = craft()->request->getRequiredPost('type');
+		$field->type = craft()->request->getRequiredPost('qf.type');
 
-		$typeSettings = craft()->request->getPost('types');
+		$typeSettings = craft()->request->getPost('qf.types');
 
 		if(isset($typeSettings[$field->type]))
 		{

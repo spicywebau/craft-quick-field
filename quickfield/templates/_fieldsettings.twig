@@ -35,7 +35,7 @@
 {% endif %}
 
 {% if fieldId is defined %}
-	<input type="hidden" name="fieldId" value="{{ fieldId }}">
+	<input type="hidden" name="qf[fieldId]" value="{{ fieldId }}">
 {% endif %}
 
 {% set groupOptions = [] %}
@@ -47,7 +47,7 @@
 	label: "Group"|t,
 	instructions: "Which group should this field be displayed in?"|t,
 	id: 'qf-group',
-	name: 'group',
+	name: 'qf[group]',
 	options: groupOptions,
 	value: groupId
 }) }}
@@ -56,7 +56,7 @@
 	label: "Name"|t,
 	instructions: "What this field will be called in the CP."|t,
 	id: 'qf-name',
-	name: 'name',
+	name: 'qf[name]',
 	value: (field is defined ? field.name : null),
 	errors: (field is defined ? field.getErrors('name') : null),
 	required: true,
@@ -69,7 +69,7 @@
 	instructions: "How you’ll refer to this field in the templates."|t,
 	id: 'qf-handle',
 	class: 'code',
-	name: 'handle',
+	name: 'qf[handle]',
 	maxlength: 64,
 	value: (field is defined ? field.handle : null),
 	errors: (field is defined ? field.getErrors('handle') : null),
@@ -81,7 +81,7 @@
 	instructions: "Helper text to guide the author."|t,
 	id: 'qf-instructions',
 	class: 'nicetext',
-	name: 'instructions',
+	name: 'qf[instructions]',
 	value: (field is defined ? field.instructions : null),
 	errors: (field is defined ? field.getErrors('instructions') : null),
 	translatable: true
@@ -90,7 +90,7 @@
 {% if craft.isLocalized() %}
 	{{ forms.checkboxField({
 		label: "This field is translatable"|t,
-		name: 'translatable',
+		name: 'qf[translatable]',
 		checked: (field is defined ? field.translatable : false)
 	}) }}
 {% endif %}
@@ -101,7 +101,7 @@
 	label: "Field Type"|t,
 	instructions: "What type of field is this?"|t,
 	id: 'qf-type',
-	name: 'type',
+	name: 'qf[type]',
 	options: fieldTypes,
 	value: fieldType.getClassHandle(),
 	errors: (isFieldTypeMissing ? ["The fieldtype class “{class}” could not be found."|t({ class: field.type })] : null),
@@ -112,7 +112,7 @@
 {% for _fieldType in fieldTypes %}
 	{% set isCurrent = (_fieldType.getClassHandle() == fieldType.getClassHandle()) %}
 	<div id="qf-{{ _fieldType.getClassHandle()|namespaceInputId }}"{% if not isCurrent %} class="hidden"{% endif %}>
-		{% namespace 'types['~_fieldType.getClassHandle()~']' %}
+		{% namespace 'qf[types]['~_fieldType.getClassHandle()~']' %}
 			{% if isCurrent %}
 				{{ fieldType.getSettingsHtml()|raw }}
 			{% else %}
