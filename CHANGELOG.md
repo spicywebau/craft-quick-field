@@ -1,5 +1,8 @@
 ## Changelog
 
+#### v0.3.4
+- `Fixed` Fixed issue with Neo where editing fields of certain types wasn't working
+
 #### v0.3.3
 - `Improved` Added support for the Neo plugin/field type
 
