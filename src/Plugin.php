@@ -3,6 +3,7 @@
 namespace spicyweb\quickfield;
 
 use craft\base\Plugin as BasePlugin;
+use spicyweb\quickfield\services\QuickFieldService;
 
 /**
  * Class Plugin
@@ -26,6 +27,10 @@ class Plugin extends BasePlugin
     {
         parent::init();
         self::$plugin = $this;
+
+        $this->setComponents([
+            'service' => QuickFieldService::class,
+        ]);
 
         /*
         if(craft()->request->isCpRequest() && $this->isCraftRequiredVersion())
