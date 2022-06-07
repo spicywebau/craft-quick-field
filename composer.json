@@ -1,0 +1,40 @@
+{
+  "name": "spicyweb/craft-quick-field",
+  "description": "Create fields on the fly while designing field layouts",
+  "version": "1.0.0",
+  "type": "craft-plugin",
+  "keywords": [
+    "cms",
+    "craftcms",
+    "plugin"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Spicy Web",
+      "homepage": "https://spicyweb.com.au/"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/spicywebau/craft-quick-field/issues",
+    "source": "https://github.com/spicywebau/craft-quick-field",
+    "docs": "https://github.com/spicywebau/craft-quick-field/blob/master/README.md",
+    "rss": "https://github.com/spicywebau/craft-quick-field/commits/master.atom"
+  },
+  "require": {
+    "craftcms/cms": "^3.7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "spicyweb\\quickfield\\": "src/"
+    }
+  },
+  "extra": {
+    "handle": "quick-field",
+    "name": "Quick Field",
+    "schemaVersion": "1.0.0",
+    "class": "spicyweb\\quickfield\\Plugin",
+    "changelogUrl": "https://github.com/spicywebau/craft-quick-field/blob/master/CHANGELOG.md",
+    "downloadUrl": "https://github.com/spicywebau/craft-quick-field/archive/master.zip"
+  }
+}
