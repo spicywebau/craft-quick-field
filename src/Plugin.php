@@ -2,7 +2,9 @@
 
 namespace spicyweb\quickfield;
 
+use Craft;
 use craft\base\Plugin as BasePlugin;
+use spicyweb\quickfield\assets\QuickFieldAsset;
 use spicyweb\quickfield\services\QuickFieldService;
 
 /**
@@ -32,26 +34,15 @@ class Plugin extends BasePlugin
             'service' => QuickFieldService::class,
         ]);
 
-        /*
-        if(craft()->request->isCpRequest() && $this->isCraftRequiredVersion())
-        {
-            $this->includeResources();
-        }
-        */
+        $this->_includeResources();
     }
 
-    /*
-    protected function includeResources()
+    private function _includeResources()
     {
-        if(!craft()->request->isAjaxRequest() && craft()->userSession->isAdmin())
-        {
-            craft()->templates->includeCssResource('quickfield/css/main.css');
+        $request = Craft::$app->getRequest();
 
-            craft()->templates->includeJsResource('quickfield/js/QuickField.js');
-            craft()->templates->includeJsResource('quickfield/js/FieldModal.js');
-            craft()->templates->includeJsResource('quickfield/js/GroupDialog.js');
-            craft()->templates->includeJsResource('quickfield/js/main.js');
+        if ($request->getIsCpRequest() && !$request->getIsAjax() && Craft::$app->getUser()->getIsAdmin()) {
+            Craft::$app->getView()->registerAssetBundle(QuickFieldAsset::class);
         }
     }
-    */
 }
