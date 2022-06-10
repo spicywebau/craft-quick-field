@@ -32,9 +32,9 @@
 
 			this.fld.$container.addClass('quick-field');
 
-			this.$container   = $('<div class="newfieldbtn-container">').insertAfter(fld.$unusedFieldContainer);
-			this.$groupButton = $('<div class="btn add icon" tabindex="0">').text(Craft.t('New Group')).appendTo(this.$container);
-			this.$fieldButton = $('<div class="btn add icon" tabindex="0">').text(Craft.t('New Field')).appendTo(this.$container);
+			this.$container = $('<div class="newfieldbtn-container">').prependTo(fld.$fieldLibrary);
+			this.$groupButton = $('<div class="btn add icon" tabindex="0">').text(Craft.t('quickfield', 'New Group')).appendTo(this.$container);
+			this.$fieldButton = $('<div class="btn add icon" tabindex="0">').text(Craft.t('quickfield', 'New Field')).appendTo(this.$container);
 
 			this.initButtons();
 
@@ -78,8 +78,8 @@
 		{
 			var that = this;
 
-			var $tabs = this.fld.$unusedFieldContainer.find('.fld-tab .tab.sel');
-			var $fields = this.fld.$unusedFieldContainer.find('.fld-field.unused');
+			// var $tabs = this.fld.$unusedFieldContainer.find('.fld-tab .tab.sel');
+			var $fields = this.fld.$fields.filter('.unused');
 
 			/*
 			$tabs.each(function()
