@@ -82,6 +82,16 @@ body.rtl .fieldlayoutform.quick-field .newfieldbtn-container .btn.add {
 	content: 'settings';
 }
 
+.fld-field.unused {
+	padding-right: 32px;
+}
+
+.fld-field .qf-edit {
+	position: absolute;
+	top: calc(50% - 10px);
+	right: 10px;
+}
+
 .fld-field .qf-edit:before {
 	content: 'edit';
 }
