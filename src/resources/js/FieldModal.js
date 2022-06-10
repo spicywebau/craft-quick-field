@@ -582,7 +582,7 @@
 		 */
 		destroy: function()
 		{
-			this.base.destroy();
+			this.base();
 
 			this.destroyListeners();
 			this.destroySettings();
