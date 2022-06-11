@@ -1,24 +1,36 @@
 <?php
-namespace Craft;
+
+namespace spicyweb\quickfield\controllers;
+
+use Craft;
+use craft\base\Field;
+use craft\fields\PlainText;
+use craft\helpers\ArrayHelper;
+use craft\web\Controller;
+use spicyweb\quickfield\Plugin as QuickField;
 
 /**
  * Class QuickFieldController
- * @package Craft
+ *
+ * @package spicyweb\quickfield\controllers
+ * @author Spicy Web <plugins@spicyweb.com.au>
+ * @author Benjamin Fleming
+ * @since 1.0.0
  */
-class QuickFieldController extends BaseElementsController
+class QuickFieldController extends Controller
 {
-	/**
-	 * Gets the HTML, CSS and Javascript of a field setting page.
-	 *
-	 * @throws HttpException
-	 */
-	public function actionGetFieldSettings()
-	{
-		$this->requireAdmin();
-		$this->requireAjaxRequest();
+    /**
+     * Gets the HTML, CSS and JavaScript of a field setting page.
+     *
+     * @throws HttpException
+     */
+    public function actionGetFieldSettings()
+    {
+        $this->requireAdmin();
+        $this->requireAcceptsJson();
 
-		$this->returnJson($this->_getTemplate());
-	}
+        return $this->asJson($this->_getTemplate());
+    }
 
 	/**
 	 * Edits an existing field.
@@ -172,34 +184,55 @@ class QuickFieldController extends BaseElementsController
 		}
 	}
 
-	/**
-	 * Loads the field settings template and returns all HTML, CSS and Javascript.
-	 *
-	 * @param FieldModel|null $field
-	 * @return array
-	 */
-	private function _getTemplate(FieldModel $field = null)
-	{
-		$data = array();
+    /**
+     * Loads the field settings template and returns all HTML, CSS and Javascript.
+     *
+     * @param Field|null $field
+     * @return array
+     */
+    private function _getTemplate(Field $field = null)
+    {
+		// Make sure a field group exists first
+		$groups = ArrayHelper::index(Craft::$app->getFields()->getAllGroups(), 'id');
 
-		if($field)
-		{
-			$data['field'] = $field;
-
-			if($field->id != null)
-			{
-				$data['fieldId'] = $field->id;
-			}
+		if (empty($groups)) {
+			return [
+				'success' => false,
+				'error' => Craft::t('quick-field', 'No field groups exist.'),
+			];
 		}
 
-		$html = craft()->templates->render('quickfield/_fieldsettings', $data);
-		$js   = craft()->templates->getFootHtml();
-		$css  = craft()->templates->getHeadHtml();
+		$fieldTypes = QuickField::$plugin->service->getFieldTypes();
+		$fieldTypeOptions = [];
+		
+		foreach ($fieldTypes as $fieldType) {
+			$fieldTypeOptions[] = [
+				'label' => $fieldType::displayName(),
+				'value' => $fieldType,
+			];
+		};
 
-		return array(
-			'html' => $html,
-			'js'   => $js,
-			'css'  => $css
-		);
-	}
+		ArrayHelper::multisort($fieldTypeOptions, 'label');
+
+        $data = [
+			'field' => $field ?? Craft::$app->getFields()->createField(PlainText::class),
+			'fieldTypes' => $fieldTypes,
+			'fieldTypeOptions' => $fieldTypeOptions,
+			'groups' => $groups,
+		];
+
+		if ($data['field']->id !== null) {
+			$data['fieldId'] = $data['field']->id;
+		}
+
+        $view = Craft::$app->getView();
+        $html = $view->renderTemplate('quick-field/_fieldsettings', $data);
+
+        return [
+			'success' => true,
+            'html' => $html,
+            'js' => $view->getBodyHtml(),
+            'css' => $view->getHeadHtml(),
+        ];
+    }
 }

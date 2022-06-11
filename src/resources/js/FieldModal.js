@@ -88,17 +88,17 @@
 			this.$leftButtons   = $('<div class="buttons left">').appendTo(this.$footer);
 			this.$rightButtons  = $('<div class="buttons right">').appendTo(this.$footer);
 
-			this.$deleteBtn     = $('<a class="delete error hidden">').text(Craft.t('Delete')).appendTo(this.$leftButtons);
+			this.$deleteBtn     = $('<a class="delete error hidden">').text(Craft.t('app', 'Delete')).appendTo(this.$leftButtons);
 			this.$deleteSpinner = $('<div class="spinner hidden">').appendTo(this.$leftButtons);
 
-			this.$cancelBtn     = $('<div class="btn disabled" role="button">').text(Craft.t('Cancel')).appendTo(this.$rightButtons);
-			this.$saveBtn       = $('<div class="btn submit disabled" role="button">').text(Craft.t('Save')).appendTo(this.$rightButtons);
+			this.$cancelBtn     = $('<div class="btn disabled" role="button">').text(Craft.t('app', 'Cancel')).appendTo(this.$rightButtons);
+			this.$saveBtn       = $('<div class="btn submit disabled" role="button">').text(Craft.t('app', 'Save')).appendTo(this.$rightButtons);
 			this.$saveSpinner   = $('<div class="spinner hidden">').appendTo(this.$rightButtons);
 
 			this.setContainer($container);
 
 			// Loads the field settings template file, as well as all the resources that come with it
-			Craft.postActionRequest('quickField/getFieldSettings', {}, $.proxy(function(response, textStatus)
+			Craft.postActionRequest('quick-field/actions/get-field-settings', {}, $.proxy(function(response, textStatus)
 			{
 				if(textStatus === 'success')
 				{
@@ -239,7 +239,7 @@
 						}
 						else
 						{
-							Craft.displayError(Craft.t('Could not load all resources.'));
+							Craft.displayError(Craft.t('quick-field', 'Could not load all resources.'));
 						}
 					}, this));
 				}

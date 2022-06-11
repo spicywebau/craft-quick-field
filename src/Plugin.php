@@ -5,6 +5,7 @@ namespace spicyweb\quickfield;
 use Craft;
 use craft\base\Plugin as BasePlugin;
 use spicyweb\quickfield\assets\QuickFieldAsset;
+use spicyweb\quickfield\controllers\QuickFieldController;
 use spicyweb\quickfield\services\QuickFieldService;
 
 /**
@@ -21,6 +22,13 @@ class Plugin extends BasePlugin
      * @var Plugin
      */
     public static $plugin;
+
+    /**
+     * @inheritdoc
+     */
+    public $controllerMap = [
+        'actions' => QuickFieldController::class,
+    ];
 
     /**
      * @inheritdoc

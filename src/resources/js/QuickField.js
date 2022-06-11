@@ -33,8 +33,8 @@
 			this.fld.$container.addClass('quick-field');
 
 			this.$container = $('<div class="newfieldbtn-container btngroup small fullwidth">').prependTo(fld.$fieldLibrary);
-			this.$groupButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quickfield', 'New Group')).appendTo(this.$container);
-			this.$fieldButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quickfield', 'New Field')).appendTo(this.$container);
+			this.$groupButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Group')).appendTo(this.$container);
+			this.$fieldButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Field')).appendTo(this.$container);
 
 			this.initButtons();
 
