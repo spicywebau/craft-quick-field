@@ -47,7 +47,7 @@
 			this.dialog.on('newGroup', $.proxy(function(e)
 			{
 				var group = e.group;
-				this.addGroup(group.id, group.name);
+				this.addGroup(group.name);
 			}, this));
 
 			this.modal.on('newField', $.proxy(function(e)
@@ -225,39 +225,25 @@
 		},
 
 		/**
-		 * Adds a new unused (dashed border) group tab to the field layout designer.
+		 * Adds a new unused group to the field layout designer sidebar.
 		 *
 		 * @param name
 		 * @param id
 		 */
-		addGroup: function(id, name)
+		addGroup: function(name)
 		{
-			var fld = this.fld;
-			var settings = fld.settings;
-			var grid = fld.unusedFieldGrid;
-			var drag = fld.tabDrag;
-
-			var $container = fld.$unusedFieldContainer;
-			var $tab = $([
-				'<div class="fld-tab unused">',
-					'<div class="tabs">',
-						'<div class="tab sel">',
-							'<span>', name, '</span>',
-							// '&nbsp;<a class="qf-settings icon" title="Edit"></a>',
-						'</div>',
-					'</div>',
-					'<div class="fld-tabcontent"></div>',
+			var fld = this.fld
+			var lowerCaseName = name.toLowerCase();
+			var $prevGroup = fld.$fieldGroups.filter(function() {
+				return $(this).data('name') < lowerCaseName;
+			}).last();
+			$([
+				'<div class="fld-field-group" data-name="', lowerCaseName, '">',
+					'<h6>', name, '</h6>',
 				'</div>'
-			].join('')).appendTo($container);
+			].join('')).insertAfter($prevGroup);
 
-			grid.addItems($tab);
-
-			if(settings.customizableTabs)
-			{
-				drag.addItems($tab);
-			}
-
-			grid.refreshCols(true);
+			fld.$fieldGroups = fld.$sidebar.find('.fld-field-group');
 		},
 
 		/**

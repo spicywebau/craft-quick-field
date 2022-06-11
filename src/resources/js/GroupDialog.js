@@ -31,7 +31,7 @@
 					name: name
 				};
 
-				Craft.postActionRequest('fields/saveGroup', data, $.proxy(function(response, textStatus)
+				Craft.postActionRequest('fields/save-group', data, $.proxy(function(response, textStatus)
 				{
 					var statusSuccess = (textStatus === 'success');
 
@@ -45,11 +45,11 @@
 					else if(statusSuccess && response.errors)
 					{
 						var errors = this._flattenErrors(response.errors);
-						alert(Craft.t('Could not create the group:') + "\n\n" + errors.join("\n"));
+						alert(Craft.t('quick-field', 'Could not create the group:') + "\n\n" + errors.join("\n"));
 					}
 					else
 					{
-						Craft.cp.displayError(Craft.t('An unknown error occurred.'));
+						Craft.cp.displayError(Craft.t('quick-field', 'An unknown error occurred.'));
 					}
 				}, this));
 			}
@@ -62,7 +62,7 @@
 		 */
 		promptForGroupName: function(oldName)
 		{
-			return prompt(Craft.t('What do you want to name your group?'), oldName);
+			return prompt(Craft.t('quick-field', 'What do you want to name the group?'), oldName);
 		},
 
 		/**
