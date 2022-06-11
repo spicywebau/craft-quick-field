@@ -5,124 +5,124 @@
 
 {% set groups = craft.fields.getAllGroups('id') %}
 {% if not groups %}
-	{% exit 404 %}
+    {% exit 404 %}
 {% endif %}
 
 {% if groupId is not defined %}
-	{% if field is defined %}
-		{% set groupId = field.groupId %}
-	{% else %}
-		{% set groupId = groups|keys[0] %}
-	{% endif %}
+    {% if field is defined %}
+        {% set groupId = field.groupId %}
+    {% else %}
+        {% set groupId = groups|keys[0] %}
+    {% endif %}
 {% endif %}
 
 {% if groups[groupId] is not defined %}
-	{% exit 404 %}
+    {% exit 404 %}
 {% endif %}
 
 
 {% set fieldTypes = craft.quickField.getFieldTypes() %}
 
 {% if field is defined %}
-	{% set fieldType = field.getFieldType() %}
-	{% set isFieldTypeMissing = not fieldType %}
+    {% set fieldType = field.getFieldType() %}
+    {% set isFieldTypeMissing = not fieldType %}
 {% else %}
-	{% set isFieldTypeMissing = false %}
+    {% set isFieldTypeMissing = false %}
 {% endif %}
 
 {% if fieldType is not defined or isFieldTypeMissing %}
-	{% set fieldType = craft.fields.getFieldType('PlainText') %}
+    {% set fieldType = craft.fields.getFieldType('PlainText') %}
 {% endif %}
 
 {% if fieldId is defined %}
-	<input type="hidden" name="qf[fieldId]" value="{{ fieldId }}">
+    <input type="hidden" name="qf[fieldId]" value="{{ fieldId }}">
 {% endif %}
 
 {% set groupOptions = [] %}
 {% for group in groups %}
-	{% set groupOptions = groupOptions|merge([{ label: group.name, value: group.id }]) %}
+    {% set groupOptions = groupOptions|merge([{ label: group.name, value: group.id }]) %}
 {% endfor %}
 {{ forms.selectField({
-	first: true,
-	label: "Group"|t,
-	instructions: "Which group should this field be displayed in?"|t,
-	id: 'qf-group',
-	name: 'qf[group]',
-	options: groupOptions,
-	value: groupId
+    first: true,
+    label: "Group"|t,
+    instructions: "Which group should this field be displayed in?"|t,
+    id: 'qf-group',
+    name: 'qf[group]',
+    options: groupOptions,
+    value: groupId
 }) }}
 
 {{ forms.textField({
-	label: "Name"|t,
-	instructions: "What this field will be called in the CP."|t,
-	id: 'qf-name',
-	name: 'qf[name]',
-	value: (field is defined ? field.name : null),
-	errors: (field is defined ? field.getErrors('name') : null),
-	required: true,
-	translatable: true,
-	autofocus: true
+    label: "Name"|t,
+    instructions: "What this field will be called in the CP."|t,
+    id: 'qf-name',
+    name: 'qf[name]',
+    value: (field is defined ? field.name : null),
+    errors: (field is defined ? field.getErrors('name') : null),
+    required: true,
+    translatable: true,
+    autofocus: true
 }) }}
 
 {{ forms.textField({
-	label: "Handle"|t,
-	instructions: "How you’ll refer to this field in the templates."|t,
-	id: 'qf-handle',
-	class: 'code',
-	name: 'qf[handle]',
-	maxlength: 64,
-	value: (field is defined ? field.handle : null),
-	errors: (field is defined ? field.getErrors('handle') : null),
-	required: true,
+    label: "Handle"|t,
+    instructions: "How you’ll refer to this field in the templates."|t,
+    id: 'qf-handle',
+    class: 'code',
+    name: 'qf[handle]',
+    maxlength: 64,
+    value: (field is defined ? field.handle : null),
+    errors: (field is defined ? field.getErrors('handle') : null),
+    required: true,
 }) }}
 
 {{ forms.textareaField({
-	label: "Instructions"|t,
-	instructions: "Helper text to guide the author."|t,
-	id: 'qf-instructions',
-	class: 'nicetext',
-	name: 'qf[instructions]',
-	value: (field is defined ? field.instructions : null),
-	errors: (field is defined ? field.getErrors('instructions') : null),
-	translatable: true
+    label: "Instructions"|t,
+    instructions: "Helper text to guide the author."|t,
+    id: 'qf-instructions',
+    class: 'nicetext',
+    name: 'qf[instructions]',
+    value: (field is defined ? field.instructions : null),
+    errors: (field is defined ? field.getErrors('instructions') : null),
+    translatable: true
 }) }}
 
 {% if craft.isLocalized() %}
-	{{ forms.checkboxField({
-		label: "This field is translatable"|t,
-		name: 'qf[translatable]',
-		checked: (field is defined ? field.translatable : false)
-	}) }}
+    {{ forms.checkboxField({
+        label: "This field is translatable"|t,
+        name: 'qf[translatable]',
+        checked: (field is defined ? field.translatable : false)
+    }) }}
 {% endif %}
 
 <hr>
 
 {{ forms.selectField({
-	label: "Field Type"|t,
-	instructions: "What type of field is this?"|t,
-	id: 'qf-type',
-	name: 'qf[type]',
-	options: fieldTypes,
-	value: fieldType.getClassHandle(),
-	errors: (isFieldTypeMissing ? ["The fieldtype class “{class}” could not be found."|t({ class: field.type })] : null),
-	toggle: true,
-	targetPrefix: 'qf-'
+    label: "Field Type"|t,
+    instructions: "What type of field is this?"|t,
+    id: 'qf-type',
+    name: 'qf[type]',
+    options: fieldTypes,
+    value: fieldType.getClassHandle(),
+    errors: (isFieldTypeMissing ? ["The fieldtype class “{class}” could not be found."|t({ class: field.type })] : null),
+    toggle: true,
+    targetPrefix: 'qf-'
 }) }}
 
 {% for _fieldType in fieldTypes %}
-	{% set isCurrent = (_fieldType.getClassHandle() == fieldType.getClassHandle()) %}
-	<div id="qf-{{ _fieldType.getClassHandle()|namespaceInputId }}"{% if not isCurrent %} class="hidden"{% endif %}>
-		{% namespace 'qf[types]['~_fieldType.getClassHandle()~']' %}
-			{% if isCurrent %}
-				{{ fieldType.getSettingsHtml()|raw }}
-			{% else %}
-				{{ _fieldType.getSettingsHtml()|raw }}
-			{% endif %}
-		{% endnamespace %}
-	</div>
+    {% set isCurrent = (_fieldType.getClassHandle() == fieldType.getClassHandle()) %}
+    <div id="qf-{{ _fieldType.getClassHandle()|namespaceInputId }}"{% if not isCurrent %} class="hidden"{% endif %}>
+        {% namespace 'qf[types]['~_fieldType.getClassHandle()~']' %}
+            {% if isCurrent %}
+                {{ fieldType.getSettingsHtml()|raw }}
+            {% else %}
+                {{ _fieldType.getSettingsHtml()|raw }}
+            {% endif %}
+        {% endnamespace %}
+    </div>
 {% endfor %}
 
 
 {% if field is not defined or not field.handle %}
-	{% includejs "new Craft.HandleGenerator('#qf-name', '#qf-handle');" %}
+    {% includejs "new Craft.HandleGenerator('#qf-name', '#qf-handle');" %}
 {% endif %}
