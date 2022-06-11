@@ -61,6 +61,7 @@
 
 			this.executedJs   = {};
 			this.loadedCss    = {};
+			this._templateLoaded = false;
 
 			// It's important to observe the DOM for new nodes when rendering the field settings template, as more
 			// complex fields may be adding elements to the body such as modal windows or helper elements. Since the
@@ -96,20 +97,31 @@
 			this.$saveSpinner   = $('<div class="spinner hidden">').appendTo(this.$rightButtons);
 
 			this.setContainer($container);
+			this.loadTemplate();
+		},
 
-			// Loads the field settings template file, as well as all the resources that come with it
-			Craft.postActionRequest('quick-field/actions/get-field-settings', {}, $.proxy(function(response, textStatus)
+		/**
+		 * Loads the field settings template file, as well as all the resources that come with it.
+		 */
+		loadTemplate: function()
+		{
+			if(!this._templateLoaded)
 			{
-				if(textStatus === 'success')
+				Craft.postActionRequest('quick-field/actions/get-field-settings', {}, $.proxy(function(response, textStatus)
 				{
-					this.$loadSpinner.addClass('hidden');
-					this.initTemplate(response);
-				}
-				else
-				{
-					this.destroy();
-				}
-			}, this));
+					if(textStatus === 'success' && response.success)
+					{
+						this.$loadSpinner.addClass('hidden');
+						this.initTemplate(response);
+						this._templateLoaded = true;
+						this.trigger('loadTemplate');
+					}
+					else
+					{
+						this.destroy();
+					}
+				}, this));
+			}
 		},
 
 		/**

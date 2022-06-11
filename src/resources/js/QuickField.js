@@ -35,6 +35,7 @@
 			this.$container = $('<div class="newfieldbtn-container btngroup small fullwidth">').prependTo(fld.$fieldLibrary);
 			this.$groupButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Group')).appendTo(this.$container);
 			this.$fieldButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Field')).appendTo(this.$container);
+			this._fieldButtonAttached = true;
 
 			this.initButtons();
 
@@ -48,6 +49,20 @@
 			{
 				var group = e.group;
 				this.addGroup(group.name);
+
+				if(!this._fieldButtonAttached)
+				{
+					this.modal.loadTemplate();
+				}
+			}, this));
+
+			this.modal.on('loadTemplate', $.proxy(function()
+			{
+				if(!this._fieldButtonAttached)
+				{
+					this.$fieldButton.appendTo(this.$container);
+					this._fieldButtonAttached = true;
+				}
 			}, this));
 
 			this.modal.on('newField', $.proxy(function(e)
@@ -68,6 +83,12 @@
 			{
 				var field = e.field;
 				this.removeField(field.id);
+			}, this));
+
+			this.modal.on('destroy', $.proxy(function()
+			{
+				this.$fieldButton.detach();
+				this._fieldButtonAttached = false;
 			}, this));
 		},
 
@@ -237,11 +258,20 @@
 			var $prevGroup = fld.$fieldGroups.filter(function() {
 				return $(this).data('name') < lowerCaseName;
 			}).last();
-			$([
+			var $newGroup = $([
 				'<div class="fld-field-group" data-name="', lowerCaseName, '">',
 					'<h6>', name, '</h6>',
 				'</div>'
-			].join('')).insertAfter($prevGroup);
+			].join(''))
+
+			if($prevGroup.length > 0)
+			{
+				$newGroup.insertAfter($prevGroup);
+			}
+			else
+			{
+				$newGroup.appendTo(fld.$fieldLibrary);
+			}
 
 			fld.$fieldGroups = fld.$sidebar.find('.fld-field-group');
 		},
