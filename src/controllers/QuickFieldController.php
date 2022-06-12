@@ -53,39 +53,37 @@ class QuickFieldController extends Controller
     {
         $this->requireAdmin();
         $this->requirePostRequest();
-        $this->requireAjaxRequest();
+        $this->requireAcceptsJson();
 
-        $id = craft()->request->getPost('fieldId');
+        $fieldsService = Craft::$app->getFields();
+        $id = Craft::$app->getRequest()->getRequiredBodyParam('fieldId');
+        $field = $fieldsService->getFieldById($id);
 
-        $field = craft()->fields->getFieldById($id);
-
-        if($field)
+        if(!$field)
         {
-            $group = craft()->fields->getGroupById($field->groupId);
-
-            $this->returnJson(array(
-                'success' => true,
-                'field'   => array(
-                    'id'           => $field->id,
-                    'name'         => $field->name,
-                    'handle'       => $field->handle,
-                    'instructions' => $field->instructions,
-                    'translatable' => $field->translatable,
-                    'group'        => !$group ? array() : array(
-                        'id'   => $group->id,
-                        'name' => $group->name,
-                    ),
-                ),
-                'template' => $this->_getTemplate($field),
-            ));
-        }
-        else
-        {
-            $this->returnJson(array(
+            return $this->asJson([
                 'success' => false,
-                'error'   => Craft::t('The field requested to edit no longer exists.'),
-            ));
+                'error'   => Craft::t('quick-field', 'The field requested to edit no longer exists.'),
+            ]);
         }
+
+        $group = $fieldsService->getGroupById($field->groupId);
+
+        return $this->asJson([
+            'success' => true,
+            'field'   => [
+                'id'           => $field->id,
+                'name'         => $field->name,
+                'handle'       => $field->handle,
+                'instructions' => $field->instructions,
+                // 'translatable' => $field->translatable,
+                'group'        => !$group ? [] : [
+                    'id'   => $group->id,
+                    'name' => $group->name,
+                ],
+            ],
+            'template' => $this->_getTemplate($field),
+        ]);
     }
 
     /**

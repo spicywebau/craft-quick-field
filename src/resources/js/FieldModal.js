@@ -357,7 +357,7 @@
 			this.$loadSpinner.removeClass('hidden');
 			var data = {fieldId: id};
 
-			Craft.postActionRequest('quickField/editField', data, $.proxy(function(response, textStatus)
+			Craft.postActionRequest('quick-field/actions/edit-field', data, $.proxy(function(response, textStatus)
 			{
 				this.$loadSpinner.addClass('hidden');
 
