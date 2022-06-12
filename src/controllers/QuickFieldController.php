@@ -4,6 +4,7 @@ namespace spicyweb\quickfield\controllers;
 
 use Craft;
 use craft\base\Field;
+use craft\fieldlayoutelements\CustomField;
 use craft\fields\PlainText;
 use craft\helpers\ArrayHelper;
 use craft\web\Controller;
@@ -96,45 +97,49 @@ class QuickFieldController extends Controller
     {
         $this->requireAdmin();
         $this->requirePostRequest();
-        $this->requireAjaxRequest();
+        $this->requireAcceptsJson();
 
-        $field = new FieldModel();
+        $fieldsService = Craft::$app->getFields();
+        $request = Craft::$app->getRequest();
+        $config = [
+            'id' => $request->getBodyParam('qf.fieldId'),
+            'groupId' => $request->getRequiredBodyParam('qf.group'),
+            'name' => $request->getBodyParam('qf.name'),
+            'handle' => $request->getBodyParam('qf.handle'),
+            'instructions' => $request->getBodyParam('qf.instructions'),
+            // 'translatable' => $request->getBodyParam('qf.translatable'),
+            'type' => $request->getRequiredBodyParam('qf.type'),
+        ];
+        $typeSettings = $request->getBodyParam('qf.types');
 
-        $field->id           = craft()->request->getPost('qf.fieldId');
-        $field->groupId      = craft()->request->getRequiredPost('qf.group');
-        $field->name         = craft()->request->getPost('qf.name');
-        $field->handle       = craft()->request->getPost('qf.handle');
-        $field->instructions = craft()->request->getPost('qf.instructions');
-        $field->translatable = (bool) craft()->request->getPost('qf.translatable');
-
-        $field->type = craft()->request->getRequiredPost('qf.type');
-
-        $typeSettings = craft()->request->getPost('qf.types');
-
-        if(isset($typeSettings[$field->type]))
+        if(isset($typeSettings[$config['type']]))
         {
-            $field->settings = $typeSettings[$field->type];
+            $config['settings'] = $typeSettings[$config['type']];
         }
 
-        $group = craft()->fields->getGroupById($field->groupId);
-        $success = $group && craft()->fields->saveField($field);
+        $field = $fieldsService->createField($config);
+        $group = $fieldsService->getGroupById($field->groupId);
+        $success = $group && $fieldsService->saveField($field);
 
-        $this->returnJson(array(
+        return $this->asJson([
             'success' => $success,
-            'errors'  => $field->getAllErrors(),
-            'field'   => array(
+            'errors'  => $field->getErrors(),
+            'field'   => [
                 'id'           => $field->id,
                 'name'         => $field->name,
                 'handle'       => $field->handle,
                 'instructions' => $field->instructions,
-                'translatable' => $field->translatable,
-                'group'        => !$group ? array() : array(
+                // 'translatable' => $field->translatable,
+                'group'        => !$group ? [] : [
                     'id'   => $group->id,
                     'name' => $group->name,
-                ),
-            ),
-            'template' => $success ? false : $this->_getTemplate($field),
-        ));
+                ],
+            ],
+            'elementSelector' => !$success ? null : Craft::$app->getView()->renderTemplate('quick-field/_elementselector', [
+                'field' => new CustomField($field),
+            ]),
+            'template' => $success ? null : $this->_getTemplate($field),
+        ]);
     }
 
     /**

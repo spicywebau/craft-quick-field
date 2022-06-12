@@ -413,7 +413,7 @@
 			var inputId = this.$container.find('input[name="qf[fieldId]"]');
 			var id = inputId.length ? inputId.val() : false;
 
-			Craft.postActionRequest('quickField/saveField', data, $.proxy(function(response, textStatus)
+			Craft.postActionRequest('quick-field/actions/save-field', data, $.proxy(function(response, textStatus)
 			{
 				this.$saveSpinner.addClass('hidden');
 
@@ -427,10 +427,11 @@
 					{
 						this.trigger('newField', {
 							target: this,
-							field: response.field
+							field: response.field,
+							elementSelector: response.elementSelector
 						});
 
-						Craft.cp.displayNotice(Craft.t('New field created.'));
+						Craft.cp.displayNotice(Craft.t('quick-field', 'New field created.'));
 					}
 					else
 					{
@@ -470,7 +471,7 @@
 				{
 					this.initListeners();
 
-					Craft.cp.displayError(Craft.t('An unknown error occurred.'));
+					Craft.cp.displayError(Craft.t('quick-field', 'An unknown error occurred.'));
 				}
 			}, this));
 		},

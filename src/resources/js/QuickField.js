@@ -70,9 +70,7 @@
 
 			this.modal.on('newField', $.proxy(function(e)
 			{
-				var field = e.field;
-				var group = field.group;
-				this.addField(field.id, field.name, group.name);
+				this.addField(e.field, e.elementSelector);
 			}, this));
 
 			this.modal.on('saveField', $.proxy(function(e)
@@ -182,13 +180,15 @@
 
 			$fields.each(function()
 			{
-				var $field = $(this);
-				var $button = $('<a class="qf-edit icon" title="Edit"></a>');
-
-				that.addListener($button, 'activate', 'editField');
-
-				$field.prepend($button);
+				that._addFieldButton($(this));
 			});
+		},
+
+		_addFieldButton: function($field)
+		{
+			var $button = $('<a class="qf-edit icon" title="Edit"></a>');
+			this.addListener($button, 'activate', 'editField');
+			$field.prepend($button);
 		},
 
 		/**
@@ -218,40 +218,36 @@
 		/**
 		 * Adds a new unused (dashed border) field to the field layout designer.
 		 *
-		 * @param id
-		 * @param name
-		 * @param groupName
+		 * @param field
+		 * @param elementSelector
 		 */
-		addField: function(id, name, groupName)
+		addField: function(field, elementSelector)
 		{
 			var fld = this.fld;
-			var grid = fld.unusedFieldGrid;
-			var drag = fld.fieldDrag;
-			var fields = fld.$allFields;
-			var $group = this._getGroupByName(groupName);
+			var drag = fld.elementDrag;
+			var $group = this._getGroupByName(field.group.name);
 
 			if($group)
 			{
-				var $groupContent = $group.children('.fld-tabcontent');
-				var $field = $([
-					'<div class="fld-field unused" data-id="', id, '">',
-						'<span>', name, '</span>',
-						'<a class="qf-edit icon" title="Edit"></a>',
-					'</div>'
-				].join('')).appendTo($groupContent);
+				var lowerCaseName = field.name.toLowerCase();
+				var $field = $(elementSelector);
+				var $prevElement = $group.children('.fld-element').filter(function() {
+					return $(this).find('h4').text().toLowerCase() < lowerCaseName;
+				}).last();
 
-				fld.$allFields = fields.add($field);
+				if($prevElement.length === 0)
+				{
+					$prevElement = $group.children('h6');
+				}
 
-				var $button = $field.children('.qf-edit');
-				this.addListener($button, 'activate', 'editField');
-
-				$group.removeClass('hidden');
+				$field.insertAfter($prevElement);
 				drag.addItems($field);
-				grid.refreshCols(true);
+				this._addFieldButton($field);
+				fld.$fields = fld.$fieldGroups.children('.fld-element');
 			}
 			else
 			{
-				Craft.cp.displayError(Craft.t('Invalid field group: {groupName}', {groupName: groupName}));
+				Craft.cp.displayError(Craft.t('quick-field', 'Invalid field group: {groupName}', {groupName: groupName}));
 			}
 		},
 
