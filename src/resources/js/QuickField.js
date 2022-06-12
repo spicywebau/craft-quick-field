@@ -63,6 +63,11 @@
 				this.renameGroup(e.oldName, e.group.name);
 			}, this));
 
+			this.dialog.on('deleteGroup', $.proxy(function(e)
+			{
+				this.deleteGroup(e.id);
+			}, this));
+
 			this.modal.on('newField', $.proxy(function(e)
 			{
 				var field = e.field;
@@ -155,11 +160,24 @@
 			$groups.each(function()
 			{
 				var $group = $(this);
-				var $button = $('<a class="qf-settings icon" title="Rename"></a>');
+				var $button = $('<button class="qf-settings icon menubtn" title="' + Craft.t('app', 'Settings') + '" role="button" type="button"></button>');
+				var $menu = $([
+					'<div class="menu">',
+						'<ul class="padded">',
+							'<li><a data-icon="edit" data-action="rename">', Craft.t('quick-field', 'Rename'), '</a></li>',
+							'<li><a class="error" data-icon="remove" data-action="delete">', Craft.t('quick-field', 'Delete'), '</a></li>',
+						'</ul>',
+					'</div>',
+				].join(''));
+				$group.prepend($menu).prepend($button);
 
-				that.addListener($button, 'activate', 'openRenameGroupDialog');
-
-				$group.prepend($button);
+				var settingsMenu = new Garnish.MenuBtn($button);
+				settingsMenu.on('optionSelect', function(e) {
+					switch ($(e.option).attr('data-action')) {
+						case 'rename': that._openRenameGroupDialog($group); break;
+						case 'delete': that._openDeleteGroupDialog($group);
+					}
+				});
 			});
 
 			$fields.each(function()
@@ -316,9 +334,8 @@
 			return $newGroup;
 		},
 
-		openRenameGroupDialog: function(e)
+		_openRenameGroupDialog: function($group)
 		{
-			var $group = $(e.target).parent();
 			var id = $group.data('id');
 			var oldName = $group.children('h6').text();
 			this.dialog.renameGroup(id, oldName);
@@ -337,6 +354,33 @@
 					.children('h6').text(newName);
 				this._attachGroup($group, true);
 			}
+		},
+
+		_openDeleteGroupDialog: function($group)
+		{
+			var id = $group.data('id');
+			this.dialog.deleteGroup(id);
+		},
+
+		deleteGroup: function(id)
+		{
+			var fld = this.fld;
+			var $deletedGroup = fld.$fieldGroups
+				.filter(function() {
+					return $(this).data('id') === id;
+				});
+
+			// Remove any fields from this group from the tabs
+			var $usedFields = $deletedGroup.find('.fld-field.hidden');
+			var filterSelector = $usedFields.map(function() {
+				return '[data-id="' + $(this).data('id') + '"]';
+			}).get().join(',');
+			fld.$tabContainer
+				.find('.fld-field')
+				.filter(filterSelector)
+				.remove();
+
+			$deletedGroup.remove();
 		},
 
 		/**

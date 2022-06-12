@@ -4,6 +4,7 @@
 
 ### Added
 - Added Craft 3 compatibility (requires Craft 3.7.0 or later)
+- Added the ability to rename and delete field groups from the field layout designer
 
 ### Changed
 - Moved the new field and new group buttons to the sidebar of the new field layout designer

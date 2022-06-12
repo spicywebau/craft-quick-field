@@ -102,6 +102,26 @@
 			};
 		},
 
+		deleteGroup: function(groupId)
+		{
+			if(confirm(Craft.t('app', 'Are you sure you want to delete this group and all its fields?')))
+			{
+				Craft.postActionRequest('fields/delete-group', { id: groupId }, $.proxy(function(response, textStatus)
+				{
+					var statusSuccess = (textStatus === 'success');
+
+					if(statusSuccess && response.success)
+					{
+						this.trigger('deleteGroup', { id: groupId });
+					}
+					else
+					{
+						Craft.cp.displayError(Craft.t('quick-field', 'Could not delete the group.'));
+					}
+				}, this));
+			}
+		},
+
 		/**
 		 * Creates and opens the dialog box asking for a group name.
 		 *

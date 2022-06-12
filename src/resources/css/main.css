@@ -84,12 +84,18 @@ body.rtl .fieldlayoutform.quick-field .newfieldbtn-container .btn.add {
 
 .fld-field-group .qf-settings {
 	position: absolute;
-	top: -6px;
-	right: 10px;
+	top: 0;
+	right: 0;
+	color: #0b69a3;
+	cursor: pointer;
 }
 
 .fld-field-group .qf-settings:before {
 	content: 'settings';
+}
+
+.fld-field-group .qf-settings:after {
+	border-color: #0b69a3;
 }
 
 .fld-field.unused {
