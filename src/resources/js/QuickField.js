@@ -157,30 +157,35 @@
 
 			$groups.each(function()
 			{
-				var $group = $(this);
-				var $button = $('<button class="qf-settings icon menubtn" title="' + Craft.t('app', 'Settings') + '" role="button" type="button"></button>');
-				var $menu = $([
-					'<div class="menu">',
-						'<ul class="padded">',
-							'<li><a data-icon="edit" data-action="rename">', Craft.t('quick-field', 'Rename'), '</a></li>',
-							'<li><a class="error" data-icon="remove" data-action="delete">', Craft.t('quick-field', 'Delete'), '</a></li>',
-						'</ul>',
-					'</div>',
-				].join(''));
-				$group.prepend($menu).prepend($button);
-
-				var settingsMenu = new Garnish.MenuBtn($button);
-				settingsMenu.on('optionSelect', function(e) {
-					switch ($(e.option).attr('data-action')) {
-						case 'rename': that._openRenameGroupDialog($group); break;
-						case 'delete': that._openDeleteGroupDialog($group);
-					}
-				});
+				that._addGroupMenu($(this));
 			});
 
 			$fields.each(function()
 			{
 				that._addFieldButton($(this));
+			});
+		},
+
+		_addGroupMenu: function($group)
+		{
+			var $button = $('<button class="qf-settings icon menubtn" title="' + Craft.t('app', 'Settings') + '" role="button" type="button"></button>');
+			var $menu = $([
+				'<div class="menu">',
+					'<ul class="padded">',
+						'<li><a data-icon="edit" data-action="rename">', Craft.t('quick-field', 'Rename'), '</a></li>',
+						'<li><a class="error" data-icon="remove" data-action="delete">', Craft.t('quick-field', 'Delete'), '</a></li>',
+					'</ul>',
+				'</div>',
+			].join(''));
+			$group.prepend($menu).prepend($button);
+
+			var that = this;
+			var settingsMenu = new Garnish.MenuBtn($button);
+			settingsMenu.on('optionSelect', function(e) {
+				switch ($(e.option).attr('data-action')) {
+					case 'rename': that._openRenameGroupDialog($group); break;
+					case 'delete': that._openDeleteGroupDialog($group);
+				}
 			});
 		},
 
@@ -319,12 +324,10 @@
 			var lowerCaseName = name.toLowerCase();
 			var $newGroup = $([
 				'<div class="fld-field-group" data-name="', lowerCaseName, '">',
-					'<a class="qf-settings icon" title="Rename"></a>',
 					'<h6>', name, '</h6>',
 				'</div>'
 			].join(''));
-			var $button = $newGroup.children('.qf-settings');
-			this.addListener($button, 'activate', 'openRenameGroupDialog');
+			this._addGroupMenu($newGroup);
 			this._attachGroup($newGroup, resetFldGroups);
 
 			return $newGroup;
