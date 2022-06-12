@@ -20,16 +20,28 @@ use spicyweb\quickfield\Plugin as QuickField;
 class QuickFieldController extends Controller
 {
     /**
-     * Gets the HTML, CSS and JavaScript of a field setting page.
+     * Loads a field settings page and field group data.
      *
      * @throws HttpException
      */
-    public function actionGetFieldSettings()
+    public function actionLoad()
     {
         $this->requireAdmin();
         $this->requireAcceptsJson();
 
-        return $this->asJson($this->_getTemplate());
+        $data = [];
+        $template = $this->_getTemplate();
+
+        if (isset($template['error'])) {
+            $data['success'] = false;
+            $data['error'] = $template['error'];
+        } else {
+            $data['success'] = true;
+            $data['template'] = $template;
+            $data['groups'] = Craft::$app->getFields()->getAllGroups();
+        }
+
+        return $this->asJson($data);
     }
 
     /**
@@ -197,7 +209,6 @@ class QuickFieldController extends Controller
 
         if (empty($groups)) {
             return [
-                'success' => false,
                 'error' => Craft::t('quick-field', 'No field groups exist.'),
             ];
         }
@@ -229,7 +240,6 @@ class QuickFieldController extends Controller
         $html = $view->renderTemplate('quick-field/_fieldsettings', $data);
 
         return [
-            'success' => true,
             'html' => $html,
             'js' => $view->getBodyHtml(),
             'css' => $view->getHeadHtml(),

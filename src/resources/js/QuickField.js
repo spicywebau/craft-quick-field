@@ -36,11 +36,13 @@
 			this.$groupButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Group')).appendTo(this.$container);
 			this.$fieldButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Field')).appendTo(this.$container);
 			this._fieldButtonAttached = true;
+			this._loaded = false;
 
 			this.initButtons();
 
 			this.dialog = QuickField.GroupDialog.getInstance();
 			this.modal  = QuickField.FieldModal.getInstance();
+			this._load();
 
 			this.addListener(this.$groupButton, 'activate', 'newGroup');
 			this.addListener(this.$fieldButton, 'activate', 'newField');
@@ -48,21 +50,17 @@
 			this.dialog.on('newGroup', $.proxy(function(e)
 			{
 				var group = e.group;
-				this.addGroup(group.name);
+				this.addGroup(group.name, true).data('id', e.group.id);
 
 				if(!this._fieldButtonAttached)
 				{
-					this.modal.loadTemplate();
+					this._load();
 				}
 			}, this));
 
-			this.modal.on('loadTemplate', $.proxy(function()
+			this.dialog.on('renameGroup', $.proxy(function(e)
 			{
-				if(!this._fieldButtonAttached)
-				{
-					this.$fieldButton.appendTo(this.$container);
-					this._fieldButtonAttached = true;
-				}
+				this.renameGroup(e.oldName, e.group.name);
 			}, this));
 
 			this.modal.on('newField', $.proxy(function(e)
@@ -93,25 +91,76 @@
 		},
 
 		/**
+		 * Loads the field settings template file, as well as all the resources that come with it.
+		 */
+		_load: function()
+		{
+			if(!this._loaded)
+			{
+				Craft.postActionRequest('quick-field/actions/load', {}, $.proxy(function(response, textStatus)
+				{
+					if(textStatus === 'success' && response.success)
+					{
+						this.modal.$loadSpinner.addClass('hidden');
+						this.modal.initTemplate(response.template);
+						this._initGroups(response.groups);
+						this._loaded = true;
+
+						if(!this._fieldButtonAttached)
+						{
+							this.$fieldButton.appendTo(this.$container);
+							this._fieldButtonAttached = true;
+						}
+
+						this.trigger('load');
+					}
+					else
+					{
+						this.modal.destroy();
+					}
+				}, this));
+			}
+		},
+
+		_initGroups: function(groups)
+		{
+			// Loop through the groups in reverse so we don't have to reset `fld.$fieldGroups` every
+			// time to get empty groups in the right place
+			for(var i = groups.length - 1; i >= 0; i--)
+			{
+				var group = groups[i];
+				var $group = this._getGroupByName(group.name);
+
+				if($group.length === 0)
+				{
+					$group = this.addGroup(group.name, false);
+				}
+
+				$group.data('id', group.id);
+			}
+
+			this._resetFldGroups()
+		},
+
+		/**
 		 * Adds edit buttons to existing fields.
 		 */
 		initButtons: function()
 		{
 			var that = this;
 
-			// var $tabs = this.fld.$unusedFieldContainer.find('.fld-tab .tab.sel');
+			var $groups = this.fld.$fieldGroups;
 			var $fields = this.fld.$fields.filter('.unused');
 
-			/*
-			$tabs.each(function()
+			$groups.each(function()
 			{
-				var $tab = $(this);
-				var $button = $('<a class="qf-settings icon" title="Edit"></a>');
+				var $group = $(this);
+				var $button = $('<a class="qf-settings icon" title="Rename"></a>');
 
-				// Add the extra space in there for consistent padding
-				$tab.append('&nbsp;').append($button);
+				that.addListener($button, 'activate', 'openRenameGroupDialog');
+
+				$group.prepend($button);
 			});
-			*/
 
 			$fields.each(function()
 			{
@@ -249,35 +298,83 @@
 		 * Adds a new unused group to the field layout designer sidebar.
 		 *
 		 * @param name
-		 * @param id
+		 * @param resetFldGroups
 		 */
-		addGroup: function(name)
+		addGroup: function(name, resetFldGroups)
 		{
-			var fld = this.fld
 			var lowerCaseName = name.toLowerCase();
-			var $prevGroup = fld.$fieldGroups.filter(function() {
-				return $(this).data('name') < lowerCaseName;
-			}).last();
 			var $newGroup = $([
 				'<div class="fld-field-group" data-name="', lowerCaseName, '">',
+					'<a class="qf-settings icon" title="Rename"></a>',
 					'<h6>', name, '</h6>',
 				'</div>'
-			].join(''))
+			].join(''));
+			var $button = $newGroup.children('.qf-settings');
+			this.addListener($button, 'activate', 'openRenameGroupDialog');
+			this._attachGroup($newGroup, resetFldGroups);
 
-			if($prevGroup.length > 0)
-			{
-				$newGroup.insertAfter($prevGroup);
-			}
-			else
-			{
-				$newGroup.appendTo(fld.$fieldLibrary);
-			}
+			return $newGroup;
+		},
 
-			fld.$fieldGroups = fld.$sidebar.find('.fld-field-group');
+		openRenameGroupDialog: function(e)
+		{
+			var $group = $(e.target).parent();
+			var id = $group.data('id');
+			var oldName = $group.children('h6').text();
+			this.dialog.renameGroup(id, oldName);
+		},
+
+		renameGroup: function(oldName, newName)
+		{
+			var $group = this._getGroupByName(oldName);
+
+			if($group.length > 0)
+			{
+				var lowerCaseName = newName.toLowerCase();
+				$group.detach()
+					.attr('data-name', lowerCaseName)
+					.data('name', lowerCaseName)
+					.children('h6').text(newName);
+				this._attachGroup($group, true);
+			}
 		},
 
 		/**
-		 * Finds the group tab element from it's name.
+		 * Attaches a group to the correct position in the sidebar.
+		 *
+		 * @param $group
+		 * @param resetFldGroups
+		 * @private
+		 */
+		_attachGroup: function($group, resetFldGroups)
+		{
+			var fld = this.fld;
+			var lowerCaseName = $group.attr('data-name');
+			var $prevElement = fld.$fieldGroups.filter(function() {
+				var $this = $(this);
+				return $this.hasClass('hidden') || $this.data('name') < lowerCaseName;
+			}).last();
+
+			if($prevElement.length === 0)
+			{
+				$prevElement = fld.$fieldSearch.parent();
+			}
+
+			$group.insertAfter($prevElement);
+
+			if(resetFldGroups)
+			{
+				this._resetFldGroups();
+			}
+		},
+
+		_resetFldGroups: function()
+		{
+			this.fld.$fieldGroups = this.fld.$sidebar.find('.fld-field-group');
+		},
+
+		/**
+		 * Finds the group element from its name.
 		 *
 		 * @param name
 		 * @returns {*}
@@ -285,24 +382,7 @@
 		 */
 		_getGroupByName: function(name)
 		{
-			var $container = this.fld.$unusedFieldContainer;
-			var $groups = $container.children('.fld-tab');
-			var $group = null;
-
-			$groups.each(function()
-			{
-				var $this = $(this);
-				var $tab = $this.children('.tabs').children('.tab.sel');
-				var $span = $tab.children('span');
-
-				if($span.text() === name)
-				{
-					$group = $this;
-					return false;
-				}
-			});
-
-			return $group;
+			return this.fld.$fieldGroups.filter('[data-name="' + name.toLowerCase() + '"]');
 		}
 	});
 

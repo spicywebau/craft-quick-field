@@ -78,7 +78,17 @@ body.rtl .fieldlayoutform.quick-field .newfieldbtn-container .btn.add {
 	margin: 0;
 }
 
-.fld-tab .qf-settings:before {
+.fld-field-group {
+	position: relative;
+}
+
+.fld-field-group .qf-settings {
+	position: absolute;
+	top: -6px;
+	right: 10px;
+}
+
+.fld-field-group .qf-settings:before {
 	content: 'settings';
 }
 
@@ -96,11 +106,6 @@ body.rtl .fieldlayoutform.quick-field .newfieldbtn-container .btn.add {
 	content: 'edit';
 }
 
-.fld-tab:not(.unused) .qf-settings,
 .fld-field:not(.unused) .qf-edit {
 	display: none;
-}
-
-.fieldlayoutform.quick-field .fld-tab.unused.last {
-	margin-bottom: 30px !important;
 }

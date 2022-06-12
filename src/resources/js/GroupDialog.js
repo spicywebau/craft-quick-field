@@ -23,12 +23,45 @@
 		 */
 		addNewGroup: function()
 		{
-			var name = this.promptForGroupName('');
+			this._saveGroup(
+				null,
+				'',
+				this._triggerGroupUpdateEvent('newGroup')
+			);
+		},
+
+		/**
+		 * Requests input for a new name for an existing group, then updates the group.
+		 *
+		 * @param id
+		 * @param name
+		 */
+		renameGroup: function(id, name)
+		{
+			this._saveGroup(
+				id,
+				name,
+				this._triggerGroupUpdateEvent('renameGroup')
+			);
+		},
+
+		/**
+		 * Internal function for saving new or updated groups.
+		 *
+		 * @param id
+		 * @param oldName
+		 * @param successCallback
+		 * @private
+		 */
+		_saveGroup: function(id, oldName, successCallback)
+		{
+			var name = this.promptForGroupName(oldName);
 
 			if(name)
 			{
 				var data = {
-					name: name
+					name: name,
+					id: id,
 				};
 
 				Craft.postActionRequest('fields/save-group', data, $.proxy(function(response, textStatus)
@@ -37,15 +70,12 @@
 
 					if(statusSuccess && response.success)
 					{
-						this.trigger('newGroup', {
-							target: this,
-							group: response.group
-						});
+						successCallback(this, response.group, oldName);
 					}
 					else if(statusSuccess && response.errors)
 					{
 						var errors = this._flattenErrors(response.errors);
-						alert(Craft.t('quick-field', 'Could not create the group:') + "\n\n" + errors.join("\n"));
+						alert(Craft.t('quick-field', 'Could not save the group:') + "\n\n" + errors.join("\n"));
 					}
 					else
 					{
@@ -53,6 +83,23 @@
 					}
 				}, this));
 			}
+		},
+
+		/**
+		 * Internal function for triggering a group update event with a given name.
+		 *
+		 * @param eventName
+		 * @private
+		 */
+		_triggerGroupUpdateEvent: function(eventName)
+		{
+			return function(target, group, oldName) {
+				target.trigger(eventName, {
+					target: target,
+					group: group,
+					oldName: oldName,
+				});
+			};
 		},
 
 		/**
