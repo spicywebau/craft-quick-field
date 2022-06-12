@@ -1,43 +1,90 @@
-## Changelog
+# Changelog
 
-#### v0.3.4
-- `Fixed` Fixed issue with Neo where editing fields of certain types wasn't working
+## Unreleased
 
-#### v0.3.3
-- `Improved` Added support for the Neo plugin/field type
+### Added
+- Added Craft 3 compatibility (requires Craft 3.7.0 or later)
 
-#### v0.3.2
-- `Improved` Updated the plugin icon
-- `Fixed` Fixed bug where changing a field's group to a hidden one wouldn't show the group
-- `Fixed` Fixed bug where newly created fields couldn't be edited
-- `Fixed` Edit icon on fields now stays visible when dragging
+### Changed
+- Moved the new field and new group buttons to the sidebar of the new field layout designer
 
-#### v0.3.1
-- `Added` Added compatibility with the PimpMyMatrix plugin
-- `Improved` Improved layout of buttons on the field layout designer
-- `Improved` Changed vertical alignment of the edit button to the top for long named fields
+### Removed
+- Removed Craft 2 compatibility
+- Removed `Craft\QuickFieldVariable`
 
-#### v0.3.0
-- `Added` Added ability to edit and delete current fields ([\#3](https://github.com/benjamminf/craft-quick-field/issues/3))
-- `Added` Added plugin icon
-- `Fixed` Now prevents modal from closing when saving (and deleting)
+### Fixed
+- Fixed a bug where the new field button would still appear if the Craft install had no field groups
 
-#### v0.2.2
-- `Fixed` Fixed issues with certain third-party field types where their Javascript wasn't executing correctly
-- `Added` Added release feed for convenient updating
-- `Added` Added plugin description
+## 0.3.4 - 2016-09-10
 
-#### v0.2.1
-- `Fixed` Plugin's resources no longer load in the frontend ([\#5](https://github.com/benjamminf/craft-quick-field/pull/5) - thanks @mmikkel)
-- `Fixed` Fixed bug where external CSS files for field types weren't getting loaded
-- `Improved` Added a modal window shake if there are errors when creating a field
+### Fixed
+- Fixed issue with Neo where editing fields of certain types wasn't working
 
-#### v0.2.0
-- `Improved` Implemented much better error reporting when saving fields ([\#1](https://github.com/benjamminf/craft-quick-field/issues/1))
-- `Fixed` Fixed issue with duplicate HTML id's ([\#2](https://github.com/benjamminf/craft-quick-field/issues/2))
+## 0.3.3 - 2016-04-24
 
-#### v0.1.1
-- `Added` Added documentation links
+### Added
+- Added support for the Neo plugin/field type
 
-#### v0.1.0
+## 0.3.2 - 2016-03-04
+
+### Changed
+- Updated the plugin icon
+
+### Fixed
+- Fixed bug where changing a field's group to a hidden one wouldn't show the group
+- Fixed bug where newly created fields couldn't be edited
+- Edit icon on fields now stays visible when dragging
+
+## 0.3.1 - 2016-01-12
+
+### Added
+- Added compatibility with the PimpMyMatrix plugin
+
+### Changed
+- Improved layout of buttons on the field layout designer
+- Changed vertical alignment of the edit button to the top for long named fields
+
+## 0.3.0 - 2015-12-22
+
+### Added
+- Added ability to edit and delete current fields ([\#3](https://github.com/benjamminf/craft-quick-field/issues/3))
+- Added plugin icon
+
+### Fixed
+- Now prevents modal from closing when saving (and deleting)
+
+## 0.2.2 - 2015-12-16
+
+### Added
+- Added release feed for convenient updating
+- Added plugin description
+
+### Fixed
+- Fixed issues with certain third-party field types where their Javascript wasn't executing correctly
+
+## 0.2.1 - 2015-12-16
+
+### Changed
+- Added a modal window shake if there are errors when creating a field
+
+### Fixed
+- Plugin's resources no longer load in the frontend ([\#5](https://github.com/benjamminf/craft-quick-field/pull/5) - thanks @mmikkel)
+- Fixed bug where external CSS files for field types weren't getting loaded
+
+## 0.2.0 - 2015-12-07
+
+### Changed
+- Implemented much better error reporting when saving fields ([\#1](https://github.com/benjamminf/craft-quick-field/issues/1))
+
+### Fixed
+- Fixed issue with duplicate HTML id's ([\#2](https://github.com/benjamminf/craft-quick-field/issues/2))
+
+## 0.1.1 - 2015-12-06
+
+### Added
+- Added documentation links
+
+## 0.1.0 - 2015-12-06
+
+### Added
 - Initial release
