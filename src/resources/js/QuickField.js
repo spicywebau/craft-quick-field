@@ -50,7 +50,7 @@
 			this.dialog.on('newGroup', $.proxy(function(e)
 			{
 				var group = e.group;
-				this.addGroup(group.name, true).data('id', e.group.id);
+				this.addGroup(group, true).data('id', e.group.id);
 
 				if(!this._fieldButtonAttached)
 				{
@@ -133,7 +133,7 @@
 
 				if($group.length === 0)
 				{
-					$group = this.addGroup(group.name, false);
+					$group = this.addGroup(group, false);
 				}
 
 				$group.data('id', group.id);
@@ -303,11 +303,12 @@
 		/**
 		 * Adds a new unused group to the field layout designer sidebar.
 		 *
-		 * @param name
+		 * @param group
 		 * @param resetFldGroups
 		 */
-		addGroup: function(name, resetFldGroups)
+		addGroup: function(group, resetFldGroups)
 		{
+			var name = group.name;
 			var lowerCaseName = name.toLowerCase();
 			var $newGroup = $([
 				'<div class="fld-field-group" data-name="', lowerCaseName, '">',
@@ -316,6 +317,16 @@
 			].join(''));
 			this._addGroupMenu($newGroup);
 			this._attachGroup($newGroup, resetFldGroups);
+
+			// Add this group to the 'new field' group options if the modal's already been loaded
+			if(this.modal.$html)
+			{
+				this._addOptionToGroupSelect(
+					$('<option value="' + group.id + '">' + name + '</option>'),
+					this.modal.$html.find('#qf-group'),
+					name
+				);
+			}
 
 			return $newGroup;
 		},
@@ -339,6 +350,30 @@
 					.data('name', lowerCaseName)
 					.children('h6').text(newName);
 				this._attachGroup($group, true);
+			}
+
+			// Update this group in the 'new field' group options
+			var $select = this.modal.$html.find('#qf-group');
+			var $options = $select.children();
+			var $option = $options.filter(function() {
+					return $(this).text() === oldName;
+				}).detach().text(newName);
+			this._addOptionToGroupSelect($option, $select, newName);
+		},
+
+		_addOptionToGroupSelect: function($option, $select, optionText)
+		{
+			var $prevOption = $select.children().filter(function() {
+				return $(this).text().toLowerCase() < optionText.toLowerCase();
+			}).last();
+
+			if($prevOption.length > 0)
+			{
+				$option.insertAfter($prevOption);
+			}
+			else
+			{
+				$option.prependTo($select);
 			}
 		},
 
@@ -367,6 +402,9 @@
 				.remove();
 
 			$deletedGroup.remove();
+
+			// Remove this group from the 'new field' group options
+			this.modal.$html.find('#qf-group').children('[value="' + id + '"]').remove();
 		},
 
 		/**

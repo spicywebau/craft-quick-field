@@ -15,6 +15,7 @@
 
 ### Fixed
 - Fixed a bug where the new field button would still appear if the Craft install had no field groups
+- Fixed a bug where newly-created groups would not appear as options for new fields
 
 ## 0.3.4 - 2016-09-10
 
