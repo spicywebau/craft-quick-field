@@ -75,9 +75,7 @@
 
 			this.modal.on('saveField', $.proxy(function(e)
 			{
-				var field = e.field;
-				var group = field.group;
-				this.resetField(field.id, group.name, field.name);
+				this.resetField(e.field, e.elementSelector);
 			}, this));
 
 			this.modal.on('deleteField', $.proxy(function(e)
@@ -228,31 +226,35 @@
 		addField: function(field, elementSelector)
 		{
 			var fld = this.fld;
-			var drag = fld.elementDrag;
 			var $group = this._getGroupByName(field.group.name);
 
 			if($group)
 			{
-				var lowerCaseName = field.name.toLowerCase();
-				var $field = $(elementSelector);
-				var $prevElement = $group.children('.fld-element').filter(function() {
-					return $(this).find('h4').text().toLowerCase() < lowerCaseName;
-				}).last();
-
-				if($prevElement.length === 0)
-				{
-					$prevElement = $group.children('h6');
-				}
-
-				$field.insertAfter($prevElement);
-				drag.addItems($field);
-				this._addFieldButton($field);
-				fld.$fields = fld.$fieldGroups.children('.fld-element');
+				this._insertFieldElementIntoGroup(field, $(elementSelector), $group);
 			}
 			else
 			{
 				Craft.cp.displayError(Craft.t('quick-field', 'Invalid field group: {groupName}', {groupName: groupName}));
 			}
+		},
+
+		_insertFieldElementIntoGroup: function(field, $element, $group)
+		{
+			var fld = this.fld;
+			var lowerCaseName = field.name.toLowerCase();
+			var $prevElement = $group.children('.fld-element').filter(function() {
+				return $(this).find('h4').text().toLowerCase() < lowerCaseName;
+			}).last();
+
+			if($prevElement.length === 0)
+			{
+				$prevElement = $group.children('h6');
+			}
+
+			$element.insertAfter($prevElement);
+			fld.elementDrag.addItems($element);
+			this._addFieldButton($element);
+			fld.$fields = fld.$fieldGroups.children('.fld-element');
 		},
 
 		/**
@@ -274,30 +276,20 @@
 		/**
 		 * Renames and regroups an existing field on the field layout designer.
 		 *
-		 * @param id
-		 * @param groupName
-		 * @param name
+		 * @param field
+		 * @param elementSelector
 		 */
-		resetField: function(id, groupName, name)
+		resetField: function(field, elementSelector)
 		{
 			var fld = this.fld;
-			var grid = fld.unusedFieldGrid;
-			var $container = fld.$container;
-			var $group = this._getGroupByName(groupName);
-			var $content = $group.children('.fld-tabcontent');
-			var $field = $container.find('.fld-field[data-id="' + id + '"]');
-			var $unusedField = $field.filter('.unused');
-			var $currentGroup = $unusedField.closest('.fld-tab');
-			var $span = $field.children('span');
+			var $group = this._getGroupByName(field.group.name);
 
-			$span.text(name);
+			// Remove the old element from the sidebar
+			var $oldElement = fld.$fields.filter('[data-id="' + field.id + '"]');
+			fld.elementDrag.removeItems($oldElement);
+			$oldElement.remove();
 
-			if($currentGroup[0] !== $group[0])
-			{
-				$group.removeClass('hidden');
-				$content.append($unusedField);
-				grid.refreshCols(true);
-			}
+			this._insertFieldElementIntoGroup(field, $(elementSelector), $group);
 		},
 
 		/**

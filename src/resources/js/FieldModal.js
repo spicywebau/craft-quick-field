@@ -437,10 +437,11 @@
 					{
 						this.trigger('saveField', {
 							target: this,
-							field: response.field
+							field: response.field,
+							elementSelector: response.elementSelector
 						});
 
-						Craft.cp.displayNotice(Craft.t('\'{name}\' field saved.', {name: response.field.name}));
+						Craft.cp.displayNotice(Craft.t('quick-field', '\'{name}\' field saved.', {name: response.field.name}));
 					}
 
 					this.hide();
