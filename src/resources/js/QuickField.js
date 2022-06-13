@@ -82,8 +82,7 @@
 
 			this.modal.on('deleteField', $.proxy(function(e)
 			{
-				var field = e.field;
-				this.removeField(field.id);
+				this.removeField(e.field.id);
 			}, this));
 
 			this.modal.on('destroy', $.proxy(function()
@@ -264,16 +263,12 @@
 		removeField: function(id)
 		{
 			var fld = this.fld;
-			var grid = fld.unusedFieldGrid;
-			var drag = fld.fieldDrag;
-			var $container = fld.$container;
-			var $fields = fld.$allFields;
-			var $field = $container.find('.fld-field[data-id="' + id + '"]');
+			var $fields = fld.$fields;
+			var $field = $fields.filter('.fld-field[data-id="' + id + '"]');
 
 			$field.remove();
-			fld.$allFields = $fields.not($field);
-			drag.removeItems($field);
-			grid.refreshCols(true);
+			fld.$fields = $fields.not($field);
+			fld.elementDrag.removeItems($field);
 		},
 
 		/**

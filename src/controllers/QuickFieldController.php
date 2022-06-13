@@ -151,52 +151,49 @@ class QuickFieldController extends Controller
     {
         $this->requireAdmin();
         $this->requirePostRequest();
-        $this->requireAjaxRequest();
+        $this->requireAcceptsJson();
 
-        $id = craft()->request->getPost('fieldId');
+        $fieldsService = Craft::$app->getFields();
+        $id = Craft::$app->getRequest()->getRequiredBodyParam('fieldId');
+        $field = $fieldsService->getFieldById($id);
 
-        $field = craft()->fields->getFieldById($id);
-
-        if($field)
+        if(!$field)
         {
-            $group = craft()->fields->getGroupById($field->groupId);
-            $returnField = array(
+            return $this->asJson([
+                'success' => false,
+                'error'   => Craft::t('quick-field', 'The field requested to delete no longer exists.'),
+            ]);
+        }
+
+        $group = $fieldsService->getGroupById($field->groupId);
+        $data = [
+            'field' => [
                 'id'           => $field->id,
                 'name'         => $field->name,
                 'handle'       => $field->handle,
                 'instructions' => $field->instructions,
-                'translatable' => $field->translatable,
-                'group'        => !$group ? array() : array(
+                // 'translatable' => $field->translatable,
+                'group'        => !$group ? [] : [
                     'id'   => $group->id,
                     'name' => $group->name,
-                ),
-            );
+                ],
+            ],
+        ];
 
-            try
-            {
-                craft()->fields->deleteField($field);
-
-                $this->returnJson(array(
-                    'success' => true,
-                    'field'   => $returnField,
-                ));
-            }
-            catch(\Exception $e)
-            {
-                $this->returnJson(array(
-                    'success' => false,
-                    'field'   => $returnField,
-                    'error'   => $e->getMessage(),
-                ));
-            }
-        }
-        else
+        try
         {
-            $this->returnJson(array(
-                'success' => false,
-                'error'   => Craft::t('The field requested to delete no longer exists.'),
-            ));
+            $fieldsService->deleteField($field);
+            $data['success'] = true;
         }
+        catch(\Exception $e)
+        {
+            $data += [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+
+        return $this->asJson($data);
     }
 
     /**

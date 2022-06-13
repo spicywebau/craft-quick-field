@@ -509,7 +509,7 @@
 
 				var data = {fieldId: id};
 
-				Craft.postActionRequest('quickField/deleteField', data, $.proxy(function(response, textStatus)
+				Craft.postActionRequest('quick-field/actions/delete-field', data, $.proxy(function(response, textStatus)
 				{
 					this.$deleteSpinner.addClass('hidden');
 
@@ -524,7 +524,7 @@
 							field: response.field
 						});
 
-						Craft.cp.displayNotice(Craft.t('\'{name}\' field deleted.', {name: response.field.name}));
+						Craft.cp.displayNotice(Craft.t('quick-field', '\'{name}\' field deleted.', {name: response.field.name}));
 
 						this.hide();
 					}
@@ -538,7 +538,7 @@
 					{
 						this.initListeners();
 
-						Craft.cp.displayError(Craft.t('An unknown error occurred.'));
+						Craft.cp.displayError(Craft.t('quick-field', 'An unknown error occurred.'));
 					}
 				}, this));
 			}
@@ -549,7 +549,7 @@
 		 */
 		promptForDelete: function()
 		{
-			return confirm(Craft.t('Are you sure you want to delete this field?'));
+			return confirm(Craft.t('quick-field', 'Are you sure you want to delete this field?'));
 		},
 
 		/**
