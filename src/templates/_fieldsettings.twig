@@ -75,6 +75,7 @@
 {{ forms.selectField({
     label: 'Field Type'|t('app'),
     instructions: 'What type of field is this?'|t('app'),
+    warning: (fieldId is defined and not field.hasErrors('type') ? "Changing this may result in data loss."|t('app')),
     id: 'qf-type',
     name: 'qf[type]',
     options: fieldTypeOptions,

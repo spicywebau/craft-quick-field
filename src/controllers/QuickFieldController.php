@@ -217,13 +217,22 @@ class QuickFieldController extends Controller
             ];
         }
 
+        $fieldsService = Craft::$app->getFields();
         $fieldTypes = QuickField::$plugin->service->getFieldTypes();
         $fieldTypeOptions = [];
         $supportedTranslationMethods = [];
-        
+        $compatibleFieldTypes = [];
+
+        if ($field) {
+            foreach ($fieldsService->getCompatibleFieldTypes($field) as $compatibleFieldType) {
+                $compatibleFieldTypes[$compatibleFieldType] = true;
+            }
+        }
+
         foreach ($fieldTypes as $fieldType) {
+            $warning = $field && !isset($compatibleFieldTypes[$fieldType]) ? ' ⚠️' : '';
             $fieldTypeOptions[] = [
-                'label' => $fieldType::displayName(),
+                'label' => $fieldType::displayName() . $warning,
                 'value' => $fieldType,
             ];
             $supportedTranslationMethods[$fieldType] = $fieldType::supportedTranslationMethods();
@@ -232,7 +241,7 @@ class QuickFieldController extends Controller
         ArrayHelper::multisort($fieldTypeOptions, 'label');
 
         $data = [
-            'field' => $field ?? Craft::$app->getFields()->createField(PlainText::class),
+            'field' => $field ?? $fieldsService->createField(PlainText::class),
             'fieldTypes' => $fieldTypes,
             'fieldTypeOptions' => $fieldTypeOptions,
             'groups' => $groups,
