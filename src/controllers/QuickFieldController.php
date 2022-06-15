@@ -77,7 +77,8 @@ class QuickFieldController extends Controller
                 'name'         => $field->name,
                 'handle'       => $field->handle,
                 'instructions' => $field->instructions,
-                // 'translatable' => $field->translatable,
+                'translationMethod' => $field->translationMethod,
+                'translationKeyFormat' => $field->translationKeyFormat,
                 'group'        => !$group ? [] : [
                     'id'   => $group->id,
                     'name' => $group->name,
@@ -107,7 +108,8 @@ class QuickFieldController extends Controller
             'name' => $request->getBodyParam('qf.name'),
             'handle' => $request->getBodyParam('qf.handle'),
             'instructions' => $request->getBodyParam('qf.instructions'),
-            // 'translatable' => $request->getBodyParam('qf.translatable'),
+            'translationMethod' => $request->getBodyParam('qf.translationMethod'),
+            'translationKeyFormat' => $request->getBodyParam('qf.translationKeyFormat'),
             'type' => $request->getRequiredBodyParam('qf.type'),
         ];
         $typeSettings = $request->getBodyParam('qf.types');
@@ -129,7 +131,8 @@ class QuickFieldController extends Controller
                 'name'         => $field->name,
                 'handle'       => $field->handle,
                 'instructions' => $field->instructions,
-                // 'translatable' => $field->translatable,
+                'translationMethod' => $field->translationMethod,
+                'translationKeyFormat' => $field->translationKeyFormat,
                 'group'        => !$group ? [] : [
                     'id'   => $group->id,
                     'name' => $group->name,
@@ -172,7 +175,8 @@ class QuickFieldController extends Controller
                 'name'         => $field->name,
                 'handle'       => $field->handle,
                 'instructions' => $field->instructions,
-                // 'translatable' => $field->translatable,
+                'translationMethod' => $field->translationMethod,
+                'translationKeyFormat' => $field->translationKeyFormat,
                 'group'        => !$group ? [] : [
                     'id'   => $group->id,
                     'name' => $group->name,
@@ -215,12 +219,14 @@ class QuickFieldController extends Controller
 
         $fieldTypes = QuickField::$plugin->service->getFieldTypes();
         $fieldTypeOptions = [];
+        $supportedTranslationMethods = [];
         
         foreach ($fieldTypes as $fieldType) {
             $fieldTypeOptions[] = [
                 'label' => $fieldType::displayName(),
                 'value' => $fieldType,
             ];
+            $supportedTranslationMethods[$fieldType] = $fieldType::supportedTranslationMethods();
         };
 
         ArrayHelper::multisort($fieldTypeOptions, 'label');
@@ -230,6 +236,7 @@ class QuickFieldController extends Controller
             'fieldTypes' => $fieldTypes,
             'fieldTypeOptions' => $fieldTypeOptions,
             'groups' => $groups,
+            'supportedTranslationMethods' => $supportedTranslationMethods,
         ];
 
         if ($data['field']->id !== null) {
