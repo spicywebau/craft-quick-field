@@ -64,7 +64,7 @@
 
 			this.dialog.on('deleteGroup', $.proxy(function(e)
 			{
-				this.deleteGroup(e.id);
+				this.removeGroup(e.id);
 			}, this));
 
 			this.modal.on('newField', $.proxy(function(e)
@@ -383,7 +383,7 @@
 			this.dialog.deleteGroup(id);
 		},
 
-		deleteGroup: function(id)
+		removeGroup: function(id)
 		{
 			var fld = this.fld;
 			var $deletedGroup = fld.$fieldGroups
