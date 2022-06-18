@@ -46,6 +46,7 @@
 
 		executedJs:     null,
 		loadedCss:      null,
+		templateLoaded: false,
 
 		/**
 		 * The constructor.
@@ -64,7 +65,6 @@
 
 			this.executedJs   = {};
 			this.loadedCss    = {};
-			this.templateLoadStatus = this.TEMPLATE_UNLOADED;
 
 			// It's important to observe the DOM for new nodes when rendering the field settings template, as more
 			// complex fields may be adding elements to the body such as modal windows or helper elements. Since the
@@ -115,7 +115,7 @@
 				this.$js   = e.$js;
 				this.$css  = e.$css;
 
-				this.templateLoadStatus = this.TEMPLATE_LOADED;
+				this.templateLoaded = true;
 				this.initListeners();
 
 				if(this.visible)
@@ -286,7 +286,7 @@
 			var that = e && e.target ? e.target : this;
 
 			// If the template files are not loaded yet, just cancel initialisation of the settings.
-			if(that.templateLoadStatus !== that.TEMPLATE_LOADED) return;
+			if(!that.templateLoaded) return;
 
 			that.$currentHtml = e && e.$html ? e.$html : that.$html.clone();
 			that.$currentJs   = e && e.$js   ? e.$js   : that.$js.clone();

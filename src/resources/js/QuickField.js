@@ -41,7 +41,7 @@
 
 			this.dialog = QuickField.GroupDialog.getInstance();
 			this.modal  = QuickField.FieldModal.getInstance();
-			this._load();
+			this.loader = QuickField.Loader.getInstance();
 
 			this.addListener(this.$groupButton, 'activate', 'newGroup');
 			this.addListener(this.$fieldButton, 'activate', 'newField');
@@ -53,13 +53,13 @@
 
 				if(!this._fieldButtonAttached)
 				{
-					this._load();
+					this.loader.load();
 				}
 			}, this));
 
 			this.dialog.on('renameGroup', $.proxy(function(e)
 			{
-				this.renameGroup(e.oldName, e.group.name);
+				this.renameGroup(e.group, e.oldName);
 			}, this));
 
 			this.dialog.on('deleteGroup', $.proxy(function(e)
@@ -87,39 +87,24 @@
 				this.$fieldButton.detach();
 				this._fieldButtonAttached = false;
 			}, this));
-		},
 
-		/**
-		 * Loads the field settings template file, as well as all the resources that come with it.
-		 */
-		_load: function()
-		{
-			if(this.modal.templateLoadStatus === this.modal.TEMPLATE_UNLOADED)
+			this.loader.on('load', $.proxy(function(e)
 			{
-				this.modal.templateLoadStatus = this.modal.TEMPLATE_LOADING;
-				Craft.postActionRequest('quick-field/actions/load', {}, $.proxy(function(response, textStatus)
+				this.modal.$loadSpinner.addClass('hidden');
+				this.modal.initTemplate(e.template);
+				this._initGroups(e.groups);
+
+				if(!this._fieldButtonAttached)
 				{
-					if(textStatus === 'success' && response.success)
-					{
-						this.modal.$loadSpinner.addClass('hidden');
-						this.modal.initTemplate(response.template);
-						this._initGroups(response.groups);
+					this.$fieldButton.appendTo(this.$container);
+					this._fieldButtonAttached = true;
+				}
+			}, this));
 
-						if(!this._fieldButtonAttached)
-						{
-							this.$fieldButton.appendTo(this.$container);
-							this._fieldButtonAttached = true;
-						}
-
-						this.trigger('load');
-					}
-					else
-					{
-						this.modal.templateLoadStatus = this.modal.TEMPLATE_UNLOADED;
-						this.modal.destroy();
-					}
-				}, this));
-			}
+			this.loader.on('unload', $.proxy(function(e)
+			{
+				this.modal.destroy();
+			}, this));
 		},
 
 		_initGroups: function(groups)
@@ -338,9 +323,10 @@
 			this.dialog.renameGroup(id, oldName);
 		},
 
-		renameGroup: function(oldName, newName)
+		renameGroup: function(group, oldName)
 		{
 			var $group = this._getGroupByName(oldName);
+			var newName = group.name;
 
 			if($group.length > 0)
 			{
