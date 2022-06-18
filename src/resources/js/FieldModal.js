@@ -17,6 +17,10 @@
 	 */
 	var FieldModal = Garnish.Modal.extend({
 
+		TEMPLATE_UNLOADED: 'unloaded',
+		TEMPLATE_LOADING: 'loading',
+		TEMPLATE_LOADED: 'loaded',
+
 		$body:          null,
 		$content:       null,
 		$main:          null,
@@ -40,7 +44,6 @@
 		$observed:      null,
 		observer:       null,
 
-		templateLoaded: false,
 		executedJs:     null,
 		loadedCss:      null,
 
@@ -61,6 +64,7 @@
 
 			this.executedJs   = {};
 			this.loadedCss    = {};
+			this.templateLoadStatus = this.TEMPLATE_UNLOADED;
 
 			// It's important to observe the DOM for new nodes when rendering the field settings template, as more
 			// complex fields may be adding elements to the body such as modal windows or helper elements. Since the
@@ -111,7 +115,7 @@
 				this.$js   = e.$js;
 				this.$css  = e.$css;
 
-				this.templateLoaded = true;
+				this.templateLoadStatus = this.TEMPLATE_LOADED;
 				this.initListeners();
 
 				if(this.visible)
@@ -282,7 +286,7 @@
 			var that = e && e.target ? e.target : this;
 
 			// If the template files are not loaded yet, just cancel initialisation of the settings.
-			if(!that.templateLoaded) return;
+			if(that.templateLoadStatus !== that.TEMPLATE_LOADED) return;
 
 			that.$currentHtml = e && e.$html ? e.$html : that.$html.clone();
 			that.$currentJs   = e && e.$js   ? e.$js   : that.$js.clone();

@@ -36,7 +36,6 @@
 			this.$groupButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Group')).appendTo(this.$container);
 			this.$fieldButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Field')).appendTo(this.$container);
 			this._fieldButtonAttached = true;
-			this._loaded = false;
 
 			this.initButtons();
 
@@ -95,8 +94,9 @@
 		 */
 		_load: function()
 		{
-			if(!this._loaded)
+			if(this.modal.templateLoadStatus === this.modal.TEMPLATE_UNLOADED)
 			{
+				this.modal.templateLoadStatus = this.modal.TEMPLATE_LOADING;
 				Craft.postActionRequest('quick-field/actions/load', {}, $.proxy(function(response, textStatus)
 				{
 					if(textStatus === 'success' && response.success)
@@ -104,7 +104,6 @@
 						this.modal.$loadSpinner.addClass('hidden');
 						this.modal.initTemplate(response.template);
 						this._initGroups(response.groups);
-						this._loaded = true;
 
 						if(!this._fieldButtonAttached)
 						{
@@ -116,6 +115,7 @@
 					}
 					else
 					{
+						this.modal.templateLoadStatus = this.modal.TEMPLATE_UNLOADED;
 						this.modal.destroy();
 					}
 				}, this));
