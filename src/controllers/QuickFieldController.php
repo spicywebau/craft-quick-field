@@ -2,6 +2,7 @@
 
 namespace spicyweb\quickfield\controllers;
 
+use benf\neo\Field as NeoField;
 use Craft;
 use craft\base\Field;
 use craft\fieldlayoutelements\CustomField;
@@ -218,7 +219,7 @@ class QuickFieldController extends Controller
         }
 
         $fieldsService = Craft::$app->getFields();
-        $fieldTypes = QuickField::$plugin->service->getFieldTypes();
+        $fieldTypes = $this->_getFieldTypes();
         $fieldTypeOptions = [];
         $supportedTranslationMethods = [];
         $compatibleFieldTypes = [];
@@ -260,5 +261,23 @@ class QuickFieldController extends Controller
             'js' => $view->getBodyHtml(),
             'css' => $view->getHeadHtml(),
         ];
+    }
+
+    /**
+     * Returns the field types that Quick Field supports creating.
+     *
+     * @return string[]
+     */
+    private function _getFieldTypes(): array
+    {
+        $fieldTypes = Craft::$app->getFields()->getAllFieldTypes();
+
+        if (Craft::$app->getPlugins()->getPlugin('neo')) {
+            return array_filter($fieldTypes, function($fieldType) {
+                return !($fieldType === NeoField::class);
+            });
+        }
+
+        return $fieldTypes;
     }
 }

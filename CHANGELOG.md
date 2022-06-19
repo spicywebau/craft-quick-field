@@ -11,6 +11,7 @@
 
 ### Removed
 - Removed Craft 2 compatibility
+- Removed `Craft\QuickFieldService`
 - Removed `Craft\QuickFieldVariable`
 
 ### Fixed

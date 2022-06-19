@@ -37,11 +37,6 @@ class Plugin extends BasePlugin
     {
         parent::init();
         self::$plugin = $this;
-
-        $this->setComponents([
-            'service' => QuickFieldService::class,
-        ]);
-
         $this->_includeResources();
     }
 
