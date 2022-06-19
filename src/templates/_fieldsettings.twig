@@ -128,24 +128,23 @@
 
 <hr>
 
-{% for _fieldType in fieldTypes %}
-    {% set isCurrent = (_fieldType == fieldType) %}
-    <div id="qf-{{ _fieldType|namespaceInputId }}"{% if not isCurrent %} class="hidden"{% endif %}>
-        {% namespace 'qf[types][' ~ _fieldType ~ ']' %}
-            {% if isCurrent %}
-                {{ field.getSettingsHtml()|raw }}
-            {% else %}
-                {{ craft.app.fields.createField(_fieldType).getSettingsHtml()|raw }}
-            {% endif %}
-        {% endnamespace %}
+<div id="qf-settings">
+    <div id="qf-{{ fieldType|id }}">
+        {% include 'settings/fields/_type-settings' with {
+            namespace: 'qf[types][' ~ fieldType ~ ']'
+        } %}
     </div>
-{% endfor %}
+</div>
 
 {% if not field.handle %}
     {% js "new Craft.HandleGenerator('#qf-name', '#qf-handle');" %}
 {% endif %}
 
 {% js %}
+    new Craft.FieldSettingsToggle('#qf-type', '#qf-settings', 'qf[types][__TYPE__]', {
+        wrapWithTypeClassDiv: true
+    });
+
     Craft.supportedTranslationMethods = {{ supportedTranslationMethods|json_encode|raw }};
 
     Craft.updateTranslationMethodSettings = function(type, container) {

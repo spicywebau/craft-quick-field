@@ -4,6 +4,7 @@ namespace spicyweb\quickfield\assets;
 
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
+use craft\web\assets\fieldsettings\FieldSettingsAsset;
 
 /**
  * Class QuickFieldAsset
@@ -23,6 +24,7 @@ class QuickFieldAsset extends AssetBundle
 
         $this->depends = [
             CpAsset::class,
+            FieldSettingsAsset::class,
         ];
 
         $this->css = [
