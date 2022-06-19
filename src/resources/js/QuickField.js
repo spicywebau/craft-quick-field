@@ -105,6 +105,19 @@
 			{
 				this.modal.destroy();
 			}, this));
+
+			// Make sure the groups are never hidden, so they can always be renamed or deleted
+			this._groupObserver = new window.MutationObserver($.proxy(function()
+			{
+				this.fld.$fieldGroups
+					.filter(function()
+					{
+						// Don't unhide e.g. the 'standard fields' group
+						return !!($(this).data('id'));
+					})
+					.removeClass('hidden');
+			}, this));
+			this._groupObserver.observe(this.fld.$fieldLibrary[0], { attributes: true, childList: true, subtree: true });
 		},
 
 		_initGroups: function(groups)
