@@ -7,3 +7,7 @@ to the field layout that allow you to quickly create fields and field groups on 
 
 <img src="docs/assets/screenshot1.png" width="841">
 <img src="docs/assets/screenshot2.png" width="841">
+
+## Documentation
+
+- [Installation](docs/installation.md)
