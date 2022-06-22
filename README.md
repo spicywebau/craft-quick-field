@@ -1,7 +1,6 @@
-# Quick Fields for Craft ![Craft 2.5](https://img.shields.io/badge/craft-2.5-red.svg?style=flat-square)
+# Quick Field
 
-Ever been creating a field layout for an entry type and realise you forgot to create one field? This plugin adds buttons
-to the field layout that allow you to quickly create fields and field groups on the same page.
+Ever been creating a field layout for a Craft CMS entry type and realise you forgot to create one field? This plugin adds buttons to the field layout designer that allow you to quickly create fields and field groups on the same page.
 
 ## Screenshots
 
@@ -11,3 +10,9 @@ to the field layout that allow you to quickly create fields and field groups on 
 ## Documentation
 
 - [Installation](docs/installation.md)
+
+---
+
+*Created by [Benjamin Fleming](https://github.com/benjamminf)*
+<br>
+*Maintained by [Spicy Web](https://spicyweb.com.au)*
