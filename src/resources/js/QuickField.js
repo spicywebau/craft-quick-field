@@ -49,7 +49,8 @@
 			this.dialog.on('newGroup', $.proxy(function(e)
 			{
 				var group = e.group;
-				this.addGroup(group, true).data('id', e.group.id);
+				this.addGroup(group, true)
+				this._getGroupByName(group.name).data('id', e.group.id);
 
 				if(!this._fieldButtonAttached)
 				{
@@ -131,7 +132,8 @@
 
 				if($group.length === 0)
 				{
-					$group = this.addGroup(group, false);
+					this.addGroup(group, false);
+					$group = this._getGroupByName(group.name);
 				}
 
 				$group.data('id', group.id);
@@ -325,8 +327,6 @@
 					name
 				);
 			}
-
-			return $newGroup;
 		},
 
 		_openRenameGroupDialog: function($group)
@@ -449,7 +449,9 @@
 		 */
 		_getGroupByName: function(name)
 		{
-			return this.fld.$fieldGroups.filter('[data-name="' + name.toLowerCase() + '"]');
+			// Filtering `this.fld.$sidebar.find('.fld-field-group')` instead of `this.fld.$fieldGroups`, in case we're
+			// adding groups and we haven't reset `this.fld.$fieldGroups` yet
+			return this.fld.$sidebar.find('.fld-field-group').filter('[data-name="' + name.toLowerCase() + '"]');
 		}
 	});
 
