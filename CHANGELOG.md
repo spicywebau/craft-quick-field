@@ -8,11 +8,14 @@
 
 ### Changed
 - Moved the new field and new group buttons to the sidebar of the new field layout designer
+- Moved the `Craft\QuickFieldPlugin` class to `spicyweb\quickfield\Plugin`
+- Moved the `Craft\QuickFieldController` class to `spicyweb\quickfield\controllers\QuickFieldController`
+- Renamed `Craft\QuickFieldController::actionGetFieldSettings()` to `spicyweb\quickfield\controllers\QuickFieldController::actionLoad()`
 
 ### Removed
 - Removed Craft 2 compatibility
-- Removed `Craft\QuickFieldService`
-- Removed `Craft\QuickFieldVariable`
+- Removed the `Craft\QuickFieldService` class
+- Removed the `Craft\QuickFieldVariable` class
 
 ### Fixed
 - Fixed a bug where the new field button would still appear if the Craft install had no field groups
