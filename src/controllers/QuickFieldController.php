@@ -31,7 +31,7 @@ class QuickFieldController extends Controller
      * @throws BadRequestHttpException if the request doesn't accept JSON
      * @throws ForbiddenHttpException if the user isn't an admin
      */
-    public function actionLoad()
+    public function actionLoad(): Response
     {
         $this->requireAdmin();
         $this->requireAcceptsJson();
@@ -58,7 +58,7 @@ class QuickFieldController extends Controller
      * @throws BadRequestHttpException if the request doesn't accept JSON, or isn't a POST request
      * @throws ForbiddenHttpException if the user isn't an admin
      */
-    public function actionEditField()
+    public function actionEditField(): Response
     {
         $this->requireAdmin();
         $this->requirePostRequest();
@@ -103,7 +103,7 @@ class QuickFieldController extends Controller
      * @throws BadRequestHttpException if the request doesn't accept JSON, or isn't a POST request
      * @throws ForbiddenHttpException if the user isn't an admin
      */
-    public function actionSaveField()
+    public function actionSaveField(): Response
     {
         $this->requireAdmin();
         $this->requirePostRequest();
@@ -161,7 +161,7 @@ class QuickFieldController extends Controller
      * @throws BadRequestHttpException if the request doesn't accept JSON, or isn't a POST request
      * @throws ForbiddenHttpException if the user isn't an admin
      */
-    public function actionDeleteField()
+    public function actionDeleteField(): Response
     {
         $this->requireAdmin();
         $this->requirePostRequest();
@@ -217,7 +217,7 @@ class QuickFieldController extends Controller
      * @param Field|null $field
      * @return array
      */
-    private function _getTemplate(Field $field = null)
+    private function _getTemplate(Field $field = null): array
     {
         // Make sure a field group exists first
         $groups = ArrayHelper::index(Craft::$app->getFields()->getAllGroups(), 'id');
