@@ -40,6 +40,9 @@ class Plugin extends BasePlugin
         $this->_includeResources();
     }
 
+    /**
+     * Includes the style/script resources for Quick Field for admin users in the Craft control panel.
+     */
     private function _includeResources()
     {
         $request = Craft::$app->getRequest();

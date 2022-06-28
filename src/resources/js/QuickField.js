@@ -121,6 +121,12 @@
 			this._groupObserver.observe(this.fld.$fieldLibrary[0], { attributes: true, childList: true, subtree: true });
 		},
 
+		/**
+		 * Initialises groups with ID data.
+		 *
+		 * @param groups
+		 * @private
+		 */
 		_initGroups: function(groups)
 		{
 			// Loop through the groups in reverse so we don't have to reset `fld.$fieldGroups` every
@@ -163,6 +169,12 @@
 			});
 		},
 
+		/**
+		 * Creates field group rename/delete menus.
+		 *
+		 * @param $group
+		 * @private
+		 */
 		_addGroupMenu: function($group)
 		{
 			var $button = $('<button class="qf-settings icon menubtn" title="' + Craft.t('app', 'Settings') + '" role="button" type="button"></button>');
@@ -186,6 +198,12 @@
 			});
 		},
 
+		/**
+		 * Creates field edit buttons.
+		 *
+		 * @param $field
+		 * @private
+		 */
 		_addFieldButton: function($field)
 		{
 			var $button = $('<a class="qf-edit icon" title="Edit"></a>');
@@ -238,6 +256,14 @@
 			}
 		},
 
+		/**
+		 * Inserts a field element into the correct position in its group.
+		 *
+		 * @param field
+		 * @param $element
+		 * @param $group
+		 * @private
+		 */
 		_insertFieldElementIntoGroup: function(field, $element, $group)
 		{
 			var fld = this.fld;
@@ -329,6 +355,12 @@
 			}
 		},
 
+		/**
+		 * Opens the field group dialog for renaming a group.
+		 *
+		 * @param $group
+		 * @private
+		 */
 		_openRenameGroupDialog: function($group)
 		{
 			var id = $group.data('id');
@@ -336,6 +368,12 @@
 			this.dialog.renameGroup(id, oldName);
 		},
 
+		/**
+		 * Renames a field group.
+		 *
+		 * @param group
+		 * @param oldName
+		 */
 		renameGroup: function(group, oldName)
 		{
 			var $group = this._getGroupByName(oldName);
@@ -360,6 +398,14 @@
 			this._addOptionToGroupSelect($option, $select, newName);
 		},
 
+		/**
+		 * Adds a field group option to the new field template.
+		 *
+		 * @param $option
+		 * @param $select
+		 * @param optionText
+		 * @private
+		 */
 		_addOptionToGroupSelect: function($option, $select, optionText)
 		{
 			var $prevOption = $select.children().filter(function() {
@@ -376,12 +422,23 @@
 			}
 		},
 
+		/**
+		 * Opens the field group dialog for deleting a group.
+		 *
+		 * @param $group
+		 * @private
+		 */
 		_openDeleteGroupDialog: function($group)
 		{
 			var id = $group.data('id');
 			this.dialog.deleteGroup(id);
 		},
 
+		/**
+		 * Removes a deleted field group, and any fields belonging to it.
+		 *
+		 * @param id
+		 */
 		removeGroup: function(id)
 		{
 			var fld = this.fld;
@@ -435,6 +492,11 @@
 			}
 		},
 
+		/**
+		 * Resets Craft's record of the field groups in the field layout designer sidebar.
+		 *
+		 * @private
+		 */
 		_resetFldGroups: function()
 		{
 			this.fld.$fieldGroups = this.fld.$sidebar.find('.fld-field-group');

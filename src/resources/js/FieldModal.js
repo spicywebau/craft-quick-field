@@ -326,6 +326,8 @@
 		/**
 		 * Event handler for when the modal window finishes fading out after hiding.
 		 * Clears out all events and elements of the modal.
+		 *
+		 * @param e
 		 */
 		destroySettings: function(e)
 		{
@@ -349,6 +351,7 @@
 		},
 
 		/**
+		 * Loads a template for editing an existing field.
 		 *
 		 * @param id
 		 */

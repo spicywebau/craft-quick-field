@@ -102,6 +102,11 @@
 			};
 		},
 
+		/**
+		 * Prompts for confirmation of deleting a field group, then deletes the group.
+		 *
+		 * @param groupId
+		 */
 		deleteGroup: function(groupId)
 		{
 			if(confirm(Craft.t('app', 'Are you sure you want to delete this group and all its fields?')))

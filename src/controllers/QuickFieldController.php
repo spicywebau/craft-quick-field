@@ -10,6 +10,9 @@ use craft\fields\PlainText;
 use craft\helpers\ArrayHelper;
 use craft\web\Controller;
 use spicyweb\quickfield\Plugin as QuickField;
+use yii\web\BadRequestHttpException;
+use yii\web\ForbiddenHttpException;
+use yii\web\Response;
 
 /**
  * Class QuickFieldController
@@ -24,7 +27,9 @@ class QuickFieldController extends Controller
     /**
      * Loads a field settings page and field group data.
      *
-     * @throws HttpException
+     * @return Response
+     * @throws BadRequestHttpException if the request doesn't accept JSON
+     * @throws ForbiddenHttpException if the user isn't an admin
      */
     public function actionLoad()
     {
@@ -49,7 +54,9 @@ class QuickFieldController extends Controller
     /**
      * Edits an existing field.
      *
-     * @throws HttpException
+     * @return Response
+     * @throws BadRequestHttpException if the request doesn't accept JSON, or isn't a POST request
+     * @throws ForbiddenHttpException if the user isn't an admin
      */
     public function actionEditField()
     {
@@ -92,8 +99,9 @@ class QuickFieldController extends Controller
     /**
      * Saves a new field to the database.
      *
-     * @throws HttpException
-     * @throws \Exception
+     * @return Response
+     * @throws BadRequestHttpException if the request doesn't accept JSON, or isn't a POST request
+     * @throws ForbiddenHttpException if the user isn't an admin
      */
     public function actionSaveField()
     {
@@ -149,7 +157,9 @@ class QuickFieldController extends Controller
     /**
      * Deletes a field from the database.
      *
-     * @throws HttpException
+     * @return Response
+     * @throws BadRequestHttpException if the request doesn't accept JSON, or isn't a POST request
+     * @throws ForbiddenHttpException if the user isn't an admin
      */
     public function actionDeleteField()
     {
