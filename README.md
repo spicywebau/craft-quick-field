@@ -12,6 +12,7 @@ Ever been creating a field layout for a Craft CMS entry type and realise you for
 ## Documentation
 
 - [Installation](docs/installation.md)
+- [Features](docs/features.md)
 
 ---
 
