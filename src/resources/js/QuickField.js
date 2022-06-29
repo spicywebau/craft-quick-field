@@ -177,7 +177,7 @@
 		 */
 		_addGroupMenu: function($group)
 		{
-			var $button = $('<button class="qf-settings icon menubtn" title="' + Craft.t('app', 'Settings') + '" role="button" type="button"></button>');
+			var $button = $('<button class="qf-settings icon menubtn" title="' + Craft.t('quick-field', 'Settings') + '" role="button" type="button"></button>');
 			var $menu = $([
 				'<div class="menu">',
 					'<ul class="padded">',

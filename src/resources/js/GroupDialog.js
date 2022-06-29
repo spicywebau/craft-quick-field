@@ -109,7 +109,7 @@
 		 */
 		deleteGroup: function(groupId)
 		{
-			if(confirm(Craft.t('app', 'Are you sure you want to delete this group and all its fields?')))
+			if(confirm(Craft.t('quick-field', 'Are you sure you want to delete this group and all its fields?')))
 			{
 				Craft.postActionRequest('fields/delete-group', { id: groupId }, $.proxy(function(response, textStatus)
 				{

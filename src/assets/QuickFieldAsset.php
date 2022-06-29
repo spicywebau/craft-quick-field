@@ -40,4 +40,33 @@ class QuickFieldAsset extends AssetBundle
 
         parent::init();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function registerAssetFiles($view)
+    {
+        $view->registerTranslations('quick-field', [
+            '\'{name}\' field saved.',
+            '\'{name}\' field deleted.',
+            'An unknown error occurred.',
+            'Are you sure you want to delete this field?',
+            'Are you sure you want to delete this group and all its fields?',
+            'Cancel',
+            'Could not delete the group.',
+            'Could not load all resources.',
+            'Could not save the group:',
+            'Delete',
+            'Invalid field group: {groupName}',
+            'New Field',
+            'New field created.',
+            'New Group',
+            'Rename',
+            'Save',
+            'Settings',
+            'What do you want to name the group?',
+        ]);
+
+        parent::registerAssetFiles($view);
+    }
 }

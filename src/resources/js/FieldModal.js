@@ -92,11 +92,11 @@
 			this.$leftButtons   = $('<div class="buttons left">').appendTo(this.$footer);
 			this.$rightButtons  = $('<div class="buttons right">').appendTo(this.$footer);
 
-			this.$deleteBtn     = $('<a class="delete error hidden">').text(Craft.t('app', 'Delete')).appendTo(this.$leftButtons);
+			this.$deleteBtn     = $('<a class="delete error hidden">').text(Craft.t('quick-field', 'Delete')).appendTo(this.$leftButtons);
 			this.$deleteSpinner = $('<div class="spinner hidden">').appendTo(this.$leftButtons);
 
-			this.$cancelBtn     = $('<div class="btn disabled" role="button">').text(Craft.t('app', 'Cancel')).appendTo(this.$rightButtons);
-			this.$saveBtn       = $('<div class="btn submit disabled" role="button">').text(Craft.t('app', 'Save')).appendTo(this.$rightButtons);
+			this.$cancelBtn     = $('<div class="btn disabled" role="button">').text(Craft.t('quick-field', 'Cancel')).appendTo(this.$rightButtons);
+			this.$saveBtn       = $('<div class="btn submit disabled" role="button">').text(Craft.t('quick-field', 'Save')).appendTo(this.$rightButtons);
 			this.$saveSpinner   = $('<div class="spinner hidden">').appendTo(this.$rightButtons);
 
 			this.setContainer($container);
@@ -390,7 +390,7 @@
 				}
 				else
 				{
-					Craft.cp.displayError(Craft.t('An unknown error occurred.'));
+					Craft.cp.displayError(Craft.t('quick-field', 'An unknown error occurred.'));
 
 					this.hide();
 				}
@@ -510,7 +510,7 @@
 
 				if(id === false)
 				{
-					Craft.cp.displayError(Craft.t('An unknown error occurred.'));
+					Craft.cp.displayError(Craft.t('quick-field', 'An unknown error occurred.'));
 
 					return;
 				}
