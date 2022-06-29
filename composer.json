@@ -22,7 +22,8 @@
     "rss": "https://github.com/spicywebau/craft-quick-field/commits/master.atom"
   },
   "require": {
-    "craftcms/cms": "^3.7.0"
+    "craftcms/cms": "^4.1.0",
+    "php": "^8.0.2"
   },
   "autoload": {
     "psr-4": {
@@ -36,5 +37,16 @@
     "class": "spicyweb\\quickfield\\Plugin",
     "changelogUrl": "https://github.com/spicywebau/craft-quick-field/blob/master/CHANGELOG.md",
     "downloadUrl": "https://github.com/spicywebau/craft-quick-field/archive/master.zip"
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require-dev": {
+    "craftcms/rector": "dev-main"
   }
 }
