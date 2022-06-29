@@ -15,3 +15,7 @@ composer require spicyweb/craft-quick-field
 ```
 
 Then open your project's control panel, navigate to Settings &rarr; Plugins, find Quick Field and click Install.
+
+## Requirements
+
+Quick Field 1.x requires Craft CMS 3.7.0 or any later Craft CMS 3 release.
