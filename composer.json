@@ -47,6 +47,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require-dev": {
-    "craftcms/rector": "dev-main"
+    "craftcms/rector": "dev-main",
+    "craftcms/ecs": "dev-main"
   }
 }

@@ -9,7 +9,6 @@ use craft\fieldlayoutelements\CustomField;
 use craft\fields\PlainText;
 use craft\helpers\ArrayHelper;
 use craft\web\Controller;
-use spicyweb\quickfield\Plugin as QuickField;
 use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\web\Response;
@@ -68,11 +67,10 @@ class QuickFieldController extends Controller
         $id = Craft::$app->getRequest()->getRequiredBodyParam('fieldId');
         $field = $fieldsService->getFieldById($id);
 
-        if(!$field)
-        {
+        if (!$field) {
             return $this->asJson([
                 'success' => false,
-                'error'   => Craft::t('quick-field', 'The field requested to edit no longer exists.'),
+                'error' => Craft::t('quick-field', 'The field requested to edit no longer exists.'),
             ]);
         }
 
@@ -80,15 +78,15 @@ class QuickFieldController extends Controller
 
         return $this->asJson([
             'success' => true,
-            'field'   => [
-                'id'           => $field->id,
-                'name'         => $field->name,
-                'handle'       => $field->handle,
+            'field' => [
+                'id' => $field->id,
+                'name' => $field->name,
+                'handle' => $field->handle,
                 'instructions' => $field->instructions,
                 'translationMethod' => $field->translationMethod,
                 'translationKeyFormat' => $field->translationKeyFormat,
-                'group'        => !$group ? [] : [
-                    'id'   => $group->id,
+                'group' => !$group ? [] : [
+                    'id' => $group->id,
                     'name' => $group->name,
                 ],
             ],
@@ -123,8 +121,7 @@ class QuickFieldController extends Controller
         ];
         $typeSettings = $request->getBodyParam('qf.types');
 
-        if(isset($typeSettings[$config['type']]))
-        {
+        if (isset($typeSettings[$config['type']])) {
             $config['settings'] = $typeSettings[$config['type']];
         }
 
@@ -134,16 +131,16 @@ class QuickFieldController extends Controller
 
         return $this->asJson([
             'success' => $success,
-            'errors'  => $field->getErrors(),
-            'field'   => [
-                'id'           => $field->id,
-                'name'         => $field->name,
-                'handle'       => $field->handle,
+            'errors' => $field->getErrors(),
+            'field' => [
+                'id' => $field->id,
+                'name' => $field->name,
+                'handle' => $field->handle,
                 'instructions' => $field->instructions,
                 'translationMethod' => $field->translationMethod,
                 'translationKeyFormat' => $field->translationKeyFormat,
-                'group'        => !$group ? [] : [
-                    'id'   => $group->id,
+                'group' => !$group ? [] : [
+                    'id' => $group->id,
                     'name' => $group->name,
                 ],
             ],
@@ -171,37 +168,33 @@ class QuickFieldController extends Controller
         $id = Craft::$app->getRequest()->getRequiredBodyParam('fieldId');
         $field = $fieldsService->getFieldById($id);
 
-        if(!$field)
-        {
+        if (!$field) {
             return $this->asJson([
                 'success' => false,
-                'error'   => Craft::t('quick-field', 'The field requested to delete no longer exists.'),
+                'error' => Craft::t('quick-field', 'The field requested to delete no longer exists.'),
             ]);
         }
 
         $group = $fieldsService->getGroupById($field->groupId);
         $data = [
             'field' => [
-                'id'           => $field->id,
-                'name'         => $field->name,
-                'handle'       => $field->handle,
+                'id' => $field->id,
+                'name' => $field->name,
+                'handle' => $field->handle,
                 'instructions' => $field->instructions,
                 'translationMethod' => $field->translationMethod,
                 'translationKeyFormat' => $field->translationKeyFormat,
-                'group'        => !$group ? [] : [
-                    'id'   => $group->id,
+                'group' => !$group ? [] : [
+                    'id' => $group->id,
                     'name' => $group->name,
                 ],
             ],
         ];
 
-        try
-        {
+        try {
             $fieldsService->deleteField($field);
             $data['success'] = true;
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             $data += [
                 'success' => false,
                 'error' => $e->getMessage(),

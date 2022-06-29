@@ -6,7 +6,6 @@ use Craft;
 use craft\base\Plugin as BasePlugin;
 use spicyweb\quickfield\assets\QuickFieldAsset;
 use spicyweb\quickfield\controllers\QuickFieldController;
-use spicyweb\quickfield\services\QuickFieldService;
 
 /**
  * Class Plugin
