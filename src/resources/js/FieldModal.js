@@ -17,10 +17,6 @@
 	 */
 	var FieldModal = Garnish.Modal.extend({
 
-		TEMPLATE_UNLOADED: 'unloaded',
-		TEMPLATE_LOADING: 'loading',
-		TEMPLATE_LOADED: 'loaded',
-
 		$body:          null,
 		$content:       null,
 		$main:          null,
@@ -109,6 +105,8 @@
 		 */
 		initTemplate: function(template)
 		{
+			if (this.templateLoaded) return;
+
 			var callback = $.proxy(function(e)
 			{
 				this.$html = e.$html;
