@@ -52,9 +52,14 @@
 				this.addGroup(group, true)
 				this._getGroupByName(group.name).data('id', e.group.id);
 
-				if(!this._fieldButtonAttached)
+				if(this.loader.loadStatus === this.loader.UNLOADED)
 				{
 					this.loader.load();
+				}
+				else if(!this._fieldButtonAttached)
+				{
+					this.$fieldButton.appendTo(this.$container);
+					this._fieldButtonAttached = true;
 				}
 			}, this));
 
@@ -458,6 +463,13 @@
 				.remove();
 
 			$deletedGroup.remove();
+			this._resetFldGroups();
+
+			if(!fld.$fieldGroups.not('.hidden').length)
+			{
+				this.$fieldButton.detach();
+				this._fieldButtonAttached = false;
+			}
 
 			// Remove this group from the 'new field' group options
 			this.modal.$html.find('#qf-group').children('[value="' + id + '"]').remove();

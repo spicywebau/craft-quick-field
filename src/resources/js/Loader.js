@@ -32,6 +32,7 @@
 				{
 					if(textStatus === 'success' && response.success)
 					{
+						this.loadStatus = this.LOADED;
 						this.trigger('load', {
 							template: response.template,
 							groups: response.groups,
