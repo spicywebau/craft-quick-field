@@ -32,10 +32,6 @@ class QuickFieldAsset extends AssetBundle
         ];
         $this->js = [
             'js/main.js',
-            'js/QuickField.js',
-            'js/FieldModal.js',
-            'js/GroupDialog.js',
-            'js/Loader.js',
         ];
 
         parent::init();

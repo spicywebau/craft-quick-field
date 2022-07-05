@@ -1,0 +1,483 @@
+import * as $ from 'jquery'
+import FieldModal from './FieldModal'
+import GroupDialog from './GroupDialog'
+import Loader from './Loader'
+
+type Field = Readonly<{
+  group: Group
+  id: number
+  name: string
+  handle: string
+  instructions: string
+  translationMethod: string
+  translationKeyFormat: string
+}>
+
+type Group = Readonly<{
+  id: number
+  name: string
+}>
+
+/**
+ * QuickField class
+ * Handles the buttons for creating new groups and fields inside a FieldLayoutDesigner
+ */
+const QuickField = Garnish.Base.extend({
+
+  $container: null,
+  $groupButton: null,
+  $fieldButton: null,
+  $settings: null,
+
+  fld: null,
+  dialog: null,
+  modal: null,
+
+  /**
+     * The constructor.
+     *
+     * @param fld - An instance of Craft.FieldLayoutDesigner
+     */
+  init: function (fld) {
+    this.fld = fld
+    this.fld.$container.addClass('quick-field')
+
+    this.$container = $('<div class="newfieldbtn-container btngroup small fullwidth">').prependTo(fld.$fieldLibrary)
+    this.$groupButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Group')).appendTo(this.$container)
+    this.$fieldButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Field')).appendTo(this.$container)
+    let fieldButtonAttached = true
+
+    this.initButtons()
+
+    this.dialog = new GroupDialog()
+    this.modal = new FieldModal()
+    this.loader = new Loader()
+
+    this.addListener(this.$groupButton, 'activate', 'newGroup')
+    this.addListener(this.$fieldButton, 'activate', 'newField')
+
+    this.dialog.on('newGroup', $.proxy(function (e) {
+      const group = e.group
+      this.addGroup(group, true)
+      this._getGroupByName(group.name).data('id', e.group.id)
+
+      if (this.loader.loadStatus === this.loader.UNLOADED) {
+        this.loader.load()
+      } else if (!fieldButtonAttached) {
+        this.$fieldButton.appendTo(this.$container)
+        fieldButtonAttached = true
+      }
+    }, this))
+
+    this.dialog.on('renameGroup', $.proxy(function (e) {
+      this.renameGroup(e.group, e.oldName)
+    }, this))
+
+    this.dialog.on('deleteGroup', $.proxy(function (e) {
+      this.removeGroup(e.id)
+
+      if (this.fld.$fieldGroups.not('.hidden').length === 0) {
+        this.$fieldButton.detach()
+        fieldButtonAttached = false
+      }
+    }, this))
+
+    this.modal.on('newField', $.proxy(function (e) {
+      this.addField(e.field, e.elementSelector)
+    }, this))
+
+    this.modal.on('saveField', $.proxy(function (e) {
+      this.resetField(e.field, e.elementSelector)
+    }, this))
+
+    this.modal.on('deleteField', $.proxy(function (e) {
+      this.removeField(e.field.id)
+    }, this))
+
+    this.modal.on('destroy', $.proxy(function () {
+      this.$fieldButton.detach()
+      fieldButtonAttached = false
+    }, this))
+
+    this.loader.on('load', $.proxy(function (e) {
+      this.modal.$loadSpinner.addClass('hidden')
+      this.modal.initTemplate(e.template)
+      this._initGroups(e.groups)
+
+      if (!fieldButtonAttached) {
+        this.$fieldButton.appendTo(this.$container)
+        fieldButtonAttached = true
+      }
+    }, this))
+
+    this.loader.on('unload', $.proxy(function (e) {
+      this.modal.destroy()
+    }, this))
+
+    // Make sure the groups are never hidden, so they can always be renamed or deleted
+    this._groupObserver = new window.MutationObserver($.proxy(function () {
+      this.fld.$fieldGroups
+        .filter(function () {
+          // Don't unhide e.g. the 'standard fields' group
+          return ($(this).data('id')) ?? false
+        })
+        .removeClass('hidden')
+    }, this))
+    this._groupObserver.observe(this.fld.$fieldLibrary[0], { attributes: true, childList: true, subtree: true })
+  },
+
+  /**
+     * Initialises groups with ID data.
+     *
+     * @param groups
+     * @private
+     */
+  _initGroups: function (groups) {
+    // Loop through the groups in reverse so we don't have to reset `fld.$fieldGroups` every
+    // time to get empty groups in the right place
+    for (let i = groups.length - 1; i >= 0; i--) {
+      const group = groups[i]
+      let $group = this._getGroupByName(group.name)
+
+      if ($group.length === 0) {
+        this.addGroup(group, false)
+        $group = this._getGroupByName(group.name)
+      }
+
+      $group.data('id', group.id)
+    }
+
+    this._resetFldGroups()
+  },
+
+  /**
+     * Adds edit buttons to existing fields.
+     */
+  initButtons: function () {
+    const $groups = this.fld.$fieldGroups
+    const $fields = this.fld.$fields.filter('.unused')
+
+    $groups.each((_, group) => this._addGroupMenu($(group)))
+    $fields.each((_, field) => this._addFieldButton($(field)))
+  },
+
+  /**
+     * Creates field group rename/delete menus.
+     *
+     * @param $group
+     * @private
+     */
+  _addGroupMenu: function ($group) {
+    const $button = $('<button class="qf-settings icon menubtn" title="' + Craft.t('quick-field', 'Settings') + '" role="button" type="button"></button>')
+    const $menu = $([
+      '<div class="menu">',
+      '<ul class="padded">',
+      '<li><a data-icon="edit" data-action="rename">', Craft.t('quick-field', 'Rename'), '</a></li>',
+      '<li><a class="error" data-icon="remove" data-action="delete">', Craft.t('quick-field', 'Delete'), '</a></li>',
+      '</ul>',
+      '</div>'
+    ].join(''))
+    $group.prepend($menu).prepend($button)
+
+    const settingsMenu = new Garnish.MenuBtn($button)
+    settingsMenu.on('optionSelect', e => {
+      switch ($(e.option).attr('data-action')) {
+        case 'rename': this._openRenameGroupDialog($group); break
+        case 'delete': this._openDeleteGroupDialog($group)
+      }
+    })
+  },
+
+  /**
+     * Creates field edit buttons.
+     *
+     * @param $field
+     * @private
+     */
+  _addFieldButton: function ($field) {
+    const $button = $('<a class="qf-edit icon" title="Edit"></a>')
+    this.addListener($button, 'activate', 'editField')
+    $field.prepend($button)
+  },
+
+  /**
+     * Event handler for the New Field button.
+     * Creates a modal window that contains new field settings.
+     */
+  newField: function () {
+    this.modal.show()
+  },
+
+  /**
+     * Event handler for the edit buttons on fields.
+     * Opens a modal window that contains the field settings.
+     *
+     * @param e
+     */
+  editField: function (e) {
+    const $button = $(e.target)
+    const $field = $button.parent()
+    const id = $field.data('id')
+
+    this.modal.editField(id)
+  },
+
+  /**
+     * Adds a new unused (dashed border) field to the field layout designer.
+     *
+     * @param field
+     * @param elementSelector
+     */
+  addField: function (field, elementSelector) {
+    const $group = this._getGroupByName(field.group.name)
+
+    if ($group !== null) {
+      this._insertFieldElementIntoGroup(field, $(elementSelector), $group)
+    } else {
+      Craft.cp.displayError(Craft.t('quick-field', 'Invalid field group: {groupName}', { groupName: field.group.name }))
+    }
+  },
+
+  /**
+     * Inserts a field element into the correct position in its group.
+     *
+     * @param field
+     * @param $element
+     * @param $group
+     * @private
+     */
+  _insertFieldElementIntoGroup: function (field, $element, $group) {
+    const fld = this.fld
+    const lowerCaseName = field.name.toLowerCase()
+    let $prevElement = $group.children('.fld-element').filter(function () {
+      return $(this).find('h4').text().toLowerCase() < lowerCaseName
+    }).last()
+
+    if ($prevElement.length === 0) {
+      $prevElement = $group.children('h6')
+    }
+
+    $element.insertAfter($prevElement)
+    fld.elementDrag.addItems($element)
+    this._addFieldButton($element)
+    fld.$fields = fld.$fieldGroups.children('.fld-element')
+  },
+
+  /**
+     * Removes a field from the field layout designer.
+     *
+     * @param id
+     */
+  removeField: function (id: number) {
+    const fld = this.fld
+    const $fields = fld.$fields
+    const $field = $fields.filter(`.fld-field[data-id="${id}"]`)
+
+    $field.remove()
+    fld.$fields = $fields.not($field)
+    fld.elementDrag.removeItems($field)
+  },
+
+  /**
+     * Renames and regroups an existing field on the field layout designer.
+     *
+     * @param field
+     * @param elementSelector
+     */
+  resetField: function (field: Field, elementSelector) {
+    const fld = this.fld
+    const $group = this._getGroupByName(field.group.name)
+
+    // Remove the old element from the sidebar
+    const $oldElement = fld.$fields.filter(`[data-id="${field.id}"]`)
+    fld.elementDrag.removeItems($oldElement)
+    $oldElement.remove()
+
+    this._insertFieldElementIntoGroup(field, $(elementSelector), $group)
+  },
+
+  /**
+     * Event listener for the new group button
+     */
+  newGroup: function () {
+    this.dialog.addNewGroup()
+  },
+
+  /**
+     * Adds a new unused group to the field layout designer sidebar.
+     *
+     * @param group
+     * @param resetFldGroups
+     */
+  addGroup: function (group: Group, resetFldGroups) {
+    const name = group.name
+    const lowerCaseName = name.toLowerCase()
+    const $newGroup = $([
+      '<div class="fld-field-group" data-name="', lowerCaseName, '">',
+      '<h6>', name, '</h6>',
+      '</div>'
+    ].join(''))
+    this._addGroupMenu($newGroup)
+    this._attachGroup($newGroup, resetFldGroups)
+
+    // Add this group to the 'new field' group options if the modal's already been loaded
+    if (this.modal.$html !== null) {
+      this._addOptionToGroupSelect(
+        $(`<option value="${group.id}">${name}</option>`),
+        this.modal.$html.find('#qf-group'),
+        name
+      )
+    }
+  },
+
+  /**
+     * Opens the field group dialog for renaming a group.
+     *
+     * @param $group
+     * @private
+     */
+  _openRenameGroupDialog: function ($group) {
+    const id = $group.data('id')
+    const oldName = $group.children('h6').text()
+    this.dialog.renameGroup(id, oldName)
+  },
+
+  /**
+     * Renames a field group.
+     *
+     * @param group
+     * @param oldName
+     */
+  renameGroup: function (group, oldName) {
+    const $group = this._getGroupByName(oldName)
+    const newName = group.name
+
+    if ($group.length > 0) {
+      const lowerCaseName = newName.toLowerCase()
+      $group.detach()
+        .attr('data-name', lowerCaseName)
+        .data('name', lowerCaseName)
+        .children('h6').text(newName)
+      this._attachGroup($group, true)
+    }
+
+    // Update this group in the 'new field' group options
+    const $select = this.modal.$html.find('#qf-group')
+    const $options = $select.children()
+    const $option = $options.filter(function () {
+      return $(this).text() === oldName
+    }).detach().text(newName)
+    this._addOptionToGroupSelect($option, $select, newName)
+  },
+
+  /**
+     * Adds a field group option to the new field template.
+     *
+     * @param $option
+     * @param $select
+     * @param optionText
+     * @private
+     */
+  _addOptionToGroupSelect: function ($option, $select, optionText) {
+    const $prevOption = $select.children().filter(function () {
+      return $(this).text().toLowerCase() < optionText.toLowerCase()
+    }).last()
+
+    if ($prevOption.length > 0) {
+      $option.insertAfter($prevOption)
+    } else {
+      $option.prependTo($select)
+    }
+  },
+
+  /**
+     * Opens the field group dialog for deleting a group.
+     *
+     * @param $group
+     * @private
+     */
+  _openDeleteGroupDialog: function ($group) {
+    const id = $group.data('id')
+    this.dialog.deleteGroup(id)
+  },
+
+  /**
+     * Removes a deleted field group, and any fields belonging to it.
+     *
+     * @param id
+     */
+  removeGroup: function (id: number) {
+    const fld = this.fld
+    const $deletedGroup = fld.$fieldGroups
+      .filter(function () {
+        return $(this).data('id') === id
+      })
+
+    // Remove any fields from this group from the tabs
+    const $usedFields = $deletedGroup.find('.fld-field.hidden')
+    const filterSelector = $usedFields.map((_, $field: JQuery) => {
+      const fieldId: string = $field.data('id')
+      return `[data-id="${fieldId}"]`
+    }).get().join(',')
+    fld.$tabContainer
+      .find('.fld-field')
+      .filter(filterSelector)
+      .remove()
+
+    $deletedGroup.remove()
+    this._resetFldGroups()
+
+    // Remove this group from the 'new field' group options
+    this.modal.$html.find('#qf-group').children(`[value="${id}"]`).remove()
+  },
+
+  /**
+     * Attaches a group to the correct position in the sidebar.
+     *
+     * @param $group
+     * @param resetFldGroups
+     * @private
+     */
+  _attachGroup: function ($group, resetFldGroups: boolean) {
+    const fld = this.fld
+    const lowerCaseName = $group.attr('data-name')
+    let $prevElement = fld.$fieldGroups.filter(function () {
+      const $this = $(this)
+      return $this.hasClass('hidden') || $this.data('name') < lowerCaseName
+    }).last()
+
+    if ($prevElement.length === 0) {
+      $prevElement = fld.$fieldSearch.parent()
+    }
+
+    $group.insertAfter($prevElement)
+
+    if (resetFldGroups) {
+      this._resetFldGroups()
+    }
+  },
+
+  /**
+     * Resets Craft's record of the field groups in the field layout designer sidebar.
+     *
+     * @private
+     */
+  _resetFldGroups: function () {
+    this.fld.$fieldGroups = this.fld.$sidebar.find('.fld-field-group')
+  },
+
+  /**
+     * Finds the group element from its name.
+     *
+     * @param name
+     * @returns {*}
+     * @private
+     */
+  _getGroupByName: function (name: string): any {
+    // Filtering `this.fld.$sidebar.find('.fld-field-group')` instead of `this.fld.$fieldGroups`, in case we're
+    // adding groups and we haven't reset `this.fld.$fieldGroups` yet
+    return this.fld.$sidebar.find('.fld-field-group').filter(`[data-name="${name.toLowerCase()}"]`)
+  }
+})
+
+export default QuickField

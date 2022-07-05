@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "strictNullChecks": true
+  },
+  "files": [
+    "FieldModal.ts",
+    "GroupDialog.ts",
+    "Loader.ts",
+    "QuickField.ts",
+    "main.ts",
+    "types/Craft.d.ts",
+    "types/Garnish.d.ts"
+  ]
+}
