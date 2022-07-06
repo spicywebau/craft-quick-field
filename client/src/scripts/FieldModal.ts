@@ -85,11 +85,11 @@ export default Garnish.Modal.extend({
     // potentially affect performance.
     // This feels like a hack, but unfortunately since field type behaviour cannot be predicted (for example,
     // third-party field type plugins) this is the cleanest possible solution.
-    this.observer = new window.MutationObserver($.proxy(function (mutations) {
+    this.observer = new window.MutationObserver((mutations) => {
       for (let i = 0; i < mutations.length; i++) {
         this.$observed = this.$observed.add(mutations[i].addedNodes)
       }
-    }, this))
+    })
 
     const $container = $('<form class="modal quick-field-modal" style="display: none; opacity: 0;">').appendTo(Garnish.$bod)
 
@@ -122,7 +122,7 @@ export default Garnish.Modal.extend({
       return
     }
 
-    const callback = $.proxy(function (e) {
+    const callback: (any) => void = (e) => {
       this.$html = e.$html
       this.$js = e.$js
       this.$css = e.$css
@@ -135,7 +135,7 @@ export default Garnish.Modal.extend({
       }
 
       this.off('parseTemplate', callback)
-    }, this)
+    }
 
     this.on('parseTemplate', callback)
     this.parseTemplate(template)

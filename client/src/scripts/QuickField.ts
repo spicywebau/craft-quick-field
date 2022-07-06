@@ -56,7 +56,7 @@ const QuickField = Garnish.Base.extend({
     this.addListener(this.$groupButton, 'activate', 'newGroup')
     this.addListener(this.$fieldButton, 'activate', 'newField')
 
-    this.dialog.on('newGroup', $.proxy(function (e) {
+    this.dialog.on('newGroup', (e) => {
       const group = e.group
       this.addGroup(group, true)
       this._getGroupByName(group.name).data('id', e.group.id)
@@ -67,39 +67,27 @@ const QuickField = Garnish.Base.extend({
         this.$fieldButton.appendTo(this.$container)
         fieldButtonAttached = true
       }
-    }, this))
+    })
 
-    this.dialog.on('renameGroup', $.proxy(function (e) {
-      this.renameGroup(e.group, e.oldName)
-    }, this))
-
-    this.dialog.on('deleteGroup', $.proxy(function (e) {
+    this.dialog.on('renameGroup', (e) => this.renameGroup(e.group, e.oldName))
+    this.dialog.on('deleteGroup', (e) => {
       this.removeGroup(e.id)
 
       if (this.fld.$fieldGroups.not('.hidden').length === 0) {
         this.$fieldButton.detach()
         fieldButtonAttached = false
       }
-    }, this))
+    })
 
-    this.modal.on('newField', $.proxy(function (e) {
-      this.addField(e.field, e.elementSelector)
-    }, this))
-
-    this.modal.on('saveField', $.proxy(function (e) {
-      this.resetField(e.field, e.elementSelector)
-    }, this))
-
-    this.modal.on('deleteField', $.proxy(function (e) {
-      this.removeField(e.field.id)
-    }, this))
-
-    this.modal.on('destroy', $.proxy(function () {
+    this.modal.on('newField', (e) => this.addField(e.field, e.elementSelector))
+    this.modal.on('saveField', (e) => this.resetField(e.field, e.elementSelector))
+    this.modal.on('deleteField', (e) => this.removeField(e.field.id))
+    this.modal.on('destroy', () => {
       this.$fieldButton.detach()
       fieldButtonAttached = false
-    }, this))
+    })
 
-    this.loader.on('load', $.proxy(function (e) {
+    this.loader.on('load', (e) => {
       this.modal.$loadSpinner.addClass('hidden')
       this.modal.initTemplate(e.template)
       this._initGroups(e.groups)
@@ -108,21 +96,18 @@ const QuickField = Garnish.Base.extend({
         this.$fieldButton.appendTo(this.$container)
         fieldButtonAttached = true
       }
-    }, this))
-
-    this.loader.on('unload', $.proxy(function (e) {
-      this.modal.destroy()
-    }, this))
+    })
+    this.loader.on('unload', () => this.modal.destroy())
 
     // Make sure the groups are never hidden, so they can always be renamed or deleted
-    this._groupObserver = new window.MutationObserver($.proxy(function () {
+    this._groupObserver = new window.MutationObserver(() => {
       this.fld.$fieldGroups
         .filter(function () {
           // Don't unhide e.g. the 'standard fields' group
           return ($(this).data('id')) ?? false
         })
         .removeClass('hidden')
-    }, this))
+    })
     this._groupObserver.observe(this.fld.$fieldLibrary[0], { attributes: true, childList: true, subtree: true })
   },
 
