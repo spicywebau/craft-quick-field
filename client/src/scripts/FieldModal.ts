@@ -1,5 +1,6 @@
 import * as $ from 'jquery'
-import { ActionResponse } from './types/ActionResponse'
+import { ActionResponse, TemplateResponse } from './types/ActionResponse'
+import Event from './types/Event'
 
 interface FieldModal extends GarnishModal {
   $main: JQuery
@@ -14,18 +15,24 @@ interface FieldModal extends GarnishModal {
   $saveBtn: JQuery
   $saveSpinner: JQuery
   $observed: JQuery
-  executedJs: object
-  loadedCss: object
+  executedJs: Record<string, boolean>
+  loadedCss: Record<string, JQuery>
   observer: MutationObserver
   templateLoaded: boolean
   base: () => void
   destroyListeners: () => void
-  destroySettings: () => void
+  destroySettings: (e?: Event) => void
   initListeners: () => void
-  initSettings: (e?: any) => void
+  initSettings: (e?: Event) => void
   parseTemplate: (template: any) => void
   promptForDelete: () => boolean
   runExternalScripts: (files: string[]) => void
+}
+
+interface SettingsEvent extends Event {
+  $html: JQuery
+  $js: JQuery
+  $css: JQuery
 }
 
 /**
@@ -64,7 +71,7 @@ export default Garnish.Modal.extend({
   /**
      * The constructor.
      */
-  init: function (settings) {
+  init: function (settings: object) {
     this.base()
     this.setSettings(settings, {
       resizable: true
@@ -117,12 +124,12 @@ export default Garnish.Modal.extend({
      *
      * @param template
      */
-  initTemplate: function (this: FieldModal, template) {
+  initTemplate: function (this: FieldModal, template: TemplateResponse) {
     if (this.templateLoaded) {
       return
     }
 
-    const callback: (any) => void = (e) => {
+    const callback: (e: any) => void = (e) => {
       this.$html = e.$html
       this.$js = e.$js
       this.$css = e.$css
@@ -147,7 +154,7 @@ export default Garnish.Modal.extend({
      *
      * @param template
      */
-  parseTemplate: function (this: FieldModal, template) {
+  parseTemplate: function (this: FieldModal, template: TemplateResponse) {
     const $head = Garnish.$doc.find('head')
     const $html = $(template.html)
     const $js = $(template.js).filter('script')
@@ -157,7 +164,8 @@ export default Garnish.Modal.extend({
     const $cssFiles = $css.filter('link').prop('async', true)
     const $cssInline = $css.filter('style')
 
-    $cssFiles.each((_, $cssFile) => {
+    $cssFiles.each((_, cssFile) => {
+      const $cssFile = $(cssFile)
       const src = $cssFile.prop('href')
 
       if (typeof this.loadedCss[src] === 'undefined') {
@@ -176,7 +184,8 @@ export default Garnish.Modal.extend({
     const $jsInline = $js.filter(':not([src])')
 
     const jsFiles: string[] = []
-    $jsFiles.each((_, $jsFile) => {
+    $jsFiles.each((_, jsFile) => {
+      const $jsFile = $(jsFile)
       const src = $jsFile.prop('src')
 
       if (typeof this.executedJs[src] === 'undefined') {
@@ -205,7 +214,7 @@ export default Garnish.Modal.extend({
      *
      * @param files - An array of URLs (as strings) to JavaScript files
      */
-  runExternalScripts: function (files) {
+  runExternalScripts: function (files: string[]) {
     let filesCount = files.length
 
     if (filesCount > 0) {
@@ -272,7 +281,7 @@ export default Garnish.Modal.extend({
   /**
      * Initialises the HTML, CSS and JavaScript for the modal window.
      */
-  initSettings: function (this: FieldModal, e) {
+  initSettings: function (this: FieldModal, e?: SettingsEvent) {
     const that: FieldModal = e?.target ?? this
 
     // If the template files aren't loaded yet, just cancel initialisation of the settings.
@@ -317,7 +326,7 @@ export default Garnish.Modal.extend({
      *
      * @param e
      */
-  destroySettings: function (e) {
+  destroySettings: function (e?: Event) {
     const that = e?.target ?? this
 
     that.$currentHtml.remove()
@@ -341,7 +350,7 @@ export default Garnish.Modal.extend({
      *
      * @param id
      */
-  editField: function (id) {
+  editField: function (id: number) {
     this.destroyListeners()
     this.show()
     this.initListeners()
@@ -351,7 +360,7 @@ export default Garnish.Modal.extend({
 
     Craft.sendActionRequest('POST', 'quick-field/actions/edit-field', { data })
       .then(response => {
-        const callback: (any) => void = (e) => {
+        const callback: (e: any) => void = (e) => {
           this.destroySettings()
           this.initSettings(e)
           this.off('parseTemplate', callback)
@@ -375,7 +384,7 @@ export default Garnish.Modal.extend({
      *
      * @param e
      */
-  saveField: function (this: FieldModal, e) {
+  saveField: function (this: FieldModal, e?: Event) {
     e?.preventDefault()
 
     if (this.$saveBtn.hasClass('disabled') || !this.$saveSpinner.hasClass('hidden')) {
@@ -412,7 +421,7 @@ export default Garnish.Modal.extend({
       .catch((response: ActionResponse) => {
         if (response.data.template !== null) {
           if (this.visible) {
-            const callback: (any) => void = (e) => {
+            const callback: (e: any) => void = (e) => {
               this.initListeners()
               this.destroySettings()
               this.initSettings(e)
@@ -439,7 +448,7 @@ export default Garnish.Modal.extend({
      *
      * @param e
      */
-  deleteField: function (this: FieldModal, e) {
+  deleteField: function (this: FieldModal, e?: Event) {
     e?.preventDefault()
 
     if (this.$deleteBtn.hasClass('disabled') || !this.$deleteSpinner.hasClass('hidden')) {

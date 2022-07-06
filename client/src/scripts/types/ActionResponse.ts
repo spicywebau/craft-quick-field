@@ -3,11 +3,17 @@ interface ActionResponse {
 }
 
 interface ActionResponseData {
-  template?: any
+  template?: TemplateResponse
   elementSelector?: string
   field?: any
   group?: any
   groups?: any
 }
 
-export { ActionResponse }
+interface TemplateResponse {
+  html: string
+  js: string
+  css: string
+}
+
+export { ActionResponse, ActionResponseData, TemplateResponse }

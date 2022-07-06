@@ -2,6 +2,8 @@ import * as $ from 'jquery'
 import FieldModal from './FieldModal'
 import GroupDialog from './GroupDialog'
 import { Loader, LoaderInterface } from './Loader'
+import { ActionResponseData } from './types/ActionResponse'
+import Event from './types/Event'
 
 interface QuickFieldInterface extends GarnishComponent {
   _groupObserver: MutationObserver
@@ -38,6 +40,27 @@ type Group = Readonly<{
   name: string
 }>
 
+interface OptionEvent extends Event {
+  option: string
+}
+
+interface FieldEvent extends Event {
+  field: Field
+}
+
+interface SaveFieldEvent extends FieldEvent {
+  elementSelector: string
+}
+
+interface DeleteGroupEvent extends Event {
+  id: number
+}
+
+interface SaveGroupEvent extends Event {
+  group: Group
+  oldName: string
+}
+
 /**
  * QuickField class
  * Handles the buttons for creating new groups and fields inside a FieldLayoutDesigner
@@ -58,7 +81,7 @@ const QuickField = Garnish.Base.extend({
      *
      * @param fld - An instance of Craft.FieldLayoutDesigner
      */
-  init: function (this: QuickFieldInterface, fld) {
+  init: function (this: QuickFieldInterface, fld: FieldLayoutDesigner) {
     this.fld = fld
     this.fld.$container.addClass('quick-field')
 
@@ -76,7 +99,7 @@ const QuickField = Garnish.Base.extend({
     this.addListener(this.$groupButton, 'activate', 'newGroup')
     this.addListener(this.$fieldButton, 'activate', 'newField')
 
-    this.dialog.on('newGroup', (e) => {
+    this.dialog.on('newGroup', (e: SaveGroupEvent) => {
       const group = e.group
       this.addGroup(group, true)
       this._getGroupByName(group.name).data('id', e.group.id)
@@ -89,8 +112,8 @@ const QuickField = Garnish.Base.extend({
       }
     })
 
-    this.dialog.on('renameGroup', (e) => this.renameGroup(e.group, e.oldName))
-    this.dialog.on('deleteGroup', (e) => {
+    this.dialog.on('renameGroup', (e: SaveGroupEvent) => this.renameGroup(e.group, e.oldName))
+    this.dialog.on('deleteGroup', (e: DeleteGroupEvent) => {
       this.removeGroup(e.id)
 
       if (this.fld.$fieldGroups.not('.hidden').length === 0) {
@@ -99,15 +122,15 @@ const QuickField = Garnish.Base.extend({
       }
     })
 
-    this.modal.on('newField', (e) => this.addField(e.field, e.elementSelector))
-    this.modal.on('saveField', (e) => this.resetField(e.field, e.elementSelector))
-    this.modal.on('deleteField', (e) => this.removeField(e.field.id))
+    this.modal.on('newField', (e: SaveFieldEvent) => this.addField(e.field, e.elementSelector))
+    this.modal.on('saveField', (e: SaveFieldEvent) => this.resetField(e.field, e.elementSelector))
+    this.modal.on('deleteField', (e: FieldEvent) => this.removeField(e.field.id))
     this.modal.on('destroy', () => {
       this.$fieldButton.detach()
       fieldButtonAttached = false
     })
 
-    this.loader.on('load', (e) => {
+    this.loader.on('load', (e: ActionResponseData) => {
       this.modal.$loadSpinner.addClass('hidden')
       this.modal.initTemplate(e.template)
       this._initGroups(e.groups)
@@ -137,7 +160,7 @@ const QuickField = Garnish.Base.extend({
      * @param groups
      * @private
      */
-  _initGroups: function (groups) {
+  _initGroups: function (groups: Group[]) {
     // Loop through the groups in reverse so we don't have to reset `fld.$fieldGroups` every
     // time to get empty groups in the right place
     for (let i = groups.length - 1; i >= 0; i--) {
@@ -162,8 +185,8 @@ const QuickField = Garnish.Base.extend({
     const $groups = this.fld.$fieldGroups
     const $fields = this.fld.$fields.filter('.unused')
 
-    $groups.each((_, group) => this._addGroupMenu($(group)))
-    $fields.each((_, field) => this._addFieldButton($(field)))
+    $groups.each((_: number, group: HTMLElement) => this._addGroupMenu($(group)))
+    $fields.each((_: number, field: HTMLElement) => this._addFieldButton($(field)))
   },
 
   /**
@@ -172,7 +195,7 @@ const QuickField = Garnish.Base.extend({
      * @param $group
      * @private
      */
-  _addGroupMenu: function ($group) {
+  _addGroupMenu: function ($group: JQuery) {
     const $button = $('<button class="qf-settings icon menubtn" title="' + Craft.t('quick-field', 'Settings') + '" role="button" type="button"></button>')
     const $menu = $([
       '<div class="menu">',
@@ -185,7 +208,7 @@ const QuickField = Garnish.Base.extend({
     $group.prepend($menu).prepend($button)
 
     const settingsMenu = new Garnish.MenuBtn($button)
-    settingsMenu.on('optionSelect', e => {
+    settingsMenu.on('optionSelect', (e: OptionEvent) => {
       switch ($(e.option).attr('data-action')) {
         case 'rename': this._openRenameGroupDialog($group); break
         case 'delete': this._openDeleteGroupDialog($group)
@@ -199,7 +222,7 @@ const QuickField = Garnish.Base.extend({
      * @param $field
      * @private
      */
-  _addFieldButton: function ($field) {
+  _addFieldButton: function ($field: JQuery) {
     const $button = $('<a class="qf-edit icon" title="Edit"></a>')
     this.addListener($button, 'activate', 'editField')
     $field.prepend($button)
@@ -219,7 +242,7 @@ const QuickField = Garnish.Base.extend({
      *
      * @param e
      */
-  editField: function (e) {
+  editField: function (e: Event) {
     const $button = $(e.target)
     const $field = $button.parent()
     const id = $field.data('id')
@@ -233,7 +256,7 @@ const QuickField = Garnish.Base.extend({
      * @param field
      * @param elementSelector
      */
-  addField: function (field, elementSelector) {
+  addField: function (field: Field, elementSelector: string) {
     const $group = this._getGroupByName(field.group.name)
 
     if ($group !== null) {
@@ -251,7 +274,7 @@ const QuickField = Garnish.Base.extend({
      * @param $group
      * @private
      */
-  _insertFieldElementIntoGroup: function (field, $element, $group) {
+  _insertFieldElementIntoGroup: function (field: Field, $element: JQuery, $group: JQuery) {
     const fld = this.fld
     const lowerCaseName = field.name.toLowerCase()
     let $prevElement = $group.children('.fld-element').filter(function () {
@@ -289,7 +312,7 @@ const QuickField = Garnish.Base.extend({
      * @param field
      * @param elementSelector
      */
-  resetField: function (field: Field, elementSelector) {
+  resetField: function (field: Field, elementSelector: string) {
     const fld = this.fld
     const $group = this._getGroupByName(field.group.name)
 
@@ -314,7 +337,7 @@ const QuickField = Garnish.Base.extend({
      * @param group
      * @param resetFldGroups
      */
-  addGroup: function (group: Group, resetFldGroups) {
+  addGroup: function (group: Group, resetFldGroups: boolean) {
     const name = group.name
     const lowerCaseName = name.toLowerCase()
     const $newGroup = $([
@@ -341,7 +364,7 @@ const QuickField = Garnish.Base.extend({
      * @param $group
      * @private
      */
-  _openRenameGroupDialog: function ($group) {
+  _openRenameGroupDialog: function ($group: JQuery) {
     const id = $group.data('id')
     const oldName = $group.children('h6').text()
     this.dialog.renameGroup(id, oldName)
@@ -353,7 +376,7 @@ const QuickField = Garnish.Base.extend({
      * @param group
      * @param oldName
      */
-  renameGroup: function (group, oldName) {
+  renameGroup: function (group: Group, oldName: string) {
     const $group = this._getGroupByName(oldName)
     const newName = group.name
 
@@ -383,7 +406,7 @@ const QuickField = Garnish.Base.extend({
      * @param optionText
      * @private
      */
-  _addOptionToGroupSelect: function ($option, $select, optionText) {
+  _addOptionToGroupSelect: function ($option: JQuery, $select: JQuery, optionText: string) {
     const $prevOption = $select.children().filter(function () {
       return $(this).text().toLowerCase() < optionText.toLowerCase()
     }).last()
@@ -401,7 +424,7 @@ const QuickField = Garnish.Base.extend({
      * @param $group
      * @private
      */
-  _openDeleteGroupDialog: function ($group) {
+  _openDeleteGroupDialog: function ($group: JQuery) {
     const id = $group.data('id')
     this.dialog.deleteGroup(id)
   },
@@ -420,7 +443,7 @@ const QuickField = Garnish.Base.extend({
 
     // Remove any fields from this group from the tabs
     const $usedFields = $deletedGroup.find('.fld-field.hidden')
-    const filterSelector = $usedFields.map((_, $field: JQuery) => {
+    const filterSelector = $usedFields.map((_: number, $field: JQuery) => {
       const fieldId: string = $field.data('id')
       return `[data-id="${fieldId}"]`
     }).get().join(',')
@@ -443,9 +466,9 @@ const QuickField = Garnish.Base.extend({
      * @param resetFldGroups
      * @private
      */
-  _attachGroup: function ($group, resetFldGroups: boolean) {
+  _attachGroup: function ($group: JQuery, resetFldGroups: boolean) {
     const fld = this.fld
-    const lowerCaseName = $group.attr('data-name')
+    const lowerCaseName = $group.attr('data-name') ?? ''
     let $prevElement = fld.$fieldGroups.filter(function () {
       const $this = $(this)
       return $this.hasClass('hidden') || $this.data('name') < lowerCaseName
