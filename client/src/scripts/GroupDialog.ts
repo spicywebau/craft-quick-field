@@ -5,15 +5,15 @@
 export default Garnish.Base.extend({
 
   /**
-     * The constructor.
-     */
+   * The constructor.
+   */
   init: function () {
     this.quickField = null
   },
 
   /**
-     * Requests input for new group name, then creates the group.
-     */
+   * Requests input for new group name, then creates the group.
+   */
   addNewGroup: function () {
     this._saveGroup(
       null,
@@ -23,11 +23,11 @@ export default Garnish.Base.extend({
   },
 
   /**
-     * Requests input for a new name for an existing group, then updates the group.
-     *
-     * @param id
-     * @param name
-     */
+   * Requests input for a new name for an existing group, then updates the group.
+   *
+   * @param id
+   * @param name
+   */
   renameGroup: function (id: number, name: string) {
     this._saveGroup(
       id,
@@ -37,13 +37,13 @@ export default Garnish.Base.extend({
   },
 
   /**
-     * Internal function for saving new or updated groups.
-     *
-     * @param id
-     * @param oldName
-     * @param successCallback
-     * @private
-     */
+   * Internal function for saving new or updated groups.
+   *
+   * @param id
+   * @param oldName
+   * @param successCallback
+   * @private
+   */
   _saveGroup: function (id: number, oldName: string, successCallback: Function) {
     const name = this.promptForGroupName(oldName)
 
@@ -67,11 +67,11 @@ export default Garnish.Base.extend({
   },
 
   /**
-     * Internal function for triggering a group update event with a given name.
-     *
-     * @param eventName
-     * @private
-     */
+   * Internal function for triggering a group update event with a given name.
+   *
+   * @param eventName
+   * @private
+   */
   _triggerGroupUpdateEvent: function (eventName: string) {
     return function (target: any, group: any, oldName: string) {
       target.trigger(eventName, {
@@ -83,10 +83,10 @@ export default Garnish.Base.extend({
   },
 
   /**
-     * Prompts for confirmation of deleting a field group, then deletes the group.
-     *
-     * @param groupId
-     */
+   * Prompts for confirmation of deleting a field group, then deletes the group.
+   *
+   * @param groupId
+   */
   deleteGroup: function (groupId: number) {
     if (confirm(Craft.t('quick-field', 'Are you sure you want to delete this group and all its fields?'))) {
       const data = {
@@ -99,20 +99,20 @@ export default Garnish.Base.extend({
   },
 
   /**
-     * Creates and opens the dialog box asking for a group name.
-     *
-     * @return String
-     */
+   * Creates and opens the dialog box asking for a group name.
+   *
+   * @return String
+   */
   promptForGroupName: function (oldName: string) {
     return prompt(Craft.t('quick-field', 'What do you want to name the group?'), oldName)
   },
 
   /**
-     * Utility method that transforms returned errors from an async request into a single dimension array.
-     * This is useful when outputting errors to the screen, so conversion to string is simpler.
-     *
-     * @return Array
-     */
+   * Utility method that transforms returned errors from an async request into a single dimension array.
+   * This is useful when outputting errors to the screen, so conversion to string is simpler.
+   *
+   * @return Array
+   */
   _flattenErrors: function (responseErrors: Record<string, string>): string[] {
     return Object.keys(responseErrors)
       .reduce((errors: string[], key: string) => errors.concat(responseErrors[key]), [])

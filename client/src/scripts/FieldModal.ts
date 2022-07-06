@@ -69,8 +69,8 @@ export default Garnish.Modal.extend({
   templateLoaded: false,
 
   /**
-     * The constructor.
-     */
+   * The constructor.
+   */
   init: function (settings: object) {
     this.base()
     this.setSettings(settings, {
@@ -120,10 +120,10 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Prepares the field settings template HTML, CSS and Javascript.
-     *
-     * @param template
-     */
+   * Prepares the field settings template HTML, CSS and JavaScript.
+   *
+   * @param template
+   */
   initTemplate: function (this: FieldModal, template: TemplateResponse) {
     if (this.templateLoaded) {
       return
@@ -149,11 +149,11 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Takes raw HTML, CSS and Javascript and parses it ready to be used in the DOM.
-     * It also loads any external resources if they are needed.
-     *
-     * @param template
-     */
+   * Takes raw HTML, CSS and JavaScript and parses it ready to be used in the DOM.
+   * It also loads any external resources if they are needed.
+   *
+   * @param template
+   */
   parseTemplate: function (this: FieldModal, template: TemplateResponse) {
     const $head = Garnish.$doc.find('head')
     const $html = $(template.html)
@@ -210,10 +210,10 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Runs external JavaScript files
-     *
-     * @param files - An array of URLs (as strings) to JavaScript files
-     */
+   * Runs external JavaScript files
+   *
+   * @param files - An array of URLs (as strings) to JavaScript files
+   */
   runExternalScripts: function (files: string[]) {
     let filesCount = files.length
 
@@ -245,8 +245,8 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Binds all listeners so the quick field buttons can start working.
-     */
+   * Binds all listeners so the Quick Field buttons can start working.
+   */
   initListeners: function () {
     this.$cancelBtn.removeClass('disabled')
     this.$saveBtn.removeClass('disabled')
@@ -262,8 +262,8 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Unbinds all listeners.
-     */
+   * Unbinds all listeners.
+   */
   destroyListeners: function () {
     this.$cancelBtn.addClass('disabled')
     this.$saveBtn.addClass('disabled')
@@ -279,8 +279,8 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Initialises the HTML, CSS and JavaScript for the modal window.
-     */
+   * Initialises the HTML, CSS and JavaScript for the modal window.
+   */
   initSettings: function (this: FieldModal, e?: SettingsEvent) {
     const that: FieldModal = e?.target ?? this
 
@@ -321,11 +321,11 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Event handler for when the modal window finishes fading out after hiding.
-     * Clears out all events and elements of the modal.
-     *
-     * @param e
-     */
+   * Event handler for when the modal window finishes fading out after hiding.
+   * Clears out all events and elements of the modal.
+   *
+   * @param e
+   */
   destroySettings: function (e?: Event) {
     const that = e?.target ?? this
 
@@ -338,18 +338,18 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Event handler for the Close button.
-     * Hides the modal window from view.
-     */
+   * Event handler for the Close button.
+   * Hides the modal window from view.
+   */
   closeModal: function () {
     this.hide()
   },
 
   /**
-     * Loads a template for editing an existing field.
-     *
-     * @param id
-     */
+   * Loads a template for editing an existing field.
+   *
+   * @param id
+   */
   editField: function (id: number) {
     this.destroyListeners()
     this.show()
@@ -379,11 +379,11 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Event handler for the save button.
-     * Saves the new field form to the database.
-     *
-     * @param e
-     */
+   * Event handler for the save button.
+   * Saves the new field form to the database.
+   *
+   * @param e
+   */
   saveField: function (this: FieldModal, e?: Event) {
     e?.preventDefault()
 
@@ -443,11 +443,11 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Event handler for the delete button.
-     * Deletes the field from the database.
-     *
-     * @param e
-     */
+   * Event handler for the delete button.
+   * Deletes the field from the database.
+   *
+   * @param e
+   */
   deleteField: function (this: FieldModal, e?: Event) {
     e?.preventDefault()
 
@@ -492,16 +492,16 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Delete confirmation dialog box.
-     */
+   * Delete confirmation dialog box.
+   */
   promptForDelete: function () {
     return confirm(Craft.t('quick-field', 'Are you sure you want to delete this field?'))
   },
 
   /**
-     * Prevents the modal from closing if it's disabled.
-     * This fixes issues if the modal is closed when saving/deleting fields.
-     */
+   * Prevents the modal from closing if it's disabled.
+   * This fixes issues if the modal is closed when saving/deleting fields.
+   */
   hide: function (this: FieldModal) {
     if (!this._disabled) {
       this.base()
@@ -509,8 +509,8 @@ export default Garnish.Modal.extend({
   },
 
   /**
-     * Removes everything to do with the modal form the DOM.
-     */
+   * Removes everything to do with the modal from the DOM.
+   */
   destroy: function () {
     this.base()
 

@@ -18,16 +18,16 @@ const Loader = Garnish.Base.extend({
   loadStatus: null,
 
   /**
-     * The constructor.
-     */
+   * The constructor.
+   */
   init: function () {
     this.loadStatus = LoadStatus.UNLOADED
     this.load()
   },
 
   /**
-     * Loads the field settings template file, as well as all the resources that come with it.
-     */
+   * Loads the field settings template file, as well as all the resources that come with it.
+   */
   load: function () {
     if (this.loadStatus === LoadStatus.UNLOADED) {
       this.loadStatus = LoadStatus.LOADING

@@ -77,10 +77,10 @@ const QuickField = Garnish.Base.extend({
   modal: null,
 
   /**
-     * The constructor.
-     *
-     * @param fld - An instance of Craft.FieldLayoutDesigner
-     */
+   * The constructor.
+   *
+   * @param fld - An instance of Craft.FieldLayoutDesigner
+   */
   init: function (this: QuickFieldInterface, fld: FieldLayoutDesigner) {
     this.fld = fld
     this.fld.$container.addClass('quick-field')
@@ -155,11 +155,11 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Initialises groups with ID data.
-     *
-     * @param groups
-     * @private
-     */
+   * Initialises groups with ID data.
+   *
+   * @param groups
+   * @private
+   */
   _initGroups: function (groups: Group[]) {
     // Loop through the groups in reverse so we don't have to reset `fld.$fieldGroups` every
     // time to get empty groups in the right place
@@ -179,8 +179,8 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Adds edit buttons to existing fields.
-     */
+   * Adds edit buttons to existing fields.
+   */
   initButtons: function () {
     const $groups = this.fld.$fieldGroups
     const $fields = this.fld.$fields.filter('.unused')
@@ -190,11 +190,11 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Creates field group rename/delete menus.
-     *
-     * @param $group
-     * @private
-     */
+   * Creates field group rename/delete menus.
+   *
+   * @param $group
+   * @private
+   */
   _addGroupMenu: function ($group: JQuery) {
     const $button = $('<button class="qf-settings icon menubtn" title="' + Craft.t('quick-field', 'Settings') + '" role="button" type="button"></button>')
     const $menu = $([
@@ -217,11 +217,11 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Creates field edit buttons.
-     *
-     * @param $field
-     * @private
-     */
+   * Creates field edit buttons.
+   *
+   * @param $field
+   * @private
+   */
   _addFieldButton: function ($field: JQuery) {
     const $button = $('<a class="qf-edit icon" title="Edit"></a>')
     this.addListener($button, 'activate', 'editField')
@@ -229,19 +229,19 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Event handler for the New Field button.
-     * Creates a modal window that contains new field settings.
-     */
+   * Event handler for the New Field button.
+   * Creates a modal window that contains new field settings.
+   */
   newField: function () {
     this.modal.show()
   },
 
   /**
-     * Event handler for the edit buttons on fields.
-     * Opens a modal window that contains the field settings.
-     *
-     * @param e
-     */
+   * Event handler for the edit buttons on fields.
+   * Opens a modal window that contains the field settings.
+   *
+   * @param e
+   */
   editField: function (e: Event) {
     const $button = $(e.target)
     const $field = $button.parent()
@@ -251,11 +251,11 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Adds a new unused (dashed border) field to the field layout designer.
-     *
-     * @param field
-     * @param elementSelector
-     */
+   * Adds a new unused (dashed border) field to the field layout designer.
+   *
+   * @param field
+   * @param elementSelector
+   */
   addField: function (field: Field, elementSelector: string) {
     const $group = this._getGroupByName(field.group.name)
 
@@ -267,13 +267,13 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Inserts a field element into the correct position in its group.
-     *
-     * @param field
-     * @param $element
-     * @param $group
-     * @private
-     */
+   * Inserts a field element into the correct position in its group.
+   *
+   * @param field
+   * @param $element
+   * @param $group
+   * @private
+   */
   _insertFieldElementIntoGroup: function (field: Field, $element: JQuery, $group: JQuery) {
     const fld = this.fld
     const lowerCaseName = field.name.toLowerCase()
@@ -292,10 +292,10 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Removes a field from the field layout designer.
-     *
-     * @param id
-     */
+   * Removes a field from the field layout designer.
+   *
+   * @param id
+   */
   removeField: function (id: number) {
     const fld = this.fld
     const $fields = fld.$fields
@@ -307,11 +307,11 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Renames and regroups an existing field on the field layout designer.
-     *
-     * @param field
-     * @param elementSelector
-     */
+   * Renames and regroups an existing field on the field layout designer.
+   *
+   * @param field
+   * @param elementSelector
+   */
   resetField: function (field: Field, elementSelector: string) {
     const fld = this.fld
     const $group = this._getGroupByName(field.group.name)
@@ -325,18 +325,18 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Event listener for the new group button
-     */
+   * Event listener for the new group button
+   */
   newGroup: function () {
     this.dialog.addNewGroup()
   },
 
   /**
-     * Adds a new unused group to the field layout designer sidebar.
-     *
-     * @param group
-     * @param resetFldGroups
-     */
+   * Adds a new unused group to the field layout designer sidebar.
+   *
+   * @param group
+   * @param resetFldGroups
+   */
   addGroup: function (group: Group, resetFldGroups: boolean) {
     const name = group.name
     const lowerCaseName = name.toLowerCase()
@@ -359,11 +359,11 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Opens the field group dialog for renaming a group.
-     *
-     * @param $group
-     * @private
-     */
+   * Opens the field group dialog for renaming a group.
+   *
+   * @param $group
+   * @private
+   */
   _openRenameGroupDialog: function ($group: JQuery) {
     const id = $group.data('id')
     const oldName = $group.children('h6').text()
@@ -371,11 +371,11 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Renames a field group.
-     *
-     * @param group
-     * @param oldName
-     */
+   * Renames a field group.
+   *
+   * @param group
+   * @param oldName
+   */
   renameGroup: function (group: Group, oldName: string) {
     const $group = this._getGroupByName(oldName)
     const newName = group.name
@@ -399,13 +399,13 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Adds a field group option to the new field template.
-     *
-     * @param $option
-     * @param $select
-     * @param optionText
-     * @private
-     */
+   * Adds a field group option to the new field template.
+   *
+   * @param $option
+   * @param $select
+   * @param optionText
+   * @private
+   */
   _addOptionToGroupSelect: function ($option: JQuery, $select: JQuery, optionText: string) {
     const $prevOption = $select.children().filter(function () {
       return $(this).text().toLowerCase() < optionText.toLowerCase()
@@ -419,21 +419,21 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Opens the field group dialog for deleting a group.
-     *
-     * @param $group
-     * @private
-     */
+   * Opens the field group dialog for deleting a group.
+   *
+   * @param $group
+   * @private
+   */
   _openDeleteGroupDialog: function ($group: JQuery) {
     const id = $group.data('id')
     this.dialog.deleteGroup(id)
   },
 
   /**
-     * Removes a deleted field group, and any fields belonging to it.
-     *
-     * @param id
-     */
+   * Removes a deleted field group, and any fields belonging to it.
+   *
+   * @param id
+   */
   removeGroup: function (id: number) {
     const fld = this.fld
     const $deletedGroup = fld.$fieldGroups
@@ -460,12 +460,12 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Attaches a group to the correct position in the sidebar.
-     *
-     * @param $group
-     * @param resetFldGroups
-     * @private
-     */
+   * Attaches a group to the correct position in the sidebar.
+   *
+   * @param $group
+   * @param resetFldGroups
+   * @private
+   */
   _attachGroup: function ($group: JQuery, resetFldGroups: boolean) {
     const fld = this.fld
     const lowerCaseName = $group.attr('data-name') ?? ''
@@ -486,21 +486,21 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-     * Resets Craft's record of the field groups in the field layout designer sidebar.
-     *
-     * @private
-     */
+   * Resets Craft's record of the field groups in the field layout designer sidebar.
+   *
+   * @private
+   */
   _resetFldGroups: function () {
     this.fld.$fieldGroups = this.fld.$sidebar.find('.fld-field-group')
   },
 
   /**
-     * Finds the group element from its name.
-     *
-     * @param name
-     * @returns {*}
-     * @private
-     */
+   * Finds the group element from its name.
+   *
+   * @param name
+   * @returns {*}
+   * @private
+   */
   _getGroupByName: function (name: string): JQuery {
     // Filtering `this.fld.$sidebar.find('.fld-field-group')` instead of `this.fld.$fieldGroups`, in case we're
     // adding groups and we haven't reset `this.fld.$fieldGroups` yet
