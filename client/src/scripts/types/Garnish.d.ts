@@ -1,5 +1,5 @@
 declare const Garnish: {
-  MenuBtn: new(btn: JQuery) => any
+  MenuBtn: new(btn: JQuery) => GarnishComponent
   $bod: JQuery
   $doc: JQuery
   Base: any

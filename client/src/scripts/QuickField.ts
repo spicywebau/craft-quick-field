@@ -501,11 +501,11 @@ const QuickField = Garnish.Base.extend({
      * @returns {*}
      * @private
      */
-  _getGroupByName: function (name: string): any {
+  _getGroupByName: function (name: string): JQuery {
     // Filtering `this.fld.$sidebar.find('.fld-field-group')` instead of `this.fld.$fieldGroups`, in case we're
     // adding groups and we haven't reset `this.fld.$fieldGroups` yet
     return this.fld.$sidebar.find('.fld-field-group').filter(`[data-name="${name.toLowerCase()}"]`)
   }
 })
 
-export default QuickField
+export { QuickField, QuickFieldInterface }

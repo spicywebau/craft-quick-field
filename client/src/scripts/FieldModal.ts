@@ -24,7 +24,7 @@ interface FieldModal extends GarnishModal {
   destroySettings: (e?: Event) => void
   initListeners: () => void
   initSettings: (e?: Event) => void
-  parseTemplate: (template: any) => void
+  parseTemplate: (template: TemplateResponse) => void
   promptForDelete: () => boolean
   runExternalScripts: (files: string[]) => void
 }
@@ -129,7 +129,7 @@ export default Garnish.Modal.extend({
       return
     }
 
-    const callback: (e: any) => void = (e) => {
+    const callback: (e: SettingsEvent) => void = (e) => {
       this.$html = e.$html
       this.$js = e.$js
       this.$css = e.$css
@@ -360,7 +360,7 @@ export default Garnish.Modal.extend({
 
     Craft.sendActionRequest('POST', 'quick-field/actions/edit-field', { data })
       .then(response => {
-        const callback: (e: any) => void = (e) => {
+        const callback: (e: Event) => void = (e) => {
           this.destroySettings()
           this.initSettings(e)
           this.off('parseTemplate', callback)
@@ -419,9 +419,9 @@ export default Garnish.Modal.extend({
         this.hide()
       })
       .catch((response: ActionResponse) => {
-        if (response.data.template !== null) {
+        if (typeof response.data.template !== 'undefined') {
           if (this.visible) {
-            const callback: (e: any) => void = (e) => {
+            const callback: (e: Event) => void = (e) => {
               this.initListeners()
               this.destroySettings()
               this.initSettings(e)

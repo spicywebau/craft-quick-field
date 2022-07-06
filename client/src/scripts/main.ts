@@ -1,8 +1,8 @@
-import QuickField from './QuickField'
+import { QuickField, QuickFieldInterface } from './QuickField'
 
 declare global {
   interface Window {
-    QuickField: any
+    QuickField: QuickFieldInterface
   }
 }
 
