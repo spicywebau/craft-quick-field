@@ -1,3 +1,5 @@
+import { SaveGroupResponse } from './types/Response'
+
 /**
  * GroupDialog class.
  * Handles the dialog box for creating new field groups.
@@ -54,7 +56,7 @@ export default Garnish.Base.extend({
       }
 
       Craft.sendActionRequest('POST', 'fields/save-group', { data })
-        .then(response => successCallback(this, response.data.group, oldName))
+        .then((response: SaveGroupResponse) => successCallback(this, response.data.group, oldName))
         .catch(response => {
           if (response.errors.length > 0) {
             const errors: string[] = this._flattenErrors(response.errors)

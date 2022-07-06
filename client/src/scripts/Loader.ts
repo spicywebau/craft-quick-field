@@ -1,3 +1,5 @@
+import { LoadResponse } from './types/Response'
+
 interface LoaderInterface extends GarnishComponent {
   isUnloaded: () => boolean
   load: () => void
@@ -32,7 +34,7 @@ const Loader = Garnish.Base.extend({
     if (this.loadStatus === LoadStatus.UNLOADED) {
       this.loadStatus = LoadStatus.LOADING
       Craft.sendActionRequest('POST', 'quick-field/actions/load', {})
-        .then(response => {
+        .then((response: LoadResponse) => {
           this.loadStatus = LoadStatus.LOADED
           this.trigger('load', {
             template: response.data.template,

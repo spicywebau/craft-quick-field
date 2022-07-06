@@ -1,5 +1,5 @@
 import * as $ from 'jquery'
-import { ActionResponse, TemplateResponse } from './types/ActionResponse'
+import { DeleteFieldResponse, EditFieldResponse, SaveFieldResponse, Template } from './types/Response'
 import Event from './types/Event'
 
 interface FieldModal extends GarnishModal {
@@ -24,7 +24,7 @@ interface FieldModal extends GarnishModal {
   destroySettings: (e?: Event) => void
   initListeners: () => void
   initSettings: (e?: Event) => void
-  parseTemplate: (template: TemplateResponse) => void
+  parseTemplate: (template: Template) => void
   promptForDelete: () => boolean
   runExternalScripts: (files: string[]) => void
 }
@@ -124,7 +124,7 @@ export default Garnish.Modal.extend({
    *
    * @param template
    */
-  initTemplate: function (this: FieldModal, template: TemplateResponse) {
+  initTemplate: function (this: FieldModal, template: Template) {
     if (this.templateLoaded) {
       return
     }
@@ -154,7 +154,7 @@ export default Garnish.Modal.extend({
    *
    * @param template
    */
-  parseTemplate: function (this: FieldModal, template: TemplateResponse) {
+  parseTemplate: function (this: FieldModal, template: Template) {
     const $head = Garnish.$doc.find('head')
     const $html = $(template.html)
     const $js = $(template.js).filter('script')
@@ -359,7 +359,7 @@ export default Garnish.Modal.extend({
     const data = { fieldId: id }
 
     Craft.sendActionRequest('POST', 'quick-field/actions/edit-field', { data })
-      .then(response => {
+      .then((response: EditFieldResponse) => {
         const callback: (e: Event) => void = (e) => {
           this.destroySettings()
           this.initSettings(e)
@@ -400,7 +400,7 @@ export default Garnish.Modal.extend({
     const id = inputId.length > 0 ? inputId.val() : null
 
     Craft.sendActionRequest('POST', 'quick-field/actions/save-field', { data })
-      .then(response => {
+      .then((response: SaveFieldResponse) => {
         this.initListeners()
         const eventData = {
           target: this,
@@ -418,7 +418,7 @@ export default Garnish.Modal.extend({
 
         this.hide()
       })
-      .catch((response: ActionResponse) => {
+      .catch((response: SaveFieldResponse) => {
         if (typeof response.data.template !== 'undefined') {
           if (this.visible) {
             const callback: (e: Event) => void = (e) => {
@@ -471,7 +471,7 @@ export default Garnish.Modal.extend({
       const data = { fieldId: id }
 
       Craft.sendActionRequest('POST', 'quick-field/actions/delete-field', { data })
-        .then(response => {
+        .then((response: DeleteFieldResponse) => {
           this.initListeners()
           this.trigger('deleteField', {
             target: this,

@@ -14,7 +14,7 @@
     "Loader.ts",
     "QuickField.ts",
     "main.ts",
-    "types/ActionResponse.ts",
+    "types/Response.ts",
     "types/Event.ts",
     "types/Craft.d.ts",
     "types/Garnish.d.ts"

@@ -2,7 +2,7 @@ import * as $ from 'jquery'
 import FieldModal from './FieldModal'
 import GroupDialog from './GroupDialog'
 import { Loader, LoaderInterface } from './Loader'
-import { ActionResponseData } from './types/ActionResponse'
+import { LoadResponseData } from './types/Response'
 import Event from './types/Event'
 
 interface QuickFieldInterface extends GarnishComponent {
@@ -24,21 +24,6 @@ interface QuickFieldInterface extends GarnishComponent {
   renameGroup: (group: Group, oldName: string) => void
   initButtons: () => void
 }
-
-type Field = Readonly<{
-  group: Group
-  id: number
-  name: string
-  handle: string
-  instructions: string
-  translationMethod: string
-  translationKeyFormat: string
-}>
-
-type Group = Readonly<{
-  id: number
-  name: string
-}>
 
 interface OptionEvent extends Event {
   option: string
@@ -130,7 +115,7 @@ const QuickField = Garnish.Base.extend({
       fieldButtonAttached = false
     })
 
-    this.loader.on('load', (e: ActionResponseData) => {
+    this.loader.on('load', (e: LoadResponseData) => {
       this.modal.$loadSpinner.addClass('hidden')
       this.modal.initTemplate(e.template)
       this._initGroups(e.groups)
