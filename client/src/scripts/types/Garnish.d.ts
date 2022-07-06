@@ -8,6 +8,7 @@ declare const Garnish: {
 }
 
 declare interface GarnishComponent {
+  addListener: (elem: HTMLElement|JQuery, events: string|string[], data: object|Function|string, func?: Function|string) => void
   extend: (source: object, value?: object) => GarnishComponent
   new: () => GarnishComponent
   off: (events: string, handler: Function) => void

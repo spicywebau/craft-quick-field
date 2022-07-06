@@ -1,7 +1,27 @@
 import * as $ from 'jquery'
 import FieldModal from './FieldModal'
 import GroupDialog from './GroupDialog'
-import Loader from './Loader'
+import { Loader, LoaderInterface } from './Loader'
+
+interface QuickFieldInterface extends GarnishComponent {
+  _groupObserver: MutationObserver
+  $container: JQuery
+  $fieldButton: JQuery
+  $groupButton: JQuery
+  fld: FieldLayoutDesigner
+  dialog: any
+  loader: LoaderInterface
+  modal: any
+  _getGroupByName: (name: string) => JQuery
+  _initGroups: (groups: Group[]) => void
+  addField: (field: Field, elementSelector: string) => void
+  resetField: (field: Field, elementSelector: string) => void
+  removeField: (id: number) => void
+  addGroup: (group: Group, resetFldGroups: boolean) => void
+  removeGroup: (id: number) => void
+  renameGroup: (group: Group, oldName: string) => void
+  initButtons: () => void
+}
 
 type Field = Readonly<{
   group: Group
@@ -38,7 +58,7 @@ const QuickField = Garnish.Base.extend({
      *
      * @param fld - An instance of Craft.FieldLayoutDesigner
      */
-  init: function (fld) {
+  init: function (this: QuickFieldInterface, fld) {
     this.fld = fld
     this.fld.$container.addClass('quick-field')
 
@@ -61,7 +81,7 @@ const QuickField = Garnish.Base.extend({
       this.addGroup(group, true)
       this._getGroupByName(group.name).data('id', e.group.id)
 
-      if (this.loader.loadStatus === this.loader.UNLOADED) {
+      if (this.loader.isUnloaded()) {
         this.loader.load()
       } else if (!fieldButtonAttached) {
         this.$fieldButton.appendTo(this.$container)
