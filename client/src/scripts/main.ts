@@ -1,4 +1,5 @@
 import { QuickField, QuickFieldInterface } from './QuickField'
+import '../styles/main.scss'
 
 declare global {
   interface Window {
