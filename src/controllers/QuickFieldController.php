@@ -129,9 +129,14 @@ class QuickFieldController extends Controller
         $group = $fieldsService->getGroupById($field->groupId);
         $success = $group && $fieldsService->saveField($field);
 
-        return $this->asJson([
-            'success' => $success,
-            'errors' => $field->getErrors(),
+        if (!$group || !$fieldsService->saveField($field)) {
+            return $this->asFailure(data: [
+                'errors' => $field->getErrors(),
+                'template' => $this->_getTemplate($field),
+            ]);
+        }
+
+        return $this->asSuccess(data: [
             'field' => [
                 'id' => $field->id,
                 'name' => $field->name,
@@ -144,10 +149,7 @@ class QuickFieldController extends Controller
                     'name' => $group->name,
                 ],
             ],
-            'elementSelector' => !$success ? null : Craft::$app->getView()->renderTemplate('quick-field/_elementselector', [
-                'field' => new CustomField($field),
-            ]),
-            'template' => $success ? null : $this->_getTemplate($field),
+            'elementSelector' => (new CustomField($field))->selectorHtml(),
         ]);
     }
 

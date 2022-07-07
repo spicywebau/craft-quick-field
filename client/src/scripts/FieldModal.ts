@@ -418,8 +418,8 @@ export default Garnish.Modal.extend({
 
         this.hide()
       })
-      .catch((response: SaveFieldResponse) => {
-        if (typeof response.data.template !== 'undefined') {
+      .catch(({ response }) => {
+        if ((response.data?.template ?? null) !== null) {
           if (this.visible) {
             const callback: (e: Event) => void = (e) => {
               this.initListeners()
