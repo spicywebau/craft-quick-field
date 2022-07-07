@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Added Craft 4 compatibility (requires Craft 4.1.0 or later)
+
+### Removed
+- Removed Craft 3 compatibility
+
+### Fixed
+- Fixed an issue where Quick Field wasn't being initialised for Craft Commerce variant field layout designers
+
 ## 1.0.0 - 2022-06-29
 
 ### Added
