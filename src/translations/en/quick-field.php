@@ -17,6 +17,7 @@ return [
     'New Group' => 'New Group',
     'Rename' => 'Rename',
     'Save' => 'Save',
+    'Save as a new field' => 'Save as a new field',
     'Settings' => 'Settings',
     'What do you want to name the group?' => 'What do you want to name the group?',
 ];

@@ -4,6 +4,7 @@
 
 ### Added
 - Added Craft 4 compatibility (requires Craft 4.1.0 or later)
+- Added the 'Save as a new field' option when editing existing fields
 
 ### Removed
 - Removed Craft 3 compatibility

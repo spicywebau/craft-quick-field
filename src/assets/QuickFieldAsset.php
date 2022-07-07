@@ -59,6 +59,7 @@ class QuickFieldAsset extends AssetBundle
             'New Group',
             'Rename',
             'Save',
+            'Save as a new field',
             'Settings',
             'What do you want to name the group?',
         ]);

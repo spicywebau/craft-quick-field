@@ -13,6 +13,7 @@ interface FieldModal extends GarnishModal {
   $deleteBtn: JQuery
   $deleteSpinner: JQuery
   $saveBtn: JQuery
+  $saveCopyBtn: JQuery
   $saveSpinner: JQuery
   $observed: JQuery
   executedJs: Record<string, boolean>
@@ -49,6 +50,7 @@ export default Garnish.Modal.extend({
   $rightButtons: null,
   $deleteBtn: null,
   $saveBtn: null,
+  $saveCopyBtn: null,
   $cancelBtn: null,
   $saveSpinner: null,
   $deleteSpinner: null,
@@ -114,6 +116,7 @@ export default Garnish.Modal.extend({
 
     this.$cancelBtn = $('<div class="btn disabled" role="button">').text(Craft.t('quick-field', 'Cancel')).appendTo(this.$rightButtons)
     this.$saveBtn = $('<div class="btn submit disabled" role="button">').text(Craft.t('quick-field', 'Save')).appendTo(this.$rightButtons)
+    this.$saveCopyBtn = $('<div class="btn submit disabled hidden" role="button">').text(Craft.t('quick-field', 'Save as a new field')).appendTo(this.$rightButtons)
     this.$saveSpinner = $('<div class="spinner hidden">').appendTo(this.$rightButtons)
 
     this.setContainer($container)
@@ -250,9 +253,11 @@ export default Garnish.Modal.extend({
   initListeners: function () {
     this.$cancelBtn.removeClass('disabled')
     this.$saveBtn.removeClass('disabled')
+    this.$saveCopyBtn.removeClass('disabled')
 
     this.addListener(this.$cancelBtn, 'activate', 'closeModal')
     this.addListener(this.$saveBtn, 'activate', 'saveField')
+    this.addListener(this.$saveCopyBtn, 'activate', 'saveField')
     this.addListener(this.$deleteBtn, 'activate', 'deleteField')
 
     this.on('show', this.initSettings)
@@ -267,9 +272,11 @@ export default Garnish.Modal.extend({
   destroyListeners: function () {
     this.$cancelBtn.addClass('disabled')
     this.$saveBtn.addClass('disabled')
+    this.$saveCopyBtn.addClass('disabled')
 
     this.removeListener(this.$cancelBtn, 'activate')
     this.removeListener(this.$saveBtn, 'activate')
+    this.removeListener(this.$saveCopyBtn, 'activate')
     this.removeListener(this.$deleteBtn, 'activate')
 
     this.off('show', this.initSettings)
@@ -363,6 +370,7 @@ export default Garnish.Modal.extend({
         const callback: (e: Event) => void = (e) => {
           this.destroySettings()
           this.initSettings(e)
+          this.$saveCopyBtn.removeClass('hidden')
           this.off('parseTemplate', callback)
         }
 
@@ -394,10 +402,15 @@ export default Garnish.Modal.extend({
     this.destroyListeners()
 
     this.$saveSpinner.removeClass('hidden')
-    const data = this.$container.serialize()
+    const saveAsNew = this.$saveCopyBtn.is(e?.target)
+    const $inputId = this.$container.find('input[name="qf[fieldId]"]')
 
-    const inputId = this.$container.find('input[name="qf[fieldId]"]')
-    const id = inputId.length > 0 ? inputId.val() : null
+    if (saveAsNew) {
+      $inputId.val('')
+    }
+
+    const data = this.$container.serialize()
+    const id = !saveAsNew && $inputId.length > 0 ? $inputId.val() : null
 
     Craft.sendActionRequest('POST', 'quick-field/actions/save-field', { data })
       .then((response: SaveFieldResponse) => {
@@ -505,6 +518,7 @@ export default Garnish.Modal.extend({
   hide: function (this: FieldModal) {
     if (!this._disabled) {
       this.base()
+      setTimeout(() => this.$saveCopyBtn.addClass('hidden'), 200)
     }
   },
 
