@@ -48,7 +48,7 @@ export default Garnish.Base.extend({
    * @param successCallback
    * @private
    */
-  _saveGroup: function (id: number, oldName: string, successCallback: Function) {
+  _saveGroup: function (id: number, oldName: string, successCallback: GroupUpdateEventFunction) {
     const name = this.promptForGroupName(oldName)
 
     if (name !== '') {
@@ -59,9 +59,11 @@ export default Garnish.Base.extend({
 
       Craft.sendActionRequest('POST', 'fields/save-group', { data })
         .then((response: SaveGroupResponse) => successCallback(this, response.data.group, oldName))
-        .catch(response => {
-          if (response.errors.length > 0) {
-            const errors: string[] = this._flattenErrors(response.errors)
+        .catch(({ response }) => {
+          const errorCount = Object.keys(response.data?.errors ?? {}).length
+
+          if (errorCount > 0) {
+            const errors: string[] = this._flattenErrors(response.data.errors)
             alert(`${Craft.t('quick-field', 'Could not save the group:')}\n\n${errors.join('\n')}`)
           } else {
             Craft.cp.displayError(Craft.t('quick-field', 'An unknown error occurred.'))

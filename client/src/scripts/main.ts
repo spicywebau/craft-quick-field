@@ -7,6 +7,7 @@ declare global {
   }
 }
 
+window.QuickField = new QuickField()
 const FLD = Craft.FieldLayoutDesigner
 const FLDinit = FLD.prototype.init
 
@@ -17,6 +18,6 @@ FLD.prototype.init = function () {
   FLDinit.apply(this, arguments)
 
   if (this.$container.is('.layoutdesigner') === true) {
-    window.QuickField = new QuickField(this)
+    window.QuickField.addFld(this)
   }
 }
