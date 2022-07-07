@@ -1,5 +1,7 @@
 import { SaveGroupResponse } from './types/Response'
 
+type GroupUpdateEventFunction = (target: GarnishComponent, group: Group, oldName: string) => void
+
 /**
  * GroupDialog class.
  * Handles the dialog box for creating new field groups.
@@ -74,8 +76,8 @@ export default Garnish.Base.extend({
    * @param eventName
    * @private
    */
-  _triggerGroupUpdateEvent: function (eventName: string) {
-    return function (target: any, group: any, oldName: string) {
+  _triggerGroupUpdateEvent: function (eventName: string): GroupUpdateEventFunction {
+    return (target, group, oldName) => {
       target.trigger(eventName, {
         target: target,
         group: group,
