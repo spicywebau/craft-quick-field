@@ -82,8 +82,13 @@ class QuickFieldLayout {
    * Adds edit buttons to existing fields.
    */
   public addFieldEditButtons (): void {
-    const $fields = this.fld.$fields.filter('.unused')
-    $fields.each((_: number, field: HTMLElement) => this.addFieldEditButton($(field)))
+    const addFieldEditButton: (_: number, field: HTMLElement) => void = (_, field) => this.addFieldEditButton($(field))
+
+    // The fields on the sidebar
+    this.fld.$fields.filter('.unused').each(addFieldEditButton)
+
+    // The fields on tabs
+    this.fld.$tabContainer.find('.fld-field[data-id]').each(addFieldEditButton)
   }
 
   /**
@@ -94,7 +99,7 @@ class QuickFieldLayout {
   public addFieldEditButton ($field: JQuery): void {
     const $button = $('<a class="qf-edit icon" title="Edit"></a>')
     this._quickField.addListener($button, 'activate', '_editField')
-    $field.prepend($button)
+    $field.append($button)
   }
 
   /**

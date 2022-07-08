@@ -33,9 +33,7 @@
 // Edit field button
 
 .fld-field {
-    .unused {
-        padding-right: 32px;
-    }
+    padding-right: 32px;
 
     .qf-edit {
         position: absolute;
@@ -47,8 +45,10 @@
         }
     }
 
-    &:not(.unused) .qf-edit {
-        display: none;
+    .fld-sidebar & {
+        &:not(.unused) .qf-edit {
+            display: none;
+        }
     }
 }
 
