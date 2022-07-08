@@ -12,6 +12,7 @@ interface QuickFieldInterface extends GarnishComponent {
   loader: LoaderInterface
   modal: any
   addFld: (fld: FieldLayoutDesigner) => void
+  addFieldEditButtonListener: ($button: JQuery) => void
   openDeleteGroupDialog: ($group: JQuery) => void
   openRenameGroupDialog: ($group: JQuery) => void
   _newField: () => void
@@ -98,7 +99,7 @@ class QuickFieldLayout {
    */
   public addFieldEditButton ($field: JQuery): void {
     const $button = $('<a class="qf-edit icon" title="Edit"></a>')
-    this._quickField.addListener($button, 'activate', '_editField')
+    this._quickField.addFieldEditButtonListener($button)
     $field.append($button)
   }
 
@@ -385,6 +386,10 @@ const QuickField = Garnish.Base.extend({
 
     newLayout.addFieldEditButtons()
     newLayout.addGroupMenus()
+  },
+
+  addFieldEditButtonListener: function ($button: JQuery): void {
+    this.addListener($button, 'activate', '_editField')
   },
 
   /**
