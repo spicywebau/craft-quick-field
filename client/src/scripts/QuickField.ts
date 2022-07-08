@@ -166,9 +166,10 @@ class QuickFieldLayout {
   }
 
   public removeField (id: number): void {
+    const selector = `.fld-field[data-id="${id}"]`
     const fld = this.fld
     const $fields = fld.$fields
-    const $field = $fields.filter(`.fld-field[data-id="${id}"]`)
+    const $field = $fields.filter(selector).add(fld.$tabContainer.find(selector))
 
     $field.remove()
     fld.$fields = $fields.not($field)
