@@ -25,6 +25,11 @@ module.exports = {
         test: /\.tsx?$/
       },
       {
+        use: ['source-map-loader'],
+        enforce: 'pre',
+        test: /\.js$/
+      },
+      {
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
         test: /\.css$/
       },
@@ -34,6 +39,7 @@ module.exports = {
       }
     ]
   },
+  devtool: 'source-map',
   plugins: [new MiniCssExtractPlugin({
     filename: 'css/[name].css'
   })]
