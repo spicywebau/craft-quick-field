@@ -8,6 +8,8 @@ use craft\base\Field;
 use craft\fieldlayoutelements\CustomField;
 use craft\fields\PlainText;
 use craft\helpers\ArrayHelper;
+use craft\helpers\Html;
+use craft\models\FieldLayout;
 use craft\web\Controller;
 use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
@@ -109,6 +111,8 @@ class QuickFieldController extends Controller
 
         $fieldsService = Craft::$app->getFields();
         $request = Craft::$app->getRequest();
+        $view = Craft::$app->getView();
+
         $config = [
             'id' => $request->getBodyParam('qf.fieldId'),
             'groupId' => $request->getRequiredBodyParam('qf.group'),
@@ -120,6 +124,7 @@ class QuickFieldController extends Controller
             'type' => $request->getRequiredBodyParam('qf.type'),
         ];
         $typeSettings = $request->getBodyParam('qf.types');
+        $layoutTypes = $request->getRequiredBodyParam('qf.layoutTypes');
 
         if (isset($typeSettings[$config['type']])) {
             $config['settings'] = $typeSettings[$config['type']];
@@ -136,6 +141,46 @@ class QuickFieldController extends Controller
             ]);
         }
 
+        // Create the element selector HTML to be inserted into the sidebar
+        // This is based on `\craft\helpers\Cp::_fldElementSelectorHtml()` (but rewritten to accommodate our need for
+        // multiple element selectors, since we might have more than one FLD on a page with different element types,
+        // e.g. Craft Commerce product types and variants)
+        $layoutField = new CustomField($field);
+        $selectorHtml = $layoutField->selectorHtml();
+
+        $classAttr = [
+            'fld-element',
+            'unused'
+        ];
+        $dataAttr = [
+            'keywords' => implode(' ', array_map('mb_strtolower', $layoutField->keywords())),
+            'config' => ['type' => CustomField::class] + $layoutField->toArray(),
+            'has-custom-width' => true,
+        ];
+        $elementSelectors = [];
+
+        $oldNamespace = $view->getNamespace();
+        $namespace = $view->namespaceInputName('element-ELEMENT_UID');
+        $view->setNamespace($namespace);
+
+        foreach ($layoutTypes as $layoutType) {
+            $layoutField->setLayout(new FieldLayout(['type' => $layoutType]));
+            $view->startJsBuffer();
+            $settingsHtml = $view->namespaceInputs($layoutField->getSettingsHtml());
+            $settingsJs = $view->clearJsBuffer(false);
+
+            $elementSelectors[$layoutType] = Html::modifyTagAttributes($selectorHtml, [
+                'class' => $classAttr,
+                'data' => $dataAttr + [
+                    'settings-namespace' => $namespace,
+                    'settings-html' => $settingsHtml ?: false,
+                    'settings-js' => $settingsJs ?: false,
+                ],
+            ]);
+        }
+
+        $view->setNamespace($oldNamespace);
+
         return $this->asSuccess(data: [
             'field' => [
                 'id' => $field->id,
@@ -149,7 +194,7 @@ class QuickFieldController extends Controller
                     'name' => $group->name,
                 ],
             ],
-            'elementSelector' => (new CustomField($field))->selectorHtml(),
+            'elementSelectors' => $elementSelectors,
         ]);
     }
 

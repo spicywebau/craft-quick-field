@@ -19,6 +19,7 @@ interface FieldLayoutDesigner {
   $fields: JQuery
   $sidebar: JQuery
   $tabContainer: JQuery
+  $uiLibraryElements: any
   Element: FldElement
   elementDrag: ElementDrag
   prototype: FldPrototype

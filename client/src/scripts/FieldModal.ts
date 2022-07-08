@@ -70,6 +70,8 @@ export default Garnish.Modal.extend({
   loadedCss: null,
   templateLoaded: false,
 
+  _layoutTypes: null,
+
   /**
    * The constructor.
    */
@@ -86,6 +88,8 @@ export default Garnish.Modal.extend({
 
     this.executedJs = {}
     this.loadedCss = {}
+
+    this._layoutTypes = {}
 
     // It's important to observe the DOM for new nodes when rendering the field settings template, as more
     // complex fields may be adding elements to the body such as modal windows or helper elements. Since the
@@ -418,7 +422,7 @@ export default Garnish.Modal.extend({
         const eventData = {
           target: this,
           field: response.data.field,
-          elementSelector: response.data.elementSelector
+          elementSelectors: response.data.elementSelectors
         }
 
         if (id === null) {
@@ -509,6 +513,25 @@ export default Garnish.Modal.extend({
    */
   promptForDelete: function () {
     return confirm(Craft.t('quick-field', 'Are you sure you want to delete this field?'))
+  },
+
+  addLayoutType: function (layoutType: string) {
+    if (typeof this._layoutTypes[layoutType] === 'undefined' || this._layoutTypes[layoutType] === 0) {
+      this._layoutTypes[layoutType] = 1
+      $(`<input type="hidden" name="qf[layoutTypes][]" value="${layoutType}">`).prependTo(this.$container)
+    } else {
+      this._layoutTypes[layoutType]++
+    }
+  },
+
+  removeLayoutType: function (layoutType: string) {
+    if (typeof this._layoutTypes[layoutType] !== 'undefined' && this._layoutTypes[layoutType] > 0) {
+      this._layoutTypes[layoutType]--
+
+      if (this._layoutTypes[layoutType] === 0) {
+        this.$container.find(`input[name="qf[layoutTypes][]"][value="${layoutType}"]`).remove()
+      }
+    }
   },
 
   /**

@@ -23,7 +23,7 @@ interface EditFieldResponse {
 interface SaveFieldResponse {
   data: {
     field: Field
-    elementSelector: string
+    elementSelectors: string
     template?: Template
   }
 }

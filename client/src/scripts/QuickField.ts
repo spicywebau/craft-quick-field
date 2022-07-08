@@ -34,7 +34,7 @@ interface FieldEvent extends Event {
 }
 
 interface SaveFieldEvent extends FieldEvent {
-  elementSelector: string
+  elementSelectors: string
 }
 
 interface DeleteGroupEvent extends Event {
@@ -51,6 +51,7 @@ class QuickFieldLayout {
   public $groupButton
   public $fieldButton
   private readonly _groupObserver: MutationObserver
+  private _type: string
 
   constructor (private readonly _quickField: QuickFieldInterface, public fld: FieldLayoutDesigner) {
     this.fld.$container.addClass('quick-field')
@@ -69,6 +70,14 @@ class QuickFieldLayout {
         .removeClass('hidden')
     })
     this._groupObserver.observe(this.fld.$fieldLibrary[0], { attributes: true, childList: true, subtree: true })
+  }
+
+  public getType (): string {
+    return this._type
+  }
+
+  public setType (type: string): void {
+    this._type = type
   }
 
   public attachFieldButton (): void {
@@ -357,8 +366,8 @@ const QuickField = Garnish.Base.extend({
       })
     })
 
-    this.modal.on('newField', (e: SaveFieldEvent) => this._addField(e.field, e.elementSelector))
-    this.modal.on('saveField', (e: SaveFieldEvent) => this._resetField(e.field, e.elementSelector))
+    this.modal.on('newField', (e: SaveFieldEvent) => this._addField(e.field, e.elementSelectors))
+    this.modal.on('saveField', (e: SaveFieldEvent) => this._resetField(e.field, e.elementSelectors))
     this.modal.on('deleteField', (e: FieldEvent) => this._removeField(e.field.id))
     this.modal.on('destroy', () => {
       this._layouts.forEach((layout) => layout.detachFieldButton())
@@ -386,6 +395,15 @@ const QuickField = Garnish.Base.extend({
 
     newLayout.addFieldEditButtons()
     newLayout.addGroupMenus()
+
+    // Get the field layout type from one of the UI elements' settings HTML
+    const matches = fld.$uiLibraryElements
+      .filter('[data-type="craft-fieldlayoutelements-Heading"]')
+      .data('settings-html')
+      .match(/elementType&quot;:&quot;([a-zA-Z\\]+)&quot;,&quot;sourceKey/g)
+    const layoutType = matches[matches.length - 1].split('&quot;')[2].replaceAll('\\\\', '\\')
+    this.modal.addLayoutType(layoutType)
+    newLayout.setType(layoutType)
   },
 
   addFieldEditButtonListener: function ($button: JQuery): void {
@@ -421,12 +439,15 @@ const QuickField = Garnish.Base.extend({
    * Adds a new unused (dashed border) field to the field layout designer.
    *
    * @param field
-   * @param elementSelector
+   * @param elementSelectors
    * @private
    */
-  _addField: function (this: QuickFieldInterface, field: Field, elementSelector: string) {
+  _addField: function (this: QuickFieldInterface, field: Field, elementSelectors: Record<string, string>) {
     try {
-      this._layouts.forEach((layout) => layout.addField(field, elementSelector))
+      this._layouts.forEach((layout) => {
+        const layoutType = layout.getType()
+        layout.addField(field, elementSelectors[layoutType])
+      })
     } catch (e) {
       Craft.cp.displayError(Craft.t('quick-field', e.message, { groupName: field.group.name }))
     }
@@ -446,11 +467,14 @@ const QuickField = Garnish.Base.extend({
    * Renames and regroups an existing field on the field layout designer.
    *
    * @param field
-   * @param elementSelector
+   * @param elementSelectors
    * @private
    */
-  _resetField: function (this: QuickFieldInterface, field: Field, elementSelector: string) {
-    this._layouts.forEach((layout) => layout.resetField(field, elementSelector))
+  _resetField: function (this: QuickFieldInterface, field: Field, elementSelectors: Record<string, string>) {
+    this._layouts.forEach((layout) => {
+      const layoutType = layout.getType()
+      layout.resetField(field, elementSelectors[layoutType])
+    })
   },
 
   /**
