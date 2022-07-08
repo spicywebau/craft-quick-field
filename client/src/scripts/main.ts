@@ -16,10 +16,10 @@ const FLDElementInitUi = FLDElement.prototype.initUi
 /**
  * Override the current FieldLayoutDesigner "constructor" so new buttons can be initialised.
  */
-FLD.prototype.init = function () {
+FLD.prototype.init = function (this: FieldLayoutDesigner) {
   FLDinit.apply(this, arguments)
 
-  if (this.$container.is('.layoutdesigner') === true) {
+  if (this.$container.is('.layoutdesigner')) {
     window.QuickField.addFld(this)
   }
 }
@@ -27,10 +27,10 @@ FLD.prototype.init = function () {
 /**
  * Override the current FieldLayoutDesigner.Element.initUi() so field edit buttons can be initialised.
  */
-FLDElement.prototype.initUi = function () {
+FLDElement.prototype.initUi = function (this: FldElement) {
   FLDElementInitUi.apply(this, arguments)
 
-  if (this.$container.is('.fld-field') === true) {
+  if (this.$container.is('.fld-field')) {
     window.QuickField.addFieldEditButtonListener(this.$container.find('.qf-edit'))
   }
 }

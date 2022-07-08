@@ -25,6 +25,7 @@ interface FieldLayoutDesigner {
 }
 
 interface FldElement {
+  $container: JQuery
   prototype: {
     initUi: () => void
   }
