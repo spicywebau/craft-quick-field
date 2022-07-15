@@ -1,12 +1,19 @@
 import { SaveGroupResponse } from './types/Response'
 
+interface GroupDialogInterface extends GarnishComponent {
+  addNewGroup: () => void
+  renameGroup: (id: number, name: string) => void
+  deleteGroup: (group: Group) => void
+  promptForGroupName: (oldName: string) => string
+}
+
 type GroupUpdateEventFunction = (target: GarnishComponent, group: Group, oldName: string) => void
 
 /**
  * GroupDialog class.
  * Handles the dialog box for creating new field groups.
  */
-export default Garnish.Base.extend({
+const GroupDialog = Garnish.Base.extend({
 
   /**
    * Requests input for new group name, then creates the group.
@@ -117,3 +124,5 @@ export default Garnish.Base.extend({
       .reduce((errors: string[], key: string) => errors.concat(responseErrors[key]), [])
   }
 })
+
+export { GroupDialog, GroupDialogInterface }

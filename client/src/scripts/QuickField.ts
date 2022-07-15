@@ -1,6 +1,6 @@
 import * as $ from 'jquery'
 import FieldModal from './FieldModal'
-import GroupDialog from './GroupDialog'
+import { GroupDialog, GroupDialogInterface } from './GroupDialog'
 import { Loader, LoaderInterface } from './Loader'
 import { LoadResponseData } from './types/Response'
 import Event from './types/Event'
@@ -10,7 +10,7 @@ interface QuickFieldInterface extends GarnishComponent {
   _layouts: QuickFieldLayout[]
   _history: QuickFieldHistoryItemInterface[]
   _initialGroups: Group[]
-  dialog: any
+  dialog: GroupDialogInterface
   loader: LoaderInterface
   modal: any
   addFld: (fld: FieldLayoutDesigner) => void
