@@ -499,7 +499,10 @@ const QuickField = Garnish.Base.extend({
 
     newLayout.addFieldEditButtons()
     newLayout.addGroupMenus()
-    newLayout.addGroupIdData(this._initialGroups)
+
+    if (this._initialGroups !== null) {
+      newLayout.addGroupIdData(this._initialGroups)
+    }
 
     // Get the field layout type from one of the UI elements' settings HTML
     const matches = fld.$uiLibraryElements
