@@ -51,7 +51,7 @@ const GroupDialog = Garnish.Base.extend({
   _saveGroup: function (id: number, oldName: string, successCallback: GroupUpdateEventFunction) {
     const name = this.promptForGroupName(oldName)
 
-    if (name !== '') {
+    if (name !== null && name !== '' && name !== oldName) {
       const data = {
         name: name,
         id: id
