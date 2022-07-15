@@ -41,7 +41,7 @@ interface FldPrototype {
   init: (container: JQuery, settings: object) => void
 }
 
-type Field = Readonly<{
+interface Field {
   group: Group
   id: number
   name: string
@@ -49,9 +49,9 @@ type Field = Readonly<{
   instructions: string
   translationMethod: string
   translationKeyFormat: string
-}>
+}
 
-type Group = Readonly<{
+interface Group {
   id: number
   name: string
-}>
+}
