@@ -9,13 +9,6 @@ type GroupUpdateEventFunction = (target: GarnishComponent, group: Group, oldName
 export default Garnish.Base.extend({
 
   /**
-   * The constructor.
-   */
-  init: function () {
-    this.quickField = null
-  },
-
-  /**
    * Requests input for new group name, then creates the group.
    */
   addNewGroup: function () {
