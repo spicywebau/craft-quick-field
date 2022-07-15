@@ -6,10 +6,6 @@ import { LoadResponseData } from './types/Response'
 import Event from './types/Event'
 
 interface QuickFieldInterface extends GarnishComponent {
-  _groupObserver: MutationObserver
-  _layouts: QuickFieldLayout[]
-  _history: QuickFieldHistoryItemInterface[]
-  _initialGroups: Group[]
   dialog: GroupDialogInterface
   loader: LoaderInterface
   modal: FieldModalInterface
@@ -18,6 +14,13 @@ interface QuickFieldInterface extends GarnishComponent {
   addFieldEditButtonListener: ($button: JQuery) => void
   openDeleteGroupDialog: ($group: JQuery) => void
   openRenameGroupDialog: ($group: JQuery) => void
+}
+
+interface QuickFieldPrivateInterface extends QuickFieldInterface {
+  _groupObserver: MutationObserver
+  _layouts: QuickFieldLayout[]
+  _history: QuickFieldHistoryItemInterface[]
+  _initialGroups: Group[]
   _newField: () => void
   _addField: (field: Field, elementSelectors: Record<string, string>) => void
   _resetField: (field: Field, elementSelectors: Record<string, string>, selectorHtml: string) => void
@@ -433,7 +436,7 @@ const QuickField = Garnish.Base.extend({
   /**
    * The constructor.
    */
-  init: function (this: QuickFieldInterface) {
+  init: function (this: QuickFieldPrivateInterface) {
     let fieldButtonAttached = true
 
     this._layouts = []
@@ -488,7 +491,7 @@ const QuickField = Garnish.Base.extend({
     this.loader.on('unload', () => this.modal.destroy())
   },
 
-  addFld: function (this: QuickFieldInterface, fld: FieldLayoutDesigner) {
+  addFld: function (this: QuickFieldPrivateInterface, fld: FieldLayoutDesigner) {
     const newLayout = new QuickFieldLayout(this, fld)
     this._layouts.push(newLayout)
     this.addListener(newLayout.$groupButton, 'activate', '_newGroup')
@@ -582,7 +585,7 @@ const QuickField = Garnish.Base.extend({
    * @param elementSelectors
    * @private
    */
-  _addField: function (this: QuickFieldInterface, field: Field, elementSelectors: Record<string, string>) {
+  _addField: function (this: QuickFieldPrivateInterface, field: Field, elementSelectors: Record<string, string>) {
     try {
       this._layouts.forEach((layout) => {
         const layoutType = layout.getType()
@@ -600,7 +603,7 @@ const QuickField = Garnish.Base.extend({
    * @param field
    * @private
    */
-  _removeField: function (this: QuickFieldInterface, field: Field) {
+  _removeField: function (this: QuickFieldPrivateInterface, field: Field) {
     this._layouts.forEach((layout) => layout.removeField(field.id))
     this._history.push(new QuickFieldHistoryFieldItem(QuickFieldHistoryAction.REMOVE, field))
   },
@@ -613,7 +616,7 @@ const QuickField = Garnish.Base.extend({
    * @param selectorHtml
    * @private
    */
-  _resetField: function (this: QuickFieldInterface, field: Field, elementSelectors: Record<string, string>, selectorHtml: string) {
+  _resetField: function (this: QuickFieldPrivateInterface, field: Field, elementSelectors: Record<string, string>, selectorHtml: string) {
     this._layouts.forEach((layout) => {
       const layoutType = layout.getType()
       layout.resetField(field, elementSelectors[layoutType], selectorHtml)
@@ -637,7 +640,7 @@ const QuickField = Garnish.Base.extend({
    * @param resetFldGroups
    * @private
    */
-  _addGroup: function (this: QuickFieldInterface, group: Group, resetFldGroups: boolean) {
+  _addGroup: function (this: QuickFieldPrivateInterface, group: Group, resetFldGroups: boolean) {
     this._layouts.forEach((layout) => layout.addGroup(group, resetFldGroups))
     this._history.push(new QuickFieldHistoryGroupItem(QuickFieldHistoryAction.ADD, group))
 
@@ -669,7 +672,7 @@ const QuickField = Garnish.Base.extend({
    * @param oldName
    * @private
    */
-  _renameGroup: function (this: QuickFieldInterface, group: Group, oldName: string) {
+  _renameGroup: function (this: QuickFieldPrivateInterface, group: Group, oldName: string) {
     this._layouts.forEach((layout) => layout.renameGroup(group, oldName))
     this._history.push(new QuickFieldHistoryGroupItem(QuickFieldHistoryAction.EDIT, group, { oldName }))
 
@@ -721,7 +724,7 @@ const QuickField = Garnish.Base.extend({
    * @param group Group
    * @private
    */
-  _removeGroup: function (this: QuickFieldInterface, group: Group) {
+  _removeGroup: function (this: QuickFieldPrivateInterface, group: Group) {
     this._layouts.forEach((layout) => layout.removeGroup(group.id))
     this._history.push(new QuickFieldHistoryGroupItem(QuickFieldHistoryAction.REMOVE, group))
 
