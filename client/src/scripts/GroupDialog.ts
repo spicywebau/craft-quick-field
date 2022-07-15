@@ -18,7 +18,7 @@ const GroupDialog = Garnish.Base.extend({
   /**
    * Requests input for new group name, then creates the group.
    */
-  addNewGroup: function () {
+  addNewGroup () {
     this._saveGroup(
       null,
       '',
@@ -32,7 +32,7 @@ const GroupDialog = Garnish.Base.extend({
    * @param id
    * @param name
    */
-  renameGroup: function (id: number, name: string) {
+  renameGroup (id: number, name: string) {
     this._saveGroup(
       id,
       name,
@@ -48,7 +48,7 @@ const GroupDialog = Garnish.Base.extend({
    * @param successCallback
    * @private
    */
-  _saveGroup: function (id: number, oldName: string, successCallback: GroupUpdateEventFunction) {
+  _saveGroup (id: number, oldName: string, successCallback: GroupUpdateEventFunction) {
     const name = this.promptForGroupName(oldName)
 
     if (name !== null && name !== '' && name !== oldName) {
@@ -78,7 +78,7 @@ const GroupDialog = Garnish.Base.extend({
    * @param eventName
    * @private
    */
-  _triggerGroupUpdateEvent: function (eventName: string): GroupUpdateEventFunction {
+  _triggerGroupUpdateEvent (eventName: string): GroupUpdateEventFunction {
     return (target, group, oldName) => {
       target.trigger(eventName, {
         target: target,
@@ -93,7 +93,7 @@ const GroupDialog = Garnish.Base.extend({
    *
    * @param group
    */
-  deleteGroup: function (group: Group) {
+  deleteGroup (group: Group) {
     if (confirm(Craft.t('quick-field', 'Are you sure you want to delete this group and all its fields?'))) {
       const data = {
         id: group.id
@@ -109,7 +109,7 @@ const GroupDialog = Garnish.Base.extend({
    *
    * @return String
    */
-  promptForGroupName: function (oldName: string) {
+  promptForGroupName (oldName: string) {
     return prompt(Craft.t('quick-field', 'What do you want to name the group?'), oldName)
   },
 
@@ -119,7 +119,7 @@ const GroupDialog = Garnish.Base.extend({
    *
    * @return Array
    */
-  _flattenErrors: function (responseErrors: Record<string, string>): string[] {
+  _flattenErrors (responseErrors: Record<string, string>): string[] {
     return Object.keys(responseErrors)
       .reduce((errors: string[], key: string) => errors.concat(responseErrors[key]), [])
   }
