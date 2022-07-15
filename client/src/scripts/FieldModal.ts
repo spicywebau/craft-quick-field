@@ -2,7 +2,7 @@ import * as $ from 'jquery'
 import { DeleteFieldResponse, EditFieldResponse, SaveFieldResponse, Template } from './types/Response'
 import Event from './types/Event'
 
-interface FieldModal extends GarnishModal {
+interface FieldModalInterface extends GarnishModal {
   $main: JQuery
   $html: JQuery
   $js: JQuery
@@ -12,6 +12,7 @@ interface FieldModal extends GarnishModal {
   $currentCss: JQuery
   $deleteBtn: JQuery
   $deleteSpinner: JQuery
+  $loadSpinner: JQuery
   $saveBtn: JQuery
   $saveCopyBtn: JQuery
   $saveSpinner: JQuery
@@ -20,11 +21,12 @@ interface FieldModal extends GarnishModal {
   loadedCss: Record<string, JQuery>
   observer: MutationObserver
   templateLoaded: boolean
-  base: () => void
+  addLayoutType: (layoutType: string) => void
   destroyListeners: () => void
   destroySettings: (e?: Event) => void
   initListeners: () => void
   initSettings: (e?: Event) => void
+  initTemplate: (template: Template) => void
   parseTemplate: (template: Template) => void
   promptForDelete: () => boolean
   runExternalScripts: (files: string[]) => void
@@ -40,7 +42,7 @@ interface SettingsEvent extends Event {
  * FieldModal class
  * Handles the modal window for creating new fields.
  */
-export default Garnish.Modal.extend({
+const FieldModal = Garnish.Modal.extend({
 
   $body: null,
   $content: null,
@@ -131,7 +133,7 @@ export default Garnish.Modal.extend({
    *
    * @param template
    */
-  initTemplate: function (this: FieldModal, template: Template) {
+  initTemplate: function (this: FieldModalInterface, template: Template) {
     if (this.templateLoaded) {
       return
     }
@@ -161,7 +163,7 @@ export default Garnish.Modal.extend({
    *
    * @param template
    */
-  parseTemplate: function (this: FieldModal, template: Template) {
+  parseTemplate: function (this: FieldModalInterface, template: Template) {
     const $head = Garnish.$doc.find('head')
     const $html = $(template.html)
     const $js = $(template.js).filter('script')
@@ -292,8 +294,8 @@ export default Garnish.Modal.extend({
   /**
    * Initialises the HTML, CSS and JavaScript for the modal window.
    */
-  initSettings: function (this: FieldModal, e?: SettingsEvent) {
-    const that: FieldModal = e?.target ?? this
+  initSettings: function (this: FieldModalInterface, e?: SettingsEvent) {
+    const that: FieldModalInterface = e?.target ?? this
 
     // If the template files aren't loaded yet, just cancel initialisation of the settings.
     if (!that.templateLoaded) {
@@ -396,7 +398,7 @@ export default Garnish.Modal.extend({
    *
    * @param e
    */
-  saveField: function (this: FieldModal, e?: Event) {
+  saveField: function (this: FieldModalInterface, e?: Event) {
     e?.preventDefault()
 
     if (this.$saveBtn.hasClass('disabled') || !this.$saveSpinner.hasClass('hidden')) {
@@ -466,7 +468,7 @@ export default Garnish.Modal.extend({
    *
    * @param e
    */
-  deleteField: function (this: FieldModal, e?: Event) {
+  deleteField: function (this: FieldModalInterface, e?: Event) {
     e?.preventDefault()
 
     if (this.$deleteBtn.hasClass('disabled') || !this.$deleteSpinner.hasClass('hidden')) {
@@ -539,7 +541,7 @@ export default Garnish.Modal.extend({
    * Prevents the modal from closing if it's disabled.
    * This fixes issues if the modal is closed when saving/deleting fields.
    */
-  hide: function (this: FieldModal) {
+  hide: function (this: FieldModalInterface) {
     if (!this._disabled) {
       this.base()
       setTimeout(() => this.$saveCopyBtn.addClass('hidden'), 200)
@@ -561,3 +563,5 @@ export default Garnish.Modal.extend({
     this.trigger('destroy')
   }
 })
+
+export { FieldModal, FieldModalInterface }
