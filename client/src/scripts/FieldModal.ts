@@ -77,7 +77,7 @@ const FieldModal = Garnish.Modal.extend({
   /**
    * The constructor.
    */
-  init (settings: object) {
+  init (settings: object): void {
     this.base()
     this.setSettings(settings, {
       resizable: true
@@ -133,7 +133,7 @@ const FieldModal = Garnish.Modal.extend({
    *
    * @param template
    */
-  initTemplate (this: FieldModalInterface, template: Template) {
+  initTemplate (this: FieldModalInterface, template: Template): void {
     if (this.templateLoaded) {
       return
     }
@@ -163,7 +163,7 @@ const FieldModal = Garnish.Modal.extend({
    *
    * @param template
    */
-  parseTemplate (this: FieldModalInterface, template: Template) {
+  parseTemplate (this: FieldModalInterface, template: Template): void {
     const $head = Garnish.$doc.find('head')
     const $html = $(template.html)
     const $js = $(template.js).filter('script')
@@ -223,7 +223,7 @@ const FieldModal = Garnish.Modal.extend({
    *
    * @param files - An array of URLs (as strings) to JavaScript files
    */
-  runExternalScripts (files: string[]) {
+  runExternalScripts (files: string[]): void {
     let filesCount = files.length
 
     if (filesCount > 0) {
@@ -256,7 +256,7 @@ const FieldModal = Garnish.Modal.extend({
   /**
    * Binds all listeners so the Quick Field buttons can start working.
    */
-  initListeners () {
+  initListeners (): void {
     this.$cancelBtn.removeClass('disabled')
     this.$saveBtn.removeClass('disabled')
     this.$saveCopyBtn.removeClass('disabled')
@@ -275,7 +275,7 @@ const FieldModal = Garnish.Modal.extend({
   /**
    * Unbinds all listeners.
    */
-  destroyListeners () {
+  destroyListeners (): void {
     this.$cancelBtn.addClass('disabled')
     this.$saveBtn.addClass('disabled')
     this.$saveCopyBtn.addClass('disabled')
@@ -294,7 +294,7 @@ const FieldModal = Garnish.Modal.extend({
   /**
    * Initialises the HTML, CSS and JavaScript for the modal window.
    */
-  initSettings (this: FieldModalInterface, e?: SettingsEvent) {
+  initSettings (this: FieldModalInterface, e?: SettingsEvent): void {
     const that: FieldModalInterface = e?.target ?? this
 
     // If the template files aren't loaded yet, just cancel initialisation of the settings.
@@ -339,7 +339,7 @@ const FieldModal = Garnish.Modal.extend({
    *
    * @param e
    */
-  destroySettings (e?: Event) {
+  destroySettings (e?: Event): void {
     const that = e?.target ?? this
 
     that.$currentHtml.remove()
@@ -354,7 +354,7 @@ const FieldModal = Garnish.Modal.extend({
    * Event handler for the Close button.
    * Hides the modal window from view.
    */
-  closeModal () {
+  closeModal (): void {
     this.hide()
   },
 
@@ -363,7 +363,7 @@ const FieldModal = Garnish.Modal.extend({
    *
    * @param id
    */
-  editField (id: number) {
+  editField (id: number): void {
     this.destroyListeners()
     this.show()
     this.initListeners()
@@ -398,7 +398,7 @@ const FieldModal = Garnish.Modal.extend({
    *
    * @param e
    */
-  saveField (this: FieldModalInterface, e?: Event) {
+  saveField (this: FieldModalInterface, e?: Event): void {
     e?.preventDefault()
 
     if (this.$saveBtn.hasClass('disabled') || !this.$saveSpinner.hasClass('hidden')) {
@@ -468,7 +468,7 @@ const FieldModal = Garnish.Modal.extend({
    *
    * @param e
    */
-  deleteField (this: FieldModalInterface, e?: Event) {
+  deleteField (this: FieldModalInterface, e?: Event): void {
     e?.preventDefault()
 
     if (this.$deleteBtn.hasClass('disabled') || !this.$deleteSpinner.hasClass('hidden')) {
@@ -514,11 +514,11 @@ const FieldModal = Garnish.Modal.extend({
   /**
    * Delete confirmation dialog box.
    */
-  promptForDelete () {
+  promptForDelete (): boolean {
     return confirm(Craft.t('quick-field', 'Are you sure you want to delete this field?'))
   },
 
-  addLayoutType (layoutType: string) {
+  addLayoutType (layoutType: string): void {
     if (typeof this._layoutTypes[layoutType] === 'undefined' || this._layoutTypes[layoutType] === 0) {
       this._layoutTypes[layoutType] = 1
       $(`<input type="hidden" name="qf[layoutTypes][]" value="${layoutType}">`).prependTo(this.$container)
@@ -527,7 +527,7 @@ const FieldModal = Garnish.Modal.extend({
     }
   },
 
-  removeLayoutType (layoutType: string) {
+  removeLayoutType (layoutType: string): void {
     if (typeof this._layoutTypes[layoutType] !== 'undefined' && this._layoutTypes[layoutType] > 0) {
       this._layoutTypes[layoutType]--
 
@@ -541,7 +541,7 @@ const FieldModal = Garnish.Modal.extend({
    * Prevents the modal from closing if it's disabled.
    * This fixes issues if the modal is closed when saving/deleting fields.
    */
-  hide (this: FieldModalInterface) {
+  hide (this: FieldModalInterface): void {
     if (!this._disabled) {
       this.base()
       setTimeout(() => this.$saveCopyBtn.addClass('hidden'), 200)
@@ -551,7 +551,7 @@ const FieldModal = Garnish.Modal.extend({
   /**
    * Removes everything to do with the modal from the DOM.
    */
-  destroy () {
+  destroy (): void {
     this.base()
 
     this.destroyListeners()

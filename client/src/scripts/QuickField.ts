@@ -436,7 +436,7 @@ const QuickField = Garnish.Base.extend({
   /**
    * The constructor.
    */
-  init (this: QuickFieldPrivateInterface) {
+  init (this: QuickFieldPrivateInterface): void {
     let fieldButtonAttached = true
 
     this._layouts = []
@@ -491,7 +491,7 @@ const QuickField = Garnish.Base.extend({
     this.loader.on('unload', () => this.modal.destroy())
   },
 
-  addFld (this: QuickFieldPrivateInterface, fld: FieldLayoutDesigner) {
+  addFld (this: QuickFieldPrivateInterface, fld: FieldLayoutDesigner): void {
     const newLayout = new QuickFieldLayout(this, fld)
     this._layouts.push(newLayout)
     this.addListener(newLayout.$groupButton, 'activate', '_newGroup')
@@ -562,7 +562,7 @@ const QuickField = Garnish.Base.extend({
    *
    * @private
    */
-  _newField () {
+  _newField (): void {
     this.modal.show()
   },
 
@@ -573,7 +573,7 @@ const QuickField = Garnish.Base.extend({
    * @param e
    * @private
    */
-  _editField (e: Event) {
+  _editField (e: Event): void {
     const $button = $(e.target)
     const $field = $button.parent()
     const id = $field.data('id')
@@ -588,7 +588,7 @@ const QuickField = Garnish.Base.extend({
    * @param elementSelectors
    * @private
    */
-  _addField (this: QuickFieldPrivateInterface, field: Field, elementSelectors: Record<string, string>) {
+  _addField (this: QuickFieldPrivateInterface, field: Field, elementSelectors: Record<string, string>): void {
     try {
       this._layouts.forEach((layout) => {
         const layoutType = layout.getType()
@@ -606,7 +606,7 @@ const QuickField = Garnish.Base.extend({
    * @param field
    * @private
    */
-  _removeField (this: QuickFieldPrivateInterface, field: Field) {
+  _removeField (this: QuickFieldPrivateInterface, field: Field): void {
     this._layouts.forEach((layout) => layout.removeField(field.id))
     this._history.push(new QuickFieldHistoryFieldItem(QuickFieldHistoryAction.REMOVE, field))
   },
@@ -619,7 +619,7 @@ const QuickField = Garnish.Base.extend({
    * @param selectorHtml
    * @private
    */
-  _resetField (this: QuickFieldPrivateInterface, field: Field, elementSelectors: Record<string, string>, selectorHtml: string) {
+  _resetField (this: QuickFieldPrivateInterface, field: Field, elementSelectors: Record<string, string>, selectorHtml: string): void {
     this._layouts.forEach((layout) => {
       const layoutType = layout.getType()
       layout.resetField(field, elementSelectors[layoutType], selectorHtml)
@@ -632,7 +632,7 @@ const QuickField = Garnish.Base.extend({
    *
    * @private
    */
-  _newGroup () {
+  _newGroup (): void {
     this.dialog.addNewGroup()
   },
 
@@ -643,7 +643,7 @@ const QuickField = Garnish.Base.extend({
    * @param resetFldGroups
    * @private
    */
-  _addGroup (this: QuickFieldPrivateInterface, group: Group, resetFldGroups: boolean) {
+  _addGroup (this: QuickFieldPrivateInterface, group: Group, resetFldGroups: boolean): void {
     this._layouts.forEach((layout) => layout.addGroup(group, resetFldGroups))
     this._history.push(new QuickFieldHistoryGroupItem(QuickFieldHistoryAction.ADD, group))
 
@@ -662,7 +662,7 @@ const QuickField = Garnish.Base.extend({
    *
    * @param $group
    */
-  openRenameGroupDialog ($group: JQuery) {
+  openRenameGroupDialog ($group: JQuery): void {
     const id = $group.data('id')
     const oldName = $group.children('h6').text()
     this.dialog.renameGroup(id, oldName)
@@ -675,7 +675,7 @@ const QuickField = Garnish.Base.extend({
    * @param oldName
    * @private
    */
-  _renameGroup (this: QuickFieldPrivateInterface, group: Group, oldName: string) {
+  _renameGroup (this: QuickFieldPrivateInterface, group: Group, oldName: string): void {
     this._layouts.forEach((layout) => layout.renameGroup(group, oldName))
     this._history.push(new QuickFieldHistoryGroupItem(QuickFieldHistoryAction.EDIT, group, { oldName }))
 
@@ -696,7 +696,7 @@ const QuickField = Garnish.Base.extend({
    * @param optionText
    * @private
    */
-  _addOptionToGroupSelect ($option: JQuery, $select: JQuery, optionText: string) {
+  _addOptionToGroupSelect ($option: JQuery, $select: JQuery, optionText: string): void {
     const $prevOption = $select.children().filter(function () {
       return $(this).text().toLowerCase() < optionText.toLowerCase()
     }).last()
@@ -713,7 +713,7 @@ const QuickField = Garnish.Base.extend({
    *
    * @param $group
    */
-  openDeleteGroupDialog ($group: JQuery) {
+  openDeleteGroupDialog ($group: JQuery): void {
     const group = {
       id: $group.data('id'),
       name: $group.children('h6').text()
@@ -727,7 +727,7 @@ const QuickField = Garnish.Base.extend({
    * @param group Group
    * @private
    */
-  _removeGroup (this: QuickFieldPrivateInterface, group: Group) {
+  _removeGroup (this: QuickFieldPrivateInterface, group: Group): void {
     this._layouts.forEach((layout) => layout.removeGroup(group.id))
     this._history.push(new QuickFieldHistoryGroupItem(QuickFieldHistoryAction.REMOVE, group))
 

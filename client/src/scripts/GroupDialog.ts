@@ -18,7 +18,7 @@ const GroupDialog = Garnish.Base.extend({
   /**
    * Requests input for new group name, then creates the group.
    */
-  addNewGroup () {
+  addNewGroup (): void {
     this._saveGroup(
       null,
       '',
@@ -32,7 +32,7 @@ const GroupDialog = Garnish.Base.extend({
    * @param id
    * @param name
    */
-  renameGroup (id: number, name: string) {
+  renameGroup (id: number, name: string): void {
     this._saveGroup(
       id,
       name,
@@ -48,7 +48,7 @@ const GroupDialog = Garnish.Base.extend({
    * @param successCallback
    * @private
    */
-  _saveGroup (id: number, oldName: string, successCallback: GroupUpdateEventFunction) {
+  _saveGroup (id: number, oldName: string, successCallback: GroupUpdateEventFunction): void {
     const name = this.promptForGroupName(oldName)
 
     if (name !== null && name !== '' && name !== oldName) {
@@ -93,7 +93,7 @@ const GroupDialog = Garnish.Base.extend({
    *
    * @param group
    */
-  deleteGroup (group: Group) {
+  deleteGroup (group: Group): void {
     if (confirm(Craft.t('quick-field', 'Are you sure you want to delete this group and all its fields?'))) {
       const data = {
         id: group.id
@@ -109,7 +109,7 @@ const GroupDialog = Garnish.Base.extend({
    *
    * @return String
    */
-  promptForGroupName (oldName: string) {
+  promptForGroupName (oldName: string): string|null {
     return prompt(Craft.t('quick-field', 'What do you want to name the group?'), oldName)
   },
 

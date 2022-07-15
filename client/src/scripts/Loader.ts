@@ -22,7 +22,7 @@ const Loader = Garnish.Base.extend({
   /**
    * The constructor.
    */
-  init () {
+  init (): void {
     this.loadStatus = LoadStatus.UNLOADED
     this.load()
   },
@@ -30,7 +30,7 @@ const Loader = Garnish.Base.extend({
   /**
    * Loads the field settings template file, as well as all the resources that come with it.
    */
-  load () {
+  load (): void {
     if (this.loadStatus === LoadStatus.UNLOADED) {
       this.loadStatus = LoadStatus.LOADING
       Craft.sendActionRequest('POST', 'quick-field/actions/load', {})
@@ -52,7 +52,7 @@ const Loader = Garnish.Base.extend({
    * Whether the initial load of Quick Field data hasn't occurred.
    * @returns boolean
    */
-  isUnloaded () {
+  isUnloaded (): boolean {
     return this.loadStatus === LoadStatus.UNLOADED
   }
 })
