@@ -31,6 +31,12 @@ FLDElement.prototype.initUi = function (this: FldElement) {
   FLDElementInitUi.apply(this, arguments)
 
   if (this.$container.is('.fld-field')) {
-    window.QuickField.addFieldEditButtonListener(this.$container.find('.qf-edit'))
+    const $editButton = this.$container.find('.qf-edit')
+
+    if ($editButton.length > 0) {
+      window.QuickField.addFieldEditButtonListener($editButton)
+    } else {
+      window.QuickField.addFieldEditButton(this.$container)
+    }
   }
 }

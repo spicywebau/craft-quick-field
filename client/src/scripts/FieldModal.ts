@@ -422,7 +422,8 @@ export default Garnish.Modal.extend({
         const eventData = {
           target: this,
           field: response.data.field,
-          elementSelectors: response.data.elementSelectors
+          elementSelectors: response.data.elementSelectors,
+          selectorHtml: response.data.selectorHtml
         }
 
         if (id === null) {

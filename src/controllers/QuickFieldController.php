@@ -195,6 +195,7 @@ class QuickFieldController extends Controller
                 ],
             ],
             'elementSelectors' => $elementSelectors,
+            'selectorHtml' => $selectorHtml,
         ]);
     }
 

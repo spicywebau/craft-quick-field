@@ -24,6 +24,7 @@ interface SaveFieldResponse {
   data: {
     field: Field
     elementSelectors: string
+    selectorHtml: string
     template?: Template
   }
 }

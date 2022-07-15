@@ -12,12 +12,13 @@ interface QuickFieldInterface extends GarnishComponent {
   loader: LoaderInterface
   modal: any
   addFld: (fld: FieldLayoutDesigner) => void
+  addFieldEditButton: ($button: JQuery) => void
   addFieldEditButtonListener: ($button: JQuery) => void
   openDeleteGroupDialog: ($group: JQuery) => void
   openRenameGroupDialog: ($group: JQuery) => void
   _newField: () => void
-  _addField: (field: Field, elementSelector: string) => void
-  _resetField: (field: Field, elementSelector: string) => void
+  _addField: (field: Field, elementSelectors: Record<string, string>) => void
+  _resetField: (field: Field, elementSelectors: Record<string, string>, selectorHtml: string) => void
   _removeField: (id: number) => void
   _addGroup: (group: Group, resetFldGroups: boolean) => void
   _removeGroup: (id: number) => void
@@ -34,7 +35,8 @@ interface FieldEvent extends Event {
 }
 
 interface SaveFieldEvent extends FieldEvent {
-  elementSelectors: string
+  elementSelectors: Record<string, string>
+  selectorHtml: string
 }
 
 interface DeleteGroupEvent extends Event {
@@ -52,6 +54,7 @@ class QuickFieldLayout {
   public $fieldButton
   private readonly _groupObserver: MutationObserver
   private _type: string
+  private _replacePlaceholder: Record<number, Function>
 
   constructor (private readonly _quickField: QuickFieldInterface, public fld: FieldLayoutDesigner) {
     this.fld.$container.addClass('quick-field')
@@ -59,6 +62,7 @@ class QuickFieldLayout {
     this.$container = $('<div class="newfieldbtn-container btngroup small fullwidth">').prependTo(fld.$fieldLibrary)
     this.$groupButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Group')).appendTo(this.$container)
     this.$fieldButton = $('<div class="btn small add icon" tabindex="0">').text(Craft.t('quick-field', 'New Field')).appendTo(this.$container)
+    this._replacePlaceholder = {}
 
     // Make sure the groups are never hidden, so they can always be renamed or deleted
     this._groupObserver = new window.MutationObserver(() => {
@@ -92,24 +96,13 @@ class QuickFieldLayout {
    * Adds edit buttons to existing fields.
    */
   public addFieldEditButtons (): void {
-    const addFieldEditButton: (_: number, field: HTMLElement) => void = (_, field) => this.addFieldEditButton($(field))
+    const addFieldEditButton: (_: number, field: HTMLElement) => void = (_, field) => this._quickField.addFieldEditButton($(field))
 
     // The fields on the sidebar
     this.fld.$fields.filter('.unused').each(addFieldEditButton)
 
     // The fields on tabs
     this.fld.$tabContainer.find('.fld-field[data-id]').each(addFieldEditButton)
-  }
-
-  /**
-   * Creates field edit buttons.
-   *
-   * @param $field
-   */
-  public addFieldEditButton ($field: JQuery): void {
-    const $button = $('<a class="qf-edit icon" title="Edit"></a>')
-    this._quickField.addFieldEditButtonListener($button)
-    $field.append($button)
   }
 
   /**
@@ -186,7 +179,7 @@ class QuickFieldLayout {
     fld.elementDrag.removeItems($field)
   }
 
-  public resetField (field: Field, elementSelector: string): void {
+  public resetField (field: Field, elementSelector: string, selectorHtml: string): void {
     const fld = this.fld
     const $group = this._getGroupByName(field.group.name)
 
@@ -196,6 +189,47 @@ class QuickFieldLayout {
     $oldElement.remove()
 
     this._insertFieldElementIntoGroup(field, elementSelector, $group)
+    this._updateFldField(field, selectorHtml)
+  }
+
+  private _updateFldField (field: Field, selectorHtml: string): void {
+    const $fldField = this.fld.$tabContainer.find(`.fld-field[data-id="${field.id}"]`)
+
+    if ($fldField.length === 0) {
+      // The field isn't on the field layout, so there's nothing to update
+      return
+    }
+
+    // Detach the required indicator before resetting the selector HTML, so we don't lose it
+    const $requiredIndicator = $fldField.find('.fld-required-indicator').detach()
+    const fldField = $fldField.data('fld-element')
+
+    // Detach the settings button before resetting the selector HTML, so we don't lose the on click event
+    // It will be reattached when calling `fldField.initUi()`
+    fldField.$editBtn.detach()
+
+    // Update the placeholder for the custom label in the settings if the field's been renamed
+    // This also involves resetting the field's `createSettings` event, so if the field's settings slideout hasn't been
+    // created yet, we can replace the placeholder with the correct field name when the slideout is created
+    if (typeof this._replacePlaceholder[field.id] !== 'undefined') {
+      fldField.off('createSettings.qf', this._replacePlaceholder[field.id])
+    }
+
+    this._replacePlaceholder[field.id] = function () {
+      this.slideout?.$container
+        .find('input[name$="[label]"')
+        .attr('placeholder', field.name)
+    }.bind(fldField)
+    fldField.on('createSettings.qf', this._replacePlaceholder[field.id])
+    this._replacePlaceholder[field.id]()
+
+    // Now actually update the field
+    $fldField
+      .data('attribute', field.handle)
+      .html($(selectorHtml).html())
+
+    $requiredIndicator.appendTo($fldField.find('.fld-element-label'))
+    fldField.initUi()
   }
 
   public addGroup (group: Group, resetFldGroups: boolean): void {
@@ -268,7 +302,7 @@ class QuickFieldLayout {
 
     $element.insertAfter($prevElement)
     fld.elementDrag.addItems($element)
-    this.addFieldEditButton($element)
+    this._quickField.addFieldEditButton($element)
     fld.$fields = fld.$fieldGroups.children('.fld-element')
   }
 
@@ -367,7 +401,7 @@ const QuickField = Garnish.Base.extend({
     })
 
     this.modal.on('newField', (e: SaveFieldEvent) => this._addField(e.field, e.elementSelectors))
-    this.modal.on('saveField', (e: SaveFieldEvent) => this._resetField(e.field, e.elementSelectors))
+    this.modal.on('saveField', (e: SaveFieldEvent) => this._resetField(e.field, e.elementSelectors, e.selectorHtml))
     this.modal.on('deleteField', (e: FieldEvent) => this._removeField(e.field.id))
     this.modal.on('destroy', () => {
       this._layouts.forEach((layout) => layout.detachFieldButton())
@@ -404,6 +438,17 @@ const QuickField = Garnish.Base.extend({
     const layoutType = matches[matches.length - 1].split('&quot;')[2].replaceAll('\\\\', '\\')
     this.modal.addLayoutType(layoutType)
     newLayout.setType(layoutType)
+  },
+
+  /**
+   * Creates field edit buttons.
+   *
+   * @param $field
+   */
+  addFieldEditButton: function ($field: JQuery): void {
+    const $button = $('<a class="qf-edit icon" title="Edit"></a>')
+    this.addFieldEditButtonListener($button)
+    $field.append($button)
   },
 
   addFieldEditButtonListener: function ($button: JQuery): void {
@@ -468,12 +513,13 @@ const QuickField = Garnish.Base.extend({
    *
    * @param field
    * @param elementSelectors
+   * @param selectorHtml
    * @private
    */
-  _resetField: function (this: QuickFieldInterface, field: Field, elementSelectors: Record<string, string>) {
+  _resetField: function (this: QuickFieldInterface, field: Field, elementSelectors: Record<string, string>, selectorHtml: string) {
     this._layouts.forEach((layout) => {
       const layoutType = layout.getType()
-      layout.resetField(field, elementSelectors[layoutType])
+      layout.resetField(field, elementSelectors[layoutType], selectorHtml)
     })
   },
 
