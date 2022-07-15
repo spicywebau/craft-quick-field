@@ -91,15 +91,15 @@ export default Garnish.Base.extend({
   /**
    * Prompts for confirmation of deleting a field group, then deletes the group.
    *
-   * @param groupId
+   * @param group
    */
-  deleteGroup: function (groupId: number) {
+  deleteGroup: function (group: Group) {
     if (confirm(Craft.t('quick-field', 'Are you sure you want to delete this group and all its fields?'))) {
       const data = {
-        id: groupId
+        id: group.id
       }
       Craft.sendActionRequest('POST', 'fields/delete-group', { data })
-        .then(_ => this.trigger('deleteGroup', { id: groupId }))
+        .then(_ => this.trigger('deleteGroup', { group }))
         .catch(_ => Craft.cp.displayError(Craft.t('quick-field', 'Could not delete the group.')))
     }
   },
