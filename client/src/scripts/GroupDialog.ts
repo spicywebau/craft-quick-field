@@ -1,5 +1,8 @@
 import { SaveGroupResponse } from './types/Response'
 
+/**
+ * An interface representing a `GroupDialog`.
+ */
 interface GroupDialogInterface extends GarnishComponent {
   addNewGroup: () => void
   renameGroup: (id: number, name: string) => void
@@ -7,6 +10,9 @@ interface GroupDialogInterface extends GarnishComponent {
   promptForGroupName: (oldName: string) => string
 }
 
+/**
+ * A type for a function that is called after updating a field group.
+ */
 type GroupUpdateEventFunction = (target: GarnishComponent, group: Group, oldName: string) => void
 
 /**
@@ -17,6 +23,7 @@ const GroupDialog = Garnish.Base.extend({
 
   /**
    * Requests input for new group name, then creates the group.
+   * @public
    */
   addNewGroup (): void {
     this._saveGroup(
@@ -28,9 +35,9 @@ const GroupDialog = Garnish.Base.extend({
 
   /**
    * Requests input for a new name for an existing group, then updates the group.
-   *
-   * @param id
-   * @param name
+   * @param id - The group's ID
+   * @param name - The group's current name
+   * @public
    */
   renameGroup (id: number, name: string): void {
     this._saveGroup(
@@ -42,10 +49,9 @@ const GroupDialog = Garnish.Base.extend({
 
   /**
    * Internal function for saving new or updated groups.
-   *
-   * @param id
-   * @param oldName
-   * @param successCallback
+   * @param id - The group's ID
+   * @param oldName - The group's current name
+   * @param successCallback - A `GroupUpdateEventFunction` to be called after the group is saved
    * @private
    */
   _saveGroup (id: number, oldName: string, successCallback: GroupUpdateEventFunction): void {
@@ -74,8 +80,8 @@ const GroupDialog = Garnish.Base.extend({
 
   /**
    * Internal function for triggering a group update event with a given name.
-   *
-   * @param eventName
+   * @param eventName - The name of the event to trigger
+   * @returns a `GroupUpdateEventFunction` for triggering an event with the given `eventName`
    * @private
    */
   _triggerGroupUpdateEvent (eventName: string): GroupUpdateEventFunction {
@@ -90,8 +96,8 @@ const GroupDialog = Garnish.Base.extend({
 
   /**
    * Prompts for confirmation of deleting a field group, then deletes the group.
-   *
-   * @param group
+   * @param group - The group to delete
+   * @public
    */
   deleteGroup (group: Group): void {
     if (confirm(Craft.t('quick-field', 'Are you sure you want to delete this group and all its fields?'))) {
@@ -106,8 +112,8 @@ const GroupDialog = Garnish.Base.extend({
 
   /**
    * Creates and opens the dialog box asking for a group name.
-   *
-   * @return String
+   * @returns a string representing the new group name, or `null` if the prompt was cancelled
+   * @public
    */
   promptForGroupName (oldName: string): string|null {
     return prompt(Craft.t('quick-field', 'What do you want to name the group?'), oldName)
@@ -116,8 +122,8 @@ const GroupDialog = Garnish.Base.extend({
   /**
    * Utility method that transforms returned errors from an async request into a single dimension array.
    * This is useful when outputting errors to the screen, so conversion to string is simpler.
-   *
-   * @return Array
+   * @returns an array of strings representing the errors that occurred
+   * @private
    */
   _flattenErrors (responseErrors: Record<string, string>): string[] {
     return Object.keys(responseErrors)

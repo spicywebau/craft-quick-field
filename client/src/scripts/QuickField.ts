@@ -5,6 +5,9 @@ import { Loader, LoaderInterface } from './Loader'
 import { LoadResponseData } from './types/Response'
 import Event from './types/Event'
 
+/**
+ * An interface representing a `QuickField`.
+ */
 interface QuickFieldInterface extends GarnishComponent {
   dialog: GroupDialogInterface
   loader: LoaderInterface
@@ -16,6 +19,9 @@ interface QuickFieldInterface extends GarnishComponent {
   openRenameGroupDialog: ($group: JQuery) => void
 }
 
+/**
+ * An interface representing a `QuickField`, for private use.
+ */
 interface QuickFieldPrivateInterface extends QuickFieldInterface {
   _groupObserver: MutationObserver
   _layouts: QuickFieldLayout[]
@@ -31,45 +37,75 @@ interface QuickFieldPrivateInterface extends QuickFieldInterface {
   _addOptionToGroupSelect: ($option: JQuery, $select: JQuery, optionText: string) => void
 }
 
+/**
+ * An event that is triggered when a group settings menu option is selected.
+ */
 interface OptionEvent extends Event {
   option: string
 }
 
+/**
+ * An event that is triggered when a field action occurs.
+ */
 interface FieldEvent extends Event {
   field: Field
 }
 
+/**
+ * An event that is triggered when a field is saved.
+ */
 interface SaveFieldEvent extends FieldEvent {
   elementSelectors: Record<string, string>
   selectorHtml: string
 }
 
+/**
+ * An event that is triggered when a field group is deleted.
+ */
 interface DeleteGroupEvent extends Event {
   group: Group
 }
 
+/**
+ * An event that is triggered when a field group is saved.
+ */
 interface SaveGroupEvent extends Event {
   group: Group
   oldName: string
 }
 
+/**
+ * An action that has occurred in the history of a `QuickField` instance.
+ */
 interface QuickFieldHistoryItemInterface {
   action: QuickFieldHistoryAction
   component: Field|Group
   data?: QuickFieldHistoryItemData
 }
 
+/**
+ * Field data for a Quick Field history action.
+ */
 interface QuickFieldHistoryFieldData {
   elementSelectors: Record<string, string>
   selectorHtml?: string
 }
 
+/**
+ * Group data for a Quick Field history action.
+ */
 interface QuickFieldHistoryGroupData {
   oldName: string
 }
 
+/**
+ * Data for a Quick Field history action.
+ */
 type QuickFieldHistoryItemData = QuickFieldHistoryFieldData|QuickFieldHistoryGroupData
 
+/**
+ * A Quick Field history action.
+ */
 class QuickFieldHistoryItem implements QuickFieldHistoryItemInterface {
   private readonly _action: QuickFieldHistoryAction
 
@@ -82,32 +118,79 @@ class QuickFieldHistoryItem implements QuickFieldHistoryItemInterface {
   }
 }
 
+/**
+ * A Quick Field history action on a field.
+ */
 class QuickFieldHistoryFieldItem extends QuickFieldHistoryItem {
   constructor (action: QuickFieldHistoryAction, public component: Field, public data?: QuickFieldHistoryFieldData) {
     super(action, component, data)
   }
 }
 
+/**
+ * A Quick Field history action on a group.
+ */
 class QuickFieldHistoryGroupItem extends QuickFieldHistoryItem {
   constructor (action: QuickFieldHistoryAction, public component: Group, public data?: QuickFieldHistoryGroupData) {
     super(action, component, data)
   }
 }
 
+/**
+ * The kind of Quick Field history action that occurred.
+ */
 enum QuickFieldHistoryAction {
   ADD,
   EDIT,
   REMOVE
 }
 
+/**
+ * A container for managing Quick Field features on a field layout.
+ */
 class QuickFieldLayout {
+  /**
+   * The container for the new group/field buttons.
+   * @public
+   */
   public $container
+
+  /**
+   * The new group button.
+   * @public
+   */
   public $groupButton
+
+  /**
+   * The new field button.
+   * @public
+   */
   public $fieldButton
+
+  /**
+   * The observer for changes to groups.
+   * @private
+   */
   private readonly _groupObserver: MutationObserver
+
+  /**
+   * The observer for changes to groups.
+   * @private
+   */
   private _type: string
+
+  /**
+   * Functions for replacing placeholder text in the field layout element sidebar.
+   * @private
+   */
   private _replacePlaceholder: Record<number, Function>
 
+  /**
+   * The constructor.
+   * @param _quickField - The Quick Field instance.
+   * @param fld - A field layout designer to initialise for usage with Quick Field.
+   * @public
+   */
   constructor (private readonly _quickField: QuickFieldInterface, public fld: FieldLayoutDesigner) {
     this.fld.$container.addClass('quick-field')
 
@@ -128,24 +211,42 @@ class QuickFieldLayout {
     this._groupObserver.observe(this.fld.$fieldLibrary[0], { attributes: true, childList: true, subtree: true })
   }
 
+  /**
+   * Gets the type of this `QuickFieldLayout` instance's field layout.
+   * @returns the field layout type.
+   * @public
+   */
   public getType (): string {
     return this._type
   }
 
+  /**
+   * Sets the type of this `QuickFieldLayout` instance's field layout.
+   * @public
+   */
   public setType (type: string): void {
     this._type = type
   }
 
+  /**
+   * Attaches the 'new field' button to the button container.
+   * @public
+   */
   public attachFieldButton (): void {
     this.$fieldButton.appendTo(this.$container)
   }
 
+  /**
+   * Detaches the 'new field' button from the button container.
+   * @public
+   */
   public detachFieldButton (): void {
     this.$fieldButton.detach()
   }
 
   /**
    * Adds edit buttons to existing fields.
+   * @public
    */
   public addFieldEditButtons (): void {
     const addFieldEditButton: (_: number, field: HTMLElement) => void = (_, field) => this._quickField.addFieldEditButton($(field))
@@ -159,14 +260,17 @@ class QuickFieldLayout {
 
   /**
    * Creates field group rename/delete menus.
-   *
-   * @param $group
-   * @private
+   * @public
    */
   public addGroupMenus (): void {
     this.fld.$fieldGroups.each((_: number, group: HTMLElement) => this._addGroupMenu($(group)))
   }
 
+  /**
+   * Creates a field group rename/delete menu.
+   * @param $group - A jQuery object representing the group to create a menu for
+   * @private
+   */
   private _addGroupMenu ($group: JQuery): void {
     const $button = $(`<button class="qf-settings icon menubtn" title="${Craft.t('quick-field', 'Settings')}" role="button" type="button"></button>`)
     const $menu = $(`
@@ -189,8 +293,8 @@ class QuickFieldLayout {
 
   /**
    * Adds groups' ID data.
-   *
-   * @param groups
+   * @param groups - The groups to have their ID data added to their respective sidebar elements.
+   * @public
    */
   public addGroupIdData (groups: Group[]): void {
     // Loop through the groups in reverse so we don't have to reset `this.fld.$fieldGroups` every
@@ -210,6 +314,12 @@ class QuickFieldLayout {
     this._resetFldGroups()
   }
 
+  /**
+   * Adds a field to the field layout designer.
+   * @param field - The field to add
+   * @param elementSelector - The element selector for the field
+   * @public
+   */
   public addField (field: Field, elementSelector: string): void {
     // Make sure the field doesn't already exist in the FLD sidebar
     if (this.fld.$fields.filter(`.fld-field[data-id="${field.id}"]`).length > 0) {
@@ -225,6 +335,11 @@ class QuickFieldLayout {
     }
   }
 
+  /**
+   * Removes a field from the field layout designer.
+   * @param id - The ID of the field to remove
+   * @public
+   */
   public removeField (id: number): void {
     const selector = `.fld-field[data-id="${id}"]`
     const fld = this.fld
@@ -238,6 +353,13 @@ class QuickFieldLayout {
     }
   }
 
+  /**
+   * Renames and regroups an existing field on the field layout designer.
+   * @param field - The field to reset
+   * @param elementSelector - The element selector to use on the field layout sidebar
+   * @param selectorHtml - The selector HTML to replace the existing selector HTML, if the field is on a field layout
+   * @public
+   */
   public resetField (field: Field, elementSelector: string, selectorHtml: string): void {
     const fld = this.fld
     const $group = this._getGroupByName(field.group.name)
@@ -251,6 +373,12 @@ class QuickFieldLayout {
     this._updateFldField(field, selectorHtml)
   }
 
+  /**
+   * Updates a field on the field layout.
+   * @param field - The field to update
+   * @param selectorHtml - The selector HTML to replace the existing selector HTML
+   * @private
+   */
   private _updateFldField (field: Field, selectorHtml: string): void {
     const $fldField = this.fld.$tabContainer.find(`.fld-field[data-id="${field.id}"]`)
 
@@ -291,6 +419,12 @@ class QuickFieldLayout {
     fldField.initUi()
   }
 
+  /**
+   * Adds a group to the field layout sidebar.
+   * @param group - The group to add.
+   * @param resetFldGroups - Whether to reset the field layout designer's record of existing field groups
+   * @public
+   */
   public addGroup (group: Group, resetFldGroups: boolean): void {
     // Make sure the group doesn't already exist in the FLD sidebar
     if (this._getGroupByName(group.name).length > 0) {
@@ -308,6 +442,12 @@ class QuickFieldLayout {
     this._getGroupByName(group.name).data('id', group.id)
   }
 
+  /**
+   * Renames a field group on the field layout sidebar.
+   * @param group - The group to rename
+   * @param oldName - The group's previous name
+   * @public
+   */
   public renameGroup (group: Group, oldName: string): void {
     const $group = this._getGroupByName(oldName)
 
@@ -322,6 +462,11 @@ class QuickFieldLayout {
     }
   }
 
+  /**
+   * Removes a group from the field layout sidebar, along with all of its fields.
+   * @param id - The ID of the group to remove
+   * @public
+   */
   public removeGroup (id: number): void {
     const fld = this.fld
     const $deletedGroup = fld.$fieldGroups
@@ -346,10 +491,9 @@ class QuickFieldLayout {
 
   /**
    * Inserts a field element into the correct position in its group.
-   *
-   * @param field
-   * @param elementSelector
-   * @param $group
+   * @param field - The field to insert into the correct position
+   * @param elementSelector - The element selector to use on the field layout sidebar
+   * @param $group - A jQuery object representing the group to insert the field into
    * @private
    */
   private _insertFieldElementIntoGroup (field: Field, elementSelector: string, $group: JQuery): void {
@@ -371,10 +515,9 @@ class QuickFieldLayout {
   }
 
   /**
-   * Attaches a group to the correct position in the sidebar.
-   *
-   * @param $group
-   * @param resetFldGroups
+   * Attaches a group to the correct position in the field layout sidebar.
+   * @param $group - A jQuery object representing the group to attach
+   * @param resetFldGroups - Whether to reset the field layout designer's record of existing field groups
    * @private
    */
   private _attachGroup ($group: JQuery, resetFldGroups: boolean): void {
@@ -398,7 +541,6 @@ class QuickFieldLayout {
 
   /**
    * Resets Craft's record of the field groups in the field layout designer sidebar.
-   *
    * @private
    */
   private _resetFldGroups (): void {
@@ -407,9 +549,8 @@ class QuickFieldLayout {
 
   /**
    * Finds the group element from its name.
-   *
-   * @param name
-   * @returns {*}
+   * @param name - The name of the group to find
+   * @returns A JQuery object representing the found group
    * @private
    */
   private _getGroupByName (name: string): JQuery {
@@ -421,7 +562,7 @@ class QuickFieldLayout {
 
 /**
  * QuickField class
- * Handles the buttons for creating new groups and fields inside a FieldLayoutDesigner
+ * Handles the buttons for creating new groups and fields inside a FieldLayoutDesigner.
  */
 const QuickField = Garnish.Base.extend({
 
@@ -434,7 +575,8 @@ const QuickField = Garnish.Base.extend({
   _initialGroups: null,
 
   /**
-   * The constructor.
+   * The QuickField constructor.
+   * @public
    */
   init (this: QuickFieldPrivateInterface): void {
     let fieldButtonAttached = true
@@ -491,6 +633,11 @@ const QuickField = Garnish.Base.extend({
     this.loader.on('unload', () => this.modal.destroy())
   },
 
+  /**
+   * Adds a field layout designer to be initialised for use by Quick Field.
+   * @param fld - The field layout designer to add
+   * @public
+   */
   addFld (this: QuickFieldPrivateInterface, fld: FieldLayoutDesigner): void {
     const newLayout = new QuickFieldLayout(this, fld)
     this._layouts.push(newLayout)
@@ -542,9 +689,9 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-   * Creates field edit buttons.
-   *
-   * @param $field
+   * Creates field edit buttons and attaches them to the field.
+   * @param $field - A jQuery object representing the field to add an edit button to
+   * @public
    */
   addFieldEditButton ($field: JQuery): void {
     const $button = $('<a class="qf-edit icon" title="Edit"></a>')
@@ -552,6 +699,11 @@ const QuickField = Garnish.Base.extend({
     $field.append($button)
   },
 
+  /**
+   * Adds a listener to a field edit button.
+   * @param $button - A jQuery object representing the field edit button
+   * @public
+   */
   addFieldEditButtonListener ($button: JQuery): void {
     this.addListener($button, 'activate', '_editField')
   },
@@ -559,7 +711,6 @@ const QuickField = Garnish.Base.extend({
   /**
    * Event handler for the New Field button.
    * Creates a modal window that contains new field settings.
-   *
    * @private
    */
   _newField (): void {
@@ -569,8 +720,7 @@ const QuickField = Garnish.Base.extend({
   /**
    * Event handler for the edit buttons on fields.
    * Opens a modal window that contains the field settings.
-   *
-   * @param e
+   * @param e - The event
    * @private
    */
   _editField (e: Event): void {
@@ -582,10 +732,9 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-   * Adds a new unused (dashed border) field to the field layout designer.
-   *
-   * @param field
-   * @param elementSelectors
+   * Adds a new unused field to the field layout designers.
+   * @param field - The field to add
+   * @param elementSelectors - The element selectors to use on the field layouts, depending on the layout types
    * @private
    */
   _addField (this: QuickFieldPrivateInterface, field: Field, elementSelectors: Record<string, string>): void {
@@ -601,9 +750,8 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-   * Removes a field from the field layout designer.
-   *
-   * @param field
+   * Removes a field from the field layout designers.
+   * @param field - The field to remove
    * @private
    */
   _removeField (this: QuickFieldPrivateInterface, field: Field): void {
@@ -612,11 +760,10 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-   * Renames and regroups an existing field on the field layout designer.
-   *
-   * @param field
-   * @param elementSelectors
-   * @param selectorHtml
+   * Renames and regroups an existing field on the field layout designers.
+   * @param field - The field to reset
+   * @param elementSelectors - The element selectors to use on the field layout sidebars, depending on the layout types
+   * @param selectorHtml - The selector HTML to replace the existing selector HTML, if the field is on a field layout
    * @private
    */
   _resetField (this: QuickFieldPrivateInterface, field: Field, elementSelectors: Record<string, string>, selectorHtml: string): void {
@@ -629,7 +776,6 @@ const QuickField = Garnish.Base.extend({
 
   /**
    * Event listener for the new group button
-   *
    * @private
    */
   _newGroup (): void {
@@ -637,10 +783,9 @@ const QuickField = Garnish.Base.extend({
   },
 
   /**
-   * Adds a new unused group to the field layout designer sidebar.
-   *
-   * @param group
-   * @param resetFldGroups
+   * Adds a new unused field group to the field layout designer sidebar.
+   * @param group - The group to add
+   * @param resetFldGroups - Whether to reset the field layout designers' records of existing field groups
    * @private
    */
   _addGroup (this: QuickFieldPrivateInterface, group: Group, resetFldGroups: boolean): void {
@@ -659,8 +804,7 @@ const QuickField = Garnish.Base.extend({
 
   /**
    * Opens the field group dialog for renaming a group.
-   *
-   * @param $group
+   * @param $group - A jQuery object representing the field group to rename
    */
   openRenameGroupDialog ($group: JQuery): void {
     const id = $group.data('id')
@@ -670,9 +814,8 @@ const QuickField = Garnish.Base.extend({
 
   /**
    * Renames a field group.
-   *
-   * @param group
-   * @param oldName
+   * @param group - The field group to rename
+   * @param oldName - The field group's previous name
    * @private
    */
   _renameGroup (this: QuickFieldPrivateInterface, group: Group, oldName: string): void {
@@ -690,10 +833,9 @@ const QuickField = Garnish.Base.extend({
 
   /**
    * Adds a field group option to the new field template.
-   *
-   * @param $option
-   * @param $select
-   * @param optionText
+   * @param $option - A jQuery object representing the option to add to the group select
+   * @param $select - A jQuery object representing the group select
+   * @param optionText - The text being used for the new option
    * @private
    */
   _addOptionToGroupSelect ($option: JQuery, $select: JQuery, optionText: string): void {
@@ -710,8 +852,8 @@ const QuickField = Garnish.Base.extend({
 
   /**
    * Opens the field group dialog for deleting a group.
-   *
-   * @param $group
+   * @param $group - A jQuery object representing the field group to rename
+   * @public
    */
   openDeleteGroupDialog ($group: JQuery): void {
     const group = {
@@ -723,8 +865,7 @@ const QuickField = Garnish.Base.extend({
 
   /**
    * Removes a deleted field group, and any fields belonging to it.
-   *
-   * @param group Group
+   * @param group - The field group to delete
    * @private
    */
   _removeGroup (this: QuickFieldPrivateInterface, group: Group): void {

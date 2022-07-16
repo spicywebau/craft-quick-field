@@ -1,10 +1,16 @@
 import { LoadResponse } from './types/Response'
 
+/**
+ * An interface representing a `Loader`.
+ */
 interface LoaderInterface extends GarnishComponent {
   isUnloaded: () => boolean
   load: () => void
 }
 
+/**
+ * The state of a `Loader`.
+ */
 enum LoadStatus {
   UNLOADED,
   LOADING,
@@ -21,6 +27,7 @@ const Loader = Garnish.Base.extend({
 
   /**
    * The constructor.
+   * @public
    */
   init (): void {
     this.loadStatus = LoadStatus.UNLOADED
@@ -29,6 +36,7 @@ const Loader = Garnish.Base.extend({
 
   /**
    * Loads the field settings template file, as well as all the resources that come with it.
+   * @public
    */
   load (): void {
     if (this.loadStatus === LoadStatus.UNLOADED) {
@@ -50,7 +58,8 @@ const Loader = Garnish.Base.extend({
 
   /**
    * Whether the initial load of Quick Field data hasn't occurred.
-   * @returns boolean
+   * @returns Whether the load status is unloaded
+   * @public
    */
   isUnloaded (): boolean {
     return this.loadStatus === LoadStatus.UNLOADED

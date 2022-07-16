@@ -1,3 +1,6 @@
+/**
+ * An instance of Craft.
+ */
 declare const Craft: {
   FieldLayoutDesigner: FieldLayoutDesigner
   cp: Cp
@@ -6,11 +9,17 @@ declare const Craft: {
   t: (category: string, message: string, params?: object) => string
 }
 
+/**
+ * An interface for Craft control panel functionality.
+ */
 interface Cp {
   displayError: (message: string) => void
   displayNotice: (message: string) => void
 }
 
+/**
+ * A Craft field layout designer.
+ */
 interface FieldLayoutDesigner {
   $container: JQuery
   $fieldGroups: JQuery
@@ -25,6 +34,9 @@ interface FieldLayoutDesigner {
   prototype: FldPrototype
 }
 
+/**
+ * A Craft field layout designer element.
+ */
 interface FldElement {
   $container: JQuery
   prototype: {
@@ -32,15 +44,24 @@ interface FldElement {
   }
 }
 
+/**
+ * An interface for a Craft field layout designer's element drag functionality.
+ */
 interface ElementDrag {
   addItems: (items: JQuery) => void
   removeItems: (items: JQuery) => void
 }
 
+/**
+ * A Craft field layout designer prototype.
+ */
 interface FldPrototype {
   init: (container: JQuery, settings: object) => void
 }
 
+/**
+ * A Craft field.
+ */
 interface Field {
   group: Group
   id: number
@@ -51,6 +72,9 @@ interface Field {
   translationKeyFormat: string
 }
 
+/**
+ * A Craft field group.
+ */
 interface Group {
   id: number
   name: string

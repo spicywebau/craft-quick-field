@@ -1,3 +1,6 @@
+/**
+ * An instance of Garnish.
+ */
 declare const Garnish: {
   MenuBtn: new(btn: JQuery) => GarnishComponent
   $bod: JQuery
@@ -7,6 +10,9 @@ declare const Garnish: {
   shake: (elem: JQuery) => void
 }
 
+/**
+ * An interface representing a Garnish component.
+ */
 declare interface GarnishComponent {
   addListener: (elem: HTMLElement|JQuery, events: string|string[], data: object|Function|string, func?: Function|string) => void
   base: () => void
@@ -17,6 +23,9 @@ declare interface GarnishComponent {
   trigger: (type: string, data: object) => void
 }
 
+/**
+ * An interface representing a Garnish modal.
+ */
 declare interface GarnishModal extends GarnishComponent {
   _disabled: boolean
   $container: JQuery

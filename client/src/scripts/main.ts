@@ -14,7 +14,7 @@ const FLDElement = FLD.Element
 const FLDElementInitUi = FLDElement.prototype.initUi
 
 /**
- * Override the current FieldLayoutDesigner "constructor" so new buttons can be initialised.
+ * Overrides the current FieldLayoutDesigner 'constructor' so new buttons can be initialised.
  */
 FLD.prototype.init = function (this: FieldLayoutDesigner) {
   FLDinit.apply(this, arguments)
@@ -25,7 +25,7 @@ FLD.prototype.init = function (this: FieldLayoutDesigner) {
 }
 
 /**
- * Override the current FieldLayoutDesigner.Element.initUi() so field edit buttons can be initialised.
+ * Overrides the current FieldLayoutDesigner.Element.initUi() so field edit buttons can be initialised.
  */
 FLDElement.prototype.initUi = function (this: FldElement) {
   FLDElementInitUi.apply(this, arguments)
