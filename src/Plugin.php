@@ -18,9 +18,9 @@ use spicyweb\quickfield\controllers\QuickFieldController;
 class Plugin extends BasePlugin
 {
     /**
-     * @var Plugin
+     * @var Plugin|null
      */
-    public static $plugin;
+    public static ?Plugin $plugin = null;
 
     /**
      * @inheritdoc
@@ -32,7 +32,7 @@ class Plugin extends BasePlugin
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         self::$plugin = $this;
@@ -42,7 +42,7 @@ class Plugin extends BasePlugin
     /**
      * Includes the style/script resources for Quick Field for admin users in the Craft control panel.
      */
-    private function _includeResources()
+    private function _includeResources(): void
     {
         $request = Craft::$app->getRequest();
 

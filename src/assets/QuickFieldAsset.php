@@ -18,7 +18,7 @@ class QuickFieldAsset extends AssetBundle
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         $this->sourcePath = '@spicyweb/quickfield/resources';
 
@@ -40,7 +40,7 @@ class QuickFieldAsset extends AssetBundle
     /**
      * @inheritdoc
      */
-    public function registerAssetFiles($view)
+    public function registerAssetFiles($view): void
     {
         $view->registerTranslations('quick-field', [
             '\'{name}\' field saved.',
