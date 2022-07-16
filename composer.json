@@ -1,6 +1,6 @@
 {
   "name": "spicyweb/craft-quick-field",
-  "description": "Create fields on the fly while designing field layouts",
+  "description": "Create Craft CMS fields on the fly while designing field layouts",
   "version": "1.0.0",
   "type": "craft-plugin",
   "keywords": [
