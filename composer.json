@@ -1,7 +1,7 @@
 {
   "name": "spicyweb/craft-quick-field",
   "description": "Create Craft CMS fields on the fly while designing field layouts",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "craft-plugin",
   "keywords": [
     "cms",
@@ -18,8 +18,8 @@
   "support": {
     "issues": "https://github.com/spicywebau/craft-quick-field/issues",
     "source": "https://github.com/spicywebau/craft-quick-field",
-    "docs": "https://github.com/spicywebau/craft-quick-field/blob/master/README.md",
-    "rss": "https://github.com/spicywebau/craft-quick-field/commits/master.atom"
+    "docs": "https://github.com/spicywebau/craft-quick-field/blob/2.0.0/README.md",
+    "rss": "https://github.com/spicywebau/craft-quick-field/commits/2.x.atom"
   },
   "require": {
     "craftcms/cms": "^4.1.0",
@@ -35,8 +35,8 @@
     "name": "Quick Field",
     "schemaVersion": "1.0.0",
     "class": "spicyweb\\quickfield\\Plugin",
-    "changelogUrl": "https://github.com/spicywebau/craft-quick-field/blob/master/CHANGELOG.md",
-    "downloadUrl": "https://github.com/spicywebau/craft-quick-field/archive/master.zip"
+    "changelogUrl": "https://github.com/spicywebau/craft-quick-field/blob/2.x/CHANGELOG.md",
+    "downloadUrl": "https://github.com/spicywebau/craft-quick-field/archive/refs/tags/2.0.0.zip"
   },
   "config": {
     "allow-plugins": {

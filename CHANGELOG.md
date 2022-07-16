@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.0 - 2022-07-16
 
 ### Added
 - Added Craft 4 compatibility (requires Craft 4.1.0 or later)
