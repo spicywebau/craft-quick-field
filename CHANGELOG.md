@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.1 - 2022-07-19
 
 ### Fixed
 - Fixed a bug where deleted field groups would still appear on new Neo block type field layouts
