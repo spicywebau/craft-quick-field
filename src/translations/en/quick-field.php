@@ -15,8 +15,11 @@ return [
     'New Field' => 'New Field',
     'New field created.' => 'New field created.',
     'New Group' => 'New Group',
+    'No field groups exist.' => 'No field groups exist.',
     'Rename' => 'Rename',
     'Save' => 'Save',
     'Settings' => 'Settings',
+    'The field requested to delete no longer exists.' => 'The field requested to delete no longer exists.',
+    'The field requested to edit no longer exists.' => 'The field requested to edit no longer exists.',
     'What do you want to name the group?' => 'What do you want to name the group?',
 ];
