@@ -43,6 +43,10 @@
 			this.modal  = QuickField.FieldModal.getInstance();
 			this.loader = QuickField.Loader.getInstance();
 
+			if (this.loader.loadStatus === this.loader.LOADED) {
+				this._initGroups(this.loader.groups)
+			}
+
 			this.addListener(this.$groupButton, 'activate', 'newGroup');
 			this.addListener(this.$fieldButton, 'activate', 'newField');
 

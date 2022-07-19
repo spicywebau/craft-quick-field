@@ -10,6 +10,7 @@
 		LOADING: 'loading',
 		LOADED: 'loaded',
 		loadStatus: null,
+		groups: null,
 
 		/**
 		 * The constructor.
@@ -33,6 +34,7 @@
 					if(textStatus === 'success' && response.success)
 					{
 						this.loadStatus = this.LOADED;
+						this.groups = response.groups
 						this.trigger('load', {
 							template: response.template,
 							groups: response.groups,
