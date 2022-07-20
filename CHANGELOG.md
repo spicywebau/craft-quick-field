@@ -13,6 +13,11 @@
 ### Fixed
 - Fixed an issue where Quick Field wasn't being initialised for Craft Commerce variant field layout designers
 
+## 1.0.1 - 2022-07-19
+
+### Fixed
+- Fixed a bug where deleted field groups would still appear on new Neo block type field layouts
+
 ## 1.0.0 - 2022-06-29
 
 ### Added
