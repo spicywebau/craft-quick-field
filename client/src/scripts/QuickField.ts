@@ -263,7 +263,11 @@ class QuickFieldLayout {
    * @public
    */
   public addGroupMenus (): void {
-    this.fld.$fieldGroups.each((_: number, group: HTMLElement) => this._addGroupMenu($(group)))
+    this.fld.$fieldGroups
+      .filter(function () {
+        return $(this).find('.fld-field[data-id]').length > 0
+      })
+      .each((_: number, group: HTMLElement) => this._addGroupMenu($(group)))
   }
 
   /**
