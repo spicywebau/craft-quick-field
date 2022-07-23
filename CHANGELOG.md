@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Fixed
-- Fixed a bug where Quick Field edit icons were displaying on non-custom fields
+- Fixed a bug on field layout designers for element types that have native fields, where Quick Field edit icons were displaying on the native fields
 - Fixed a bug on field layout designers for element types that have native fields, where Quick Field group action menus were displaying on the Native Fields group
 
 ## 2.0.0 - 2022-07-16
