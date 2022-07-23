@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.1 - 2022-07-23
 
 ### Fixed
 - Fixed a bug on field layout designers for element types that have native fields, where Quick Field edit icons were displaying on the native fields
