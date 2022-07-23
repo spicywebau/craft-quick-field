@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed a bug where Quick Field edit icons were displaying on non-custom fields
+
 ## 2.0.0 - 2022-07-16
 
 ### Added

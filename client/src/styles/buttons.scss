@@ -32,7 +32,7 @@
 
 // Edit field button
 
-.fld-field {
+.fld-field[data-id] {
     padding-right: 32px;
 
     .qf-edit {

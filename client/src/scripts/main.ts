@@ -30,7 +30,7 @@ FLD.prototype.init = function (this: FieldLayoutDesigner) {
 FLDElement.prototype.initUi = function (this: FldElement) {
   FLDElementInitUi.apply(this, arguments)
 
-  if (this.$container.is('.fld-field')) {
+  if (this.$container.is('.fld-field[data-id]')) {
     const $editButton = this.$container.find('.qf-edit')
 
     if ($editButton.length > 0) {

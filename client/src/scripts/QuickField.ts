@@ -252,7 +252,7 @@ class QuickFieldLayout {
     const addFieldEditButton: (_: number, field: HTMLElement) => void = (_, field) => this._quickField.addFieldEditButton($(field))
 
     // The fields on the sidebar
-    this.fld.$fields.filter('.unused').each(addFieldEditButton)
+    this.fld.$fields.filter('.unused[data-id]').each(addFieldEditButton)
 
     // The fields on tabs
     this.fld.$tabContainer.find('.fld-field[data-id]').each(addFieldEditButton)
