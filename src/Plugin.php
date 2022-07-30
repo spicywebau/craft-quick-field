@@ -4,6 +4,7 @@ namespace spicyweb\quickfield;
 
 use Craft;
 use craft\base\Plugin as BasePlugin;
+use craft\web\Application;
 use spicyweb\quickfield\assets\QuickFieldAsset;
 use spicyweb\quickfield\controllers\QuickFieldController;
 
@@ -44,10 +45,12 @@ class Plugin extends BasePlugin
      */
     private function _includeResources(): void
     {
-        $request = Craft::$app->getRequest();
+        Craft::$app->on(Application::EVENT_INIT, function() {
+            $request = Craft::$app->getRequest();
 
-        if ($request->getIsCpRequest() && !$request->getIsAjax() && Craft::$app->getUser()->getIsAdmin()) {
-            Craft::$app->getView()->registerAssetBundle(QuickFieldAsset::class);
-        }
+            if ($request->getIsCpRequest() && !$request->getIsAjax() && Craft::$app->getUser()->getIsAdmin()) {
+                Craft::$app->getView()->registerAssetBundle(QuickFieldAsset::class);
+            }
+        });
     }
 }
