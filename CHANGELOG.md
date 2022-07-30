@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.2 - 2022-07-30
 
 ### Fixed
 - Fixed a bug where Quick Field could sometimes fail to load its style/script resources
