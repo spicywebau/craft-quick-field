@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fixed a bug where empty field groups could sometimes appear in the incorrect order on field layout designer sidebars
+- Fixed a bug where empty field groups could sometimes not appear on field layout designer sidebars
 
 ## 2.0.2 - 2022-07-30
 

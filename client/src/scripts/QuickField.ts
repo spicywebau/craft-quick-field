@@ -310,6 +310,9 @@ class QuickFieldLayout {
       if ($group.length === 0) {
         this.addGroup(group, false)
         $group = this._getGroupByName(group.name)
+      } else {
+        // Make sure empty groups aren't hidden
+        $group.removeClass('hidden')
       }
 
       $group.data('id', group.id)
