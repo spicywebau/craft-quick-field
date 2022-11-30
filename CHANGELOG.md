@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.3 - 2022-11-30
 
 ### Fixed
 - Fixed a bug where empty field groups could sometimes appear in the incorrect order on field layout designer sidebars
