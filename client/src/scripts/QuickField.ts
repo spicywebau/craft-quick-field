@@ -529,7 +529,7 @@ class QuickFieldLayout {
     const lowerCaseName = $group.attr('data-name') ?? ''
     let $prevElement = fld.$fieldGroups.filter(function () {
       const $this = $(this)
-      return $this.hasClass('hidden') || $this.data('name') < lowerCaseName
+      return $this.is(':first-of-type') || $this.data('name') < lowerCaseName
     }).last()
 
     if ($prevElement.length === 0) {
