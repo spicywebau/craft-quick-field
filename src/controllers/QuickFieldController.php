@@ -114,7 +114,7 @@ class QuickFieldController extends Controller
         $view = Craft::$app->getView();
 
         $config = [
-            'id' => $request->getBodyParam('qf.fieldId'),
+            'id' => $request->getBodyParam('qf.fieldId') ?: null,
             'groupId' => $request->getRequiredBodyParam('qf.group'),
             'name' => $request->getBodyParam('qf.name'),
             'handle' => $request->getBodyParam('qf.handle'),

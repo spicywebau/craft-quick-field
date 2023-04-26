@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed an error that occurred when saving a new Matrix field from an existing one
+
 ## 2.0.3 - 2022-11-30
 
 ### Fixed
