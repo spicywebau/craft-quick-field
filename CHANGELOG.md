@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.5 - 2023-08-19
 
 ### Fixed
 - Fixed a bug where Quick Field was trying to initialise in environments where admin changes are disallowed
