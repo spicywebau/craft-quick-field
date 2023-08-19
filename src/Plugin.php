@@ -48,7 +48,12 @@ class Plugin extends BasePlugin
         Craft::$app->on(Application::EVENT_INIT, function() {
             $request = Craft::$app->getRequest();
 
-            if ($request->getIsCpRequest() && !$request->getIsAjax() && Craft::$app->getUser()->getIsAdmin()) {
+            if (
+                $request->getIsCpRequest() &&
+                !$request->getIsAjax() &&
+                Craft::$app->getUser()->getIsAdmin() &&
+                Craft::$app->getConfig()->getGeneral()->allowAdminChanges
+            ) {
                 Craft::$app->getView()->registerAssetBundle(QuickFieldAsset::class);
             }
         });
