@@ -118,6 +118,7 @@ class QuickFieldController extends Controller
             'groupId' => $request->getRequiredBodyParam('qf.group'),
             'name' => $request->getBodyParam('qf.name'),
             'handle' => $request->getBodyParam('qf.handle'),
+            'searchable' => (bool)$request->getBodyParam('qf.searchable', true),
             'instructions' => $request->getBodyParam('qf.instructions'),
             'translationMethod' => $request->getBodyParam('qf.translationMethod'),
             'translationKeyFormat' => $request->getBodyParam('qf.translationKeyFormat'),
