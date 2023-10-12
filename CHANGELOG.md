@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.6 - 2023-10-12
 
 ### Fixed
 - Fixed a bug where changes to a field's "Use this field's values as search keywords" setting weren't being saved
