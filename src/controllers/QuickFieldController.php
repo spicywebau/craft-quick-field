@@ -120,7 +120,7 @@ class QuickFieldController extends Controller
             'handle' => $request->getBodyParam('qf.handle'),
             'searchable' => (bool)$request->getBodyParam('qf.searchable', true),
             'instructions' => $request->getBodyParam('qf.instructions'),
-            'translationMethod' => $request->getBodyParam('qf.translationMethod'),
+            'translationMethod' => $request->getBodyParam('qf.translationMethod', Field::TRANSLATION_METHOD_NONE),
             'translationKeyFormat' => $request->getBodyParam('qf.translationKeyFormat'),
             'type' => $request->getRequiredBodyParam('qf.type'),
         ];

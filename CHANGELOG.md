@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed an error that occurred when saving changes to a Super Table field on a single-site Craft install
+
 ## 2.0.6 - 2023-10-12
 
 ### Fixed
